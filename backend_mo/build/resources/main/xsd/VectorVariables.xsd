@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="VectorVariablesArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Description" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Type" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Scope" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Length" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Start" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assignment" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VAC" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VDN_Assig" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Description_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Type_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Scope_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Length_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Start_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assignment_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VAC_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VDN_Assig_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Description_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Type_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Scope_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Length_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Start_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assignment_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VAC_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VDN_Assig_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="VectorVariablesType">
+		<xsd:sequence>
+			<xsd:group ref="VectorVariablesArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

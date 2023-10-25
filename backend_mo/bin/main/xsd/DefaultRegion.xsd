@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="DefaultRegionArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="H323_Security_Profiles" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Backup_Servers_In_Priority_Order" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="DefaultRegionType">
+		<xsd:sequence>
+			<xsd:element name="Region" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Location" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Codec_Set" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="UDP_Port_Min" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="UDP_Port_Max" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="InterRegionDirect" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IntraRegionDirect" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Hairpinning" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Control_8021p_Priority" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_8021p_Priority" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Video_8021p_Priority" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Control_PHB_Value" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_PHB_Value" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Video_PHB_Value" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="H323_Link_Bounce_Recovery" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Idle_Traffic_Interval" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Keep_Alive_Interval" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Keep_Alive_Count" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="RTCP_Reporting_Enabled" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Near_End_Establishes_TCP_Signaling_Socket" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Near_End_TCP_Port_Min" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Near_End_TCP_Port_Max" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="DefaultRegionArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

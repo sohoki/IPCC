@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!--Mybatis 설정 -->
+	<settings>
+		<!-- 전통적인 데이터베이스 컬럼명 형태인 A_COLUMN을 CamelCase형태의 자바 프로퍼티명 형태인 aColumn으로 자동으로 매핑하도록 함 -->
+		<setting name="mapUnderscoreToCamelCase" value="true"></setting>
+		<setting name="lazyLoadingEnabled" value="true" />
+		<setting name="cacheEnabled" value="true"/>	
+		<!--  파라미터에 Null 값이 있을 경우 에러 처리 -->
+		<setting name="jdbcTypeForNull" value="VARCHAR"></setting>
+	</settings>
+	
+	<!-- Type Aliases 설정-->
+	<typeAliases>
+		<typeAlias alias="lmap" type="com.system.backoffice.util.service.LowerKeyMap"/>
+		<typeAlias alias="camelmap" type="com.system.backoffice.util.service.CamelKeyMap"/>
+		<typeAlias alias="FileVO"			type="egovframework.com.cmm.service.FileVO" />
+		<typeAlias alias="ComDefaultCodeVO" type="egovframework.com.cmm.ComDefaultCodeVO" />
+		<typeAlias alias="comDefaultVO"		type="egovframework.com.cmm.ComDefaultVO" />
+		<typeAlias alias="AdminLoginVO"		type="egovframework.com.cmm.AdminLoginVO" />
+		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
+		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
+		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sys.svr.models.ServerInfo" />
+		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
+		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
+		<typeAlias alias="CmmnCode"			type="com.system.backoffice.bas.code.models.CmmnCode" />
+	    <typeAlias alias="CmmnClCode"		type="com.system.backoffice.bas.code.models.CmmnClCode" />
+		<typeAlias alias="CmmnDetailCode"	type="com.system.backoffice.bas.code.models.CmmnDetailCode" />										  
+		
+		<typeAlias alias="ProgrmInfoDto"	type="com.system.backoffice.bas.program.models.dto.ProgrmInfoDto" />	
+		<typeAlias alias="ProgrmInfo"	    type="com.system.backoffice.bas.program.models.ProgrmInfo" />	
+		
+		<typeAlias alias="VocInfoRequestDto" type="com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto" />
+		<typeAlias alias="VocInfo"	         type="com.system.backoffice.sym.voc.models.VocInfo" />
+		
+		<typeAlias alias="RoleInfo"	         type="com.system.backoffice.uat.role.models.RoleInfo" />
+		<typeAlias alias="RoleInfoRequestDto"  type="com.system.backoffice.uat.role.models.dto.RoleInfoRequestDto" />
+		
+		<typeAlias alias="AdminInfo"  type="com.system.backoffice.uat.uia.models.AdminInfo" />
+		<typeAlias alias="AdminInfoVO"  type="com.system.backoffice.uat.uia.models.AdminInfoVO" />
+		<typeAlias alias="ConsultantInfo"  type="com.system.backoffice.uat.uia.models.ConsultantInfo" />
+		<typeAlias alias="ConsultantAgentInfo"  type="com.system.backoffice.uat.uia.models.ConsultantAgentInfo" />
+		<typeAlias alias="PartInfo"  type="com.system.backoffice.uat.uia.models.PartInfo" />
+		<typeAlias alias="PartInfoVO"  type="com.system.backoffice.uat.uia.models.PartInfoVO" />
+		<typeAlias alias="UniUtilInfo"  type="com.system.backoffice.uat.uia.models.UniUtilInfo" />
+		<typeAlias alias="UserRoleInfo"  type="com.system.backoffice.uat.uia.models.UserRoleInfo" />
+		<typeAlias alias="UserToken"  type="com.system.backoffice.uat.uia.models.UserToken" />
+		<typeAlias alias="ConsultantInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto" />
+		<typeAlias alias="UserRoleInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.UserRoleInfoRequestDto" />
+		
+		
+		<package name="com.system.backoffice.sys.svr.models"/>
+		<package name="com.system.backoffice.sys.svr.models.dto"/>
+		
+		<package name="com.system.backoffice.uat.log.models.dto"/>
+		<package name="com.system.backoffice.uat.log.models"/>
+		
+		<package name="com.system.backoffice.sys.pbx.avaya.models"/>
+		<package name="com.system.backoffice.sys.pbx.avaya.models.dto"/>
+		
+		<package name="com.system.backoffice.bas.code.models"/>	
+		<package name="com.system.backoffice.bas.code.models.dto"/>	
+		
+		<package name="com.system.backoffice.sym.voc.models"/>	
+		<package name="com.system.backoffice.sym.voc.models.dto"/>	
+		
+		<package name="com.system.backoffice.bas.menu.models"/>	
+		<package name="com.system.backoffice.bas.menu.models.dto"/>	
+		
+		<package name="com.system.backoffice.bas.program.models"/>	
+		<package name="com.system.backoffice.bas.program.models.dto"/>	
+		
+		<package name="com.system.backoffice.uat.role.models"/>	
+		<package name="com.system.backoffice.uat.uia.models"/>		
+		<package name="com.system.backoffice.sym.error.models"/>		
+		
+		
+	</typeAliases>
+    
+</configuration>

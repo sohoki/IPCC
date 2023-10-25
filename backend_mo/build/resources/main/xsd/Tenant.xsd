@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="TenantArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Permission" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="TenantType">
+		<xsd:sequence>
+			<xsd:element name="Tenant_Partition_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Tenant_Description" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Attendant_Group" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="External_Alert_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="External_Alert_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Music_Source" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Night_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audible_Alert_Internal" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audible_Alert_External" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audible_Alert_Priority" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="COS" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Attendant_Vectoring_VDN" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="TenantArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

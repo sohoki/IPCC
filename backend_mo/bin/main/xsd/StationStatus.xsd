@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="StationStatusArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Src_Port" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Dst_Port" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_1" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_4" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_5" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_6" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_7" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_8" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_9" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_10" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_11" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_12" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_13" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_14" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_15" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_16" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_17" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_18" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_19" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_20" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_21" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_22" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_23" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_24" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_25" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_26" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_27" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_28" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_29" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_30" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_31" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TPD_32" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ACD_Grp" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ACD_Mod" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="StationStatusType">
+		<xsd:sequence>
+			<xsd:element name="Administered_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Connected_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_State" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Parked" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="TCP_Signal_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Parameter_Download" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="SAC_Activated" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ring_Cut_Off_Act" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Active_Coverage_Option" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_Link_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_Link_Ext" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Service" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="MM_Conference_ID" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="MM_Endpoint_ID" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Message_Waiting" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Mobility_State" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Access_Rights" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Key_Allocation" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Connected_Ports" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Multimedia_Service_Link_Mode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="EC500_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Off_PBX_Service_State" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Limit_Incoming_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Multimedia_Mode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="User_Cntrl_Restr" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group_Cntrl_Restr" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Awaken_At" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="User_DND" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group_DND" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Room_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Part_ID_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Serial_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="FW_Version" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Station_Lock_Active" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="TOD_Station_Lock" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="CF_Destination_Ext" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Internal_Unconditional" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Internal_Busy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Internal_No_Reply" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="External_Unconditional" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="External_Busy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="External_No_Reply" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Switch_End_IP_Signaling_Loc" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IP_Signaling_Switch_End_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IP_Signaling_Switch_End_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IP_Signaling_Set_End_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IP_Signaling_Set_End_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Codec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Other_End_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Other_End_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Set_End_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Set_End_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Other_End_Network_Region" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Set_End_Network_Region" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audio_Channel_Audio_Connection_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Mac_Address_3_x" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Mac_Address_4_x" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IP_Endpoint_Data_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Product_ID_Release" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="H245_Tunneled" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Registration_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Authentication_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Dependency_Mode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_NAT_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="ALG_NAT_WAN_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_TCP_Signal_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_Product_ID_Release" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_Product_Version" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_H245_Tunneled" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_Registration_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_MAC_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_Authentication_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_Dependency_Mode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_Native_NAT_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd_ALG_NAT_WAN_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_TCP_Signal_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_Product_ID_Release" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_Product_Version" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_H245_Tunneled" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_Registration_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_MAC_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_Authentication_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_Dependency_Mode" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_Native_NAT_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Shd2_ALG_NAT_WAN_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="On_ACD_Call" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Occupancy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="StationStatusArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

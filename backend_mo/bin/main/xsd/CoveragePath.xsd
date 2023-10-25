@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="CoveragePathArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Linkage" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="CoveragePathType">
+		<xsd:sequence>
+			<xsd:element name="Coverage_Path" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Next_Path_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Hunt_After_Coverage" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Inside_Active" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Inside_Busy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Inside_Dont_Answer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Inside_All" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Inside_DND_SAC_GotoCover" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Inside_Holiday_Coverage" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outside_Active" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outside_Busy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outside_Dont_Answer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outside_All" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outside_DND_SAC_GotoCover" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outside_Holiday_Coverage" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Number_Of_Rings" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Holiday_Table" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Terminate_To_Coverage_Pts_With_Bridged_Appearances" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Point1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Point2" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Point3" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Point4" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Point5" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Point6" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Rings1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Rings2" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Rings3" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Rings4" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Rings5" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Rings6" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="CoveragePathArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

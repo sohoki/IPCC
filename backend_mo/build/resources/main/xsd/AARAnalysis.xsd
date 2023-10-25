@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="AARAnalysisType">
+		<xsd:sequence>
+			<xsd:element name="Dialed_String" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Total_min" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Total_max" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Route_Pattern" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Node_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="ANI_Reqd" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

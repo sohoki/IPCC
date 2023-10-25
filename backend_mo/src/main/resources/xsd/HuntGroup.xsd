@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="HuntGroupArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Assigned_Extension" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension201" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension401" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension601" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension801" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension1001" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension1201" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension1401" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name201" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name401" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name601" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name801" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name1001" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name1201" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Assigned_Extension_Name1401" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="HuntGroupType">
+		<xsd:sequence>
+			<xsd:element name="Group_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Total_Administered_Members" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="ACD" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Measured" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Queue" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Vector" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Skill" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Coverage_Path" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="LWC_Reception" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Message_Center" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Audix_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Message_Center_AUDIX_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Externally_Controlled_Distribution" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Administered_Members_Min" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Administered_Members_Max" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="TN" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Class_of_Restriction" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Security_Code" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="ISDN_SIP_Caller_Display" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="MM_Early_Answer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="AAS" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Supervisor_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Local_Agent_Preference" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="SLM_Max_Auto_Reserve_Agents" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="SLM_Interval" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="SLM_Count_Abandoned_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Controlling_Adjunct" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Adjunct_CTI_Link" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Forced_Entry_of_Stroke_Counts_or_Call_Work_Codes" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Timed_ACW_Interval_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="After_Xfer_or_Held_Call_Drops" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_Objective_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_Level_Supervisor" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Level_1_Threshold_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Level_2_Threshold_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Activate_on_Oldest_Call_Waiting" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Selection_Override" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Dynamic_Threshold_Adjustment" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Dynamic_Percentage_Adjustment" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Dynamic_Queue_Position" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_Level_Target_Perct_In_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_Level_Target_Seconds" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Expected_Call_Handling_Time_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="VuStats_Objective" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Multiple_Call_Handling" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Redirect_on_No_Answer_Rings" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Redirect_to_VDN" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Redirect_on_IP_OPTIM_Fail_to_VDN" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Retain_Active_VDN_Context" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Queue_Limit" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Warning_Threshold" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Warning_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Warning_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Time_Warning_Threshold" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Time_Warning_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Time_Warning_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Night_Service_Destination" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Inflow_Threshold_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Priority_On_Intraflow" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="First_Announcement_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="First_Announcement_Delay_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Second_Announcement_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Second_Announcement_Delay_Sec" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Second_Announcement_Recurring" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Primary" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Calling_Party_Number_to_INTUITY_AUDIX" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Voice_Mail_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Routing_Digits" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Voice_Mail_Number_Rem_Vm" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Voice_Mail_Handle_Rem_Vm" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Routing_Digits_Rem_Vm" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Provide_Ringback" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="TSC_per_MWI_Interrogation" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Send_Reroute_Request" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Voice_Mail_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Interruptible_Aux_Threshold" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Interruptible_Aux_Deactivation_Threshold" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_2" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_3" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_4" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_5" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_Scripts" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="HuntGroupArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

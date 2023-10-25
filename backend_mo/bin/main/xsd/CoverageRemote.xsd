@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="CoverageRemoteArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Remote_Digits" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Remote_Digits_1" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Remote_Digits_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Remote_Digits_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Remote_Digits_4" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="CoverageRemoteType">
+		<xsd:sequence>
+			<xsd:group ref="CoverageRemoteArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

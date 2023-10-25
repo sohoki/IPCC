@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="OffPbxFeatureNameExtensionsType">
+		<xsd:sequence>
+			<xsd:element name="Set_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Active_Appearance_Select" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Automatic_Call_Back" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Automatic_Call_Back_Cancel" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Forward_All" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Forward_Busy_No_Answer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Forward_Cancel" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Park" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Park_Answer_Back" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Pick_Up" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Calling_Number_Block" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Calling_Number_Unblock" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Conditional_Call_Extend_Enable" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Conditional_Call_Extend_Disable" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Conference_Complete" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Conference_on_Answer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Directed_Call_Pick_Up" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Drop_Last_Added_Party" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Exclusion_Toggle_On_Off" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Extended_Group_Call_Pickup" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Held_Appearance_Select" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Idle_Appearance_Select" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Last_Number_Dialed" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Malicious_Call_Trace" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Malicious_Call_Trace_Cancel" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Off_Pbx_Call_Enable" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Off_Pbx_Call_Disable" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Priority_Call" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Recall" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Send_All_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Send_All_Calls_Cancel" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Transfer_Complete" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Transfer_On_Hang_Up" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Transfer_to_Voice_Mail" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Whisper_Page_Activation" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

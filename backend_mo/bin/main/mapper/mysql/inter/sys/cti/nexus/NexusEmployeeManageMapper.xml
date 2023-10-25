@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.ipcc.cti.nexus.mapper.NexusEmployeeManageMapper">
+	<select id="selectEmployeesInfoPageList" resultType="camelmap">
+		SELECT R.* FROM
+		(
+			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+			       ROW_NUMBER() OVER (ORDER BY A.EMPLOYEE_ID ASC) AS RNUM, 
+				   A.CENTER_ID, A.TENANT_ID, A.EMPLOYEEGRP_ID, A.EMPLOYEEPART_ID, A.EMPLOYEE_ID, A.LOGIN_ID, 
+				   A.EMPLOYEE_NAME, A.EMPLOYEE_PAWD, A.EMPLOYEE_CLASS, A.BLEND_KIND, A.PERMIT_ID,
+				   A.SKILL_DEPTH1, A.SKILL_DEPTH2, A.SKILL_DEPTH3, A.SKILL_DEPTH4, A.SKILL_DEPTH5, A.SKILL_DEPTH6, A.SKILL_DEPTH7, A.SKILL_DEPTH8,
+				   A.SKILL_DEPTH9, A.SKILL_DEPTH10, A.DEFAULT_QUEUE, A.USER_DEFINE2, A.SEND_FILESIZE, A.MONITOR_FLAG, A.WORK_HOURS,
+				   A.JOINING_DATE, A.END_UPDATEDATE, A.UPDATE_USER, A.TEL_HOME, A.USER_DEFINE1, A.USER_DEFINE3,
+				   A.EMPLOYEE_DUTY, A.EMAIL_ADDR, A.LOGOFF_REASON, A.LEAVING_DATE, A.EMPLOYEE_ALIAS ,
+				   B.CENTER_NAME , E.TENANT_NAME, C.EMPLOYEEGRP_NAME, D.EMPLOYEEPART_NAME
+			FROM MA_EMPLOYEE A	, MA_CENTER B	, MA_EMPLOYEEGRP C,	MA_EMPLOYEEPART D, MA_TENANT E	  		     
+			WHERE A.CENTER_ID = B.CENTER_ID 
+				  AND A.CENTER_ID = C.CENTER_ID
+				  AND A.TENANT_ID = C.TENANT_ID
+				  AND A.EMPLOYEEGRP_ID = C.EMPLOYEEGRP_ID
+				  
+				  AND A.CENTER_ID = D.CENTER_ID
+				  AND A.TENANT_ID = D.TENANT_ID
+				  AND A.EMPLOYEEGRP_ID = D.EMPLOYEEGRP_ID
+				  AND A.EMPLOYEEGRP_ID = D.EMPLOYEEPART_ID
+				  
+				  AND A.CENTER_ID = E.CENTER_ID
+				  AND A.TENANT_ID = E.TENANT_ID
+			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+				AND (A.EMPLOYEE_ID LIKE '%' #{params.searchKeyword} '%' OR A.EMPLOYEE_NAME LIKE '%' #{params.searchKeyword} '%')
+			</if>					
+		) R
+		WHERE RNUM BETWEEN #{params.firstIndex} + 1 AND #{params.firstIndex} + #{params.recordCountPerPage}    
+		ORDER BY RNUM ASC
+	</select>
+	<select id="selectEmployeesInfoComboList" resultType="NexusAgentComboInfo">
+		SELECT A.EMPLOYEEGRP_ID, A.EMPLOYEE_NAME
+		FROM MA_EMPLOYEE A
+		WHERE  A.CENTER_ID = #{centerId}
+	</select>
+	
+	
+	<select id="selectNexusEmployeesExistsInfo" resultType="Integer">
+		SELECT (
+			SELECT COUNT(1) 
+			FROM MA_EMPLOYEE 
+			WHERE EMPLOYEE_ID=#{employeeId} AND CENTER_ID=#{centerId}
+		)
+	</select>
+	<select id="selectParentNexusEmployeesInfo" resultType="Integer">
+		SELECT COUNT(1) 
+		FROM MA_EMPLOYEEPART 
+		WHERE EMPLOYEEPART_ID=#{employeepartId} 
+			  AND EMPLOYEEGRP_ID=#{employeegrpId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND CENTER_ID=#{centerId}
+	</select>
+	<select id="selectPermitExistsInfo" resultType="Integer">
+		SELECT COUNT(1) 
+		FROM MA_PERMIT 
+		WHERE  PERMIT_ID=#{permitId} 
+		 		AND TENANT_ID=#{tenantId} 
+		 		AND CENTER_ID=#{centerId}
+	</select>
+	
+	<select id="selectEmployeesExistInfoDetail" resultType="NexusAgentInfoResponseDto">
+		SELECT A.CENTER_ID, A.TENANT_ID, A.EMPLOYEEGRP_ID, A.EMPLOYEEPART_ID, A.EMPLOYEE_ID, A.LOGIN_ID, 
+			   A.EMPLOYEE_NAME, A.EMPLOYEE_PAWD, A.EMPLOYEE_CLASS, A.BLEND_KIND, A.PERMIT_ID,
+			   A.SKILL_DEPTH1, A.SKILL_DEPTH2, A.SKILL_DEPTH3, A.SKILL_DEPTH4, A.SKILL_DEPTH5, A.SKILL_DEPTH6, A.SKILL_DEPTH7, A.SKILL_DEPTH8,
+			   A.SKILL_DEPTH9, A.SKILL_DEPTH10, A.DEFAULT_QUEUE, A.USER_DEFINE2, A.SEND_FILESIZE, A.MONITOR_FLAG, A.WORK_HOURS,
+			   A.JOINING_DATE, A.END_UPDATEDATE, A.UPDATE_USER, A.TEL_HOME, A.USER_DEFINE1, A.USER_DEFINE3,
+			   A.EMPLOYEE_DUTY, A.EMAIL_ADDR, A.LOGOFF_REASON, A.LEAVING_DATE, A.EMPLOYEE_ALIAS ,
+			   B.CENTER_NAME , E.TENANT_NAME, C.EMPLOYEEGRP_NAME, D.EMPLOYEEPART_NAME
+		FROM MA_EMPLOYEE A, MA_CENTER B	, MA_EMPLOYEEGRP C,	MA_EMPLOYEEPART D, MA_TENANT E	   
+		WHERE A.EMPLOYEE_ID = #{employeeId}
+			  AND A.CENTER_ID=#{centerId} 
+			  AND A.TENANT_ID=#{tenantId} 
+			  AND A.CENTER_ID = B.CENTER_ID
+			  
+			  AND A.CENTER_ID = C.CENTER_ID
+			  AND A.TENANT_ID = C.TENANT_ID
+			  AND A.EMPLOYEEGRP_ID = C.EMPLOYEEGRP_ID
+			  
+			  AND A.CENTER_ID = D.CENTER_ID
+			  AND A.TENANT_ID = D.TENANT_ID
+			  AND A.EMPLOYEEGRP_ID = D.EMPLOYEEGRP_ID
+			  AND A.EMPLOYEEGRP_ID = D.EMPLOYEEPART_ID
+			  
+			  AND A.CENTER_ID = E.CENTER_ID
+			  AND A.TENANT_ID = E.TENANT_ID
+	</select>
+	
+	
+	<insert id="insertNexusEmployeesInfo">
+		INSERT INTO MA_EMPLOYEE
+		(
+			CENTER_ID,TENANT_ID,EMPLOYEEGRP_ID,EMPLOYEEPART_ID,EMPLOYEE_ID,LOGIN_ID,EMPLOYEE_NAME,EMPLOYEE_PAWD, EMPLOYEE_CLASS,BLEND_KIND,PERMIT_ID,
+			SKILL_DEPTH1,SKILL_DEPTH2,SKILL_DEPTH3,SKILL_DEPTH4,SKILL_DEPTH5,SKILL_DEPTH6,SKILL_DEPTH7,SKILL_DEPTH8,SKILL_DEPTH9,SKILL_DEPTH10,
+			DEFAULT_QUEUE,SEND_FILESIZE, MONITOR_FLAG, WORK_HOURS,TEL_HOME,USER_DEFINE1,USER_DEFINE2,USER_DEFINE3,EMPLOYEE_DUTY,JOINING_DATE,
+			END_UPDATEDATE,UPDATE_USER,EMAIL_ADDR,LOGOFF_REASON,LEAVING_DATE,EMPLOYEE_ALIAS
+		)
+		VALUES
+		(
+			#{centerId},#{tenantId},#{employeegrpId},#{employeepartId},#{employeeId},#{loginId},#{employeeName},#{employeePawd},#{employeeClass},#{blendKind},#{permitId},
+			#{skillDepth1},#{skillDepth2},#{skillDepth3},#{skillDepth4},#{skillDepth5},#{skillDepth6},#{skillDepth7},#{skillDepth8},#{skillDepth9},#{skillDepth10},
+			#{defaultQueue},#{sendFilesize},#{monitorFlag},#{workHours},#{telHome},#{userDefine1},#{userDefine2},#{userDefine3},#{duty},DATE_FORMAT( now(), '%Y-%m-%d'),
+			NOW(),#{userId},#{emailAddr},#{logoffReason},#{leavingDate},#{employeeAlias}
+		)
+	</insert>	
+	
+	<update id="updateNexusEmployeesInfo">
+		UPDATE MA_EMPLOYEE SET CENTER_ID=#{centerId},
+							   TENANT_ID=#{tenantId},
+							   EMPLOYEEGRP_ID=#{employeegrpId},
+							   EMPLOYEEPART_ID=#{employeepartId},
+							   EMPLOYEE_ID=#{employeeId},
+							   LOGIN_ID=#{loginId},
+							   EMPLOYEE_NAME=#{employeeName},
+							   EMPLOYEE_PAWD=#{employeePawd},
+							   EMPLOYEE_CLASS=#{employeeClass},
+							   BLEND_KIND=#{blendKind},
+							   PERMIT_ID=#{permitId},
+							   SKILL_DEPTH1=#{skillDepth1},
+							   SKILL_DEPTH2=#{skillDepth2},
+							   SKILL_DEPTH3=#{skillDepth3},
+							   SKILL_DEPTH4=#{skillDepth4},
+							   SKILL_DEPTH5=#{skillDepth5},
+							   SKILL_DEPTH6=#{skillDepth6},
+							   SKILL_DEPTH6=#{skillDepth7},
+							   SKILL_DEPTH8=#{skillDepth8},
+							   SKILL_DEPTH9=#{skillDepth9},
+							   SKILL_DEPTH10=#{skillDepth10},
+							   DEFAULT_QUEUE=#{defaultQueue},
+							   USER_DEFINE2=#{userDefine2},
+							   SEND_FILESIZE=#{sendFilesize},
+							   MONITOR_FLAG=#{monitorFlag},
+							   WORK_HOURS=#{workHours},
+							   JOINING_DATE=#{joiningDate},
+							   END_UPDATEDATE= NOW(),
+							   UPDATE_USER=#{userId},
+							   TEL_HOME=#{telHome},
+							   USER_DEFINE1=#{userDefine1},
+							   USER_DEFINE3=#{userDefine3},
+							   EMAIL_ADDR=#{emailAddr},
+							   LOGOFF_REASON=#{logoffReason},
+							   LEAVING_DATE=#{leavingDate},
+							   EMPLOYEE_ALIAS=#{employeeAlias},
+							   EMPLOYEE_DUTY=#{employeeDuty}
+		WHERE CENTER_ID=#{centerId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND EMPLOYEEGRP_ID=#{employeegrpId} 
+			  AND EMPLOYEEPART_ID=#{employeepartId} 
+			  AND EMPLOYEE_ID=#{employeeId}
+	</update>	
+	
+	<delete id="deleteNexusEmployeesInfo">
+   		DELETE FROM MA_EMPLOYEE 
+   		WHERE CENTER_ID=#{centerId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND EMPLOYEEGRP_ID=#{employeegrpId} 
+			  AND EMPLOYEEPART_ID=#{employeepartId} 
+			  AND EMPLOYEE_ID=#{employeeId}
+	</delete>
+</mapper>

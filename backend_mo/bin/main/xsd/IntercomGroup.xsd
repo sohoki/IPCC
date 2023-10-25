@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="IntercomGroupArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Ext" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="DC" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Name" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="IntercomGroupType">
+		<xsd:sequence>
+			<xsd:element name="Group_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Dial_Code_Length" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="IntercomGroupArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

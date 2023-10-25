@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="UniformDialplanArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Match_Pattern" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Len" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Del" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Insert_Digits" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Net" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Conv" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Node" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="UniformDialplanType">
+		<xsd:sequence>
+			<xsd:element name="Percent_Full" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="UniformDialplanArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+ <xsd:include schemaLocation="./AARAnalysis.xsd"/>
+ <xsd:include schemaLocation="./AARDigitConversion.xsd"/>
+ <xsd:include schemaLocation="./AESvcsCTILink.xsd"/>
+ <xsd:include schemaLocation="./AESvcsInterface.xsd"/>
+ <xsd:include schemaLocation="./AESvcsLink.xsd"/>
+ <xsd:include schemaLocation="./ARSAnalysis.xsd"/>
+ <xsd:include schemaLocation="./ARSDigitConversion.xsd"/>
+ <xsd:include schemaLocation="./AbbreviatedDialing7103.xsd"/>
+ <xsd:include schemaLocation="./AbbreviatedDialingEnhanced.xsd"/>
+ <xsd:include schemaLocation="./AbbreviatedDialingGroup.xsd"/>
+ <xsd:include schemaLocation="./AbbreviatedDialingPersonal.xsd"/>
+ <xsd:include schemaLocation="./AbbreviatedDialingSystem.xsd"/>
+ <xsd:include schemaLocation="./Agent.xsd"/>
+ <xsd:include schemaLocation="./AliasStation.xsd"/>
+ <xsd:include schemaLocation="./Amw.xsd"/>
+ <xsd:include schemaLocation="./Announcement.xsd"/>
+ <xsd:include schemaLocation="./AudioGroup.xsd"/>
+ <xsd:include schemaLocation="./AudixNodeNames.xsd"/>
+ <xsd:include schemaLocation="./AuthorizationCode.xsd"/>
+ <xsd:include schemaLocation="./BCMSAgentReport.xsd"/>
+ <xsd:include schemaLocation="./BCMSSkillReport.xsd"/>
+ <xsd:include schemaLocation="./BCMSTrunkReport.xsd"/>
+ <xsd:include schemaLocation="./BCMSVDNReport.xsd"/>
+ <xsd:include schemaLocation="./BestServiceRouting.xsd"/>
+ <xsd:include schemaLocation="./Board.xsd"/>
+ <xsd:include schemaLocation="./CAMANumbering.xsd"/>
+ <xsd:include schemaLocation="./COR.xsd"/>
+ <xsd:include schemaLocation="./COS.xsd"/>
+ <xsd:include schemaLocation="./CTILink.xsd"/>
+ <xsd:include schemaLocation="./Cabinet.xsd"/>
+ <xsd:include schemaLocation="./Capacity.xsd"/>
+ <xsd:include schemaLocation="./Configuration.xsd"/>
+ <xsd:include schemaLocation="./CoverageAnswerGroup.xsd"/>
+ <xsd:include schemaLocation="./CoveragePath.xsd"/>
+ <xsd:include schemaLocation="./CoverageRemote.xsd"/>
+ <xsd:include schemaLocation="./CoverageTimeOfDay.xsd"/>
+ <xsd:include schemaLocation="./CustomerOptions.xsd"/>
+ <xsd:include schemaLocation="./DataModule.xsd"/>
+ <xsd:include schemaLocation="./DefaultRegion.xsd"/>
+ <xsd:include schemaLocation="./DialPlan.xsd"/>
+ <xsd:include schemaLocation="./DialPlanParameters.xsd"/>
+ <xsd:include schemaLocation="./DisplayParameters.xsd"/>
+ <xsd:include schemaLocation="./EcdControlledSkills.xsd"/>
+ <xsd:include schemaLocation="./ExtendedPickUpGroup.xsd"/>
+ <xsd:include schemaLocation="./ExtensionStation.xsd"/>
+ <xsd:include schemaLocation="./ExtensionType.xsd"/>
+ <xsd:include schemaLocation="./FeatureAccessCodes.xsd"/>
+ <xsd:include schemaLocation="./FileTransfer.xsd"/>
+ <xsd:include schemaLocation="./HolidayTable.xsd"/>
+ <xsd:include schemaLocation="./HuntGroup.xsd"/>
+ <xsd:include schemaLocation="./IPAddressUsage.xsd"/>
+ <xsd:include schemaLocation="./IPCodec.xsd"/>
+ <xsd:include schemaLocation="./IPHoteling.xsd"/>
+ <xsd:include schemaLocation="./IPInterface.xsd"/>
+ <xsd:include schemaLocation="./IPNetworkMap.xsd"/>
+ <xsd:include schemaLocation="./IPNetworkRegion.xsd"/>
+ <xsd:include schemaLocation="./IPNetworkRegionStatus.xsd"/>
+ <xsd:include schemaLocation="./IPNodeNames.xsd"/>
+ <xsd:include schemaLocation="./IPOptions.xsd"/>
+ <xsd:include schemaLocation="./IPRegTTI.xsd"/>
+ <xsd:include schemaLocation="./IPRegistration.xsd"/>
+ <xsd:include schemaLocation="./IPServerInterface.xsd"/>
+ <xsd:include schemaLocation="./IPServices.xsd"/>
+ <xsd:include schemaLocation="./IPStations.xsd"/>
+ <xsd:include schemaLocation="./IPStations5.xsd"/>
+ <xsd:include schemaLocation="./IPStations6.xsd"/>
+ <xsd:include schemaLocation="./IncomingCallHandling.xsd"/>
+ <xsd:include schemaLocation="./IntercomGroup.xsd"/>
+ <xsd:include schemaLocation="./ListExtensionType.xsd"/>
+ <xsd:include schemaLocation="./ListHistory.xsd"/>
+ <xsd:include schemaLocation="./ListIPInterface.xsd"/>
+ <xsd:include schemaLocation="./ListIPNetworkRegionMonitor.xsd"/>
+ <xsd:include schemaLocation="./ListNodeNames.xsd"/>
+ <xsd:include schemaLocation="./ListSurvivable.xsd"/>
+ <xsd:include schemaLocation="./ListTTIRegistration.xsd"/>
+ <xsd:include schemaLocation="./ListUsageExtension.xsd"/>
+ <xsd:include schemaLocation="./Locations.xsd"/>
+ <xsd:include schemaLocation="./Logins.xsd"/>
+ <xsd:include schemaLocation="./MOHGroup.xsd"/>
+ <xsd:include schemaLocation="./MediaGateway.xsd"/>
+ <xsd:include schemaLocation="./OffPbxFeatureNameExtensions.xsd"/>
+ <xsd:include schemaLocation="./OffPbxStationMapping.xsd"/>
+ <xsd:include schemaLocation="./PersonalCOLine.xsd"/>
+ <xsd:include schemaLocation="./PickUpGroup.xsd"/>
+ <xsd:include schemaLocation="./Port.xsd"/>
+ <xsd:include schemaLocation="./ProcessorIPInterface.xsd"/>
+ <xsd:include schemaLocation="./PublicUnknownNumbering.xsd"/>
+ <xsd:include schemaLocation="./RHNPA.xsd"/>
+ <xsd:include schemaLocation="./ReasonCodeNames.xsd"/>
+ <xsd:include schemaLocation="./RegisteredIPStations.xsd"/>
+ <xsd:include schemaLocation="./RemoteAccess.xsd"/>
+ <xsd:include schemaLocation="./RoutePattern.xsd"/>
+ <xsd:include schemaLocation="./ServiceHoursTable.xsd"/>
+ <xsd:include schemaLocation="./SignalingGroup.xsd"/>
+ <xsd:include schemaLocation="./SiteData.xsd"/>
+ <xsd:include schemaLocation="./SoftwareVersion.xsd"/>
+ <xsd:include schemaLocation="./SpecialApplications.xsd"/>
+ <xsd:include schemaLocation="./Station.xsd"/>
+ <xsd:include schemaLocation="./StationStatus.xsd"/>
+ <xsd:include schemaLocation="./System.xsd"/>
+ <xsd:include schemaLocation="./SystemFeatures.xsd"/>
+ <xsd:include schemaLocation="./SystemParameters.xsd"/>
+ <xsd:include schemaLocation="./SystemParametersCustomer.xsd"/>
+ <xsd:include schemaLocation="./SystemParametersFeatures.xsd"/>
+ <xsd:include schemaLocation="./SystemParametersSpecial.xsd"/>
+ <xsd:include schemaLocation="./SystemSecurity.xsd"/>
+ <xsd:include schemaLocation="./Tenant.xsd"/>
+ <xsd:include schemaLocation="./TerminatingExtensionGroup.xsd"/>
+ <xsd:include schemaLocation="./TollAnalysis.xsd"/>
+ <xsd:include schemaLocation="./Translation.xsd"/>
+ <xsd:include schemaLocation="./TrunkGroup.xsd"/>
+ <xsd:include schemaLocation="./TrunkStatus.xsd"/>
+ <xsd:include schemaLocation="./UniformDialplan.xsd"/>
+ <xsd:include schemaLocation="./VDN.xsd"/>
+ <xsd:include schemaLocation="./VRT.xsd"/>
+ <xsd:include schemaLocation="./Vector.xsd"/>
+ <xsd:include schemaLocation="./VectorVariables.xsd"/>
+ <xsd:include schemaLocation="./WitnessStation.xsd"/>
+
+	<xsd:complexType name="modelChoices">
+		<xsd:choice>
+			<xsd:element name="AARAnalysis" type="AARAnalysisType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AARDigitConversion" type="AARDigitConversionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AESvcsCTILink" type="AESvcsCTILinkType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AESvcsInterface" type="AESvcsInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AESvcsLink" type="AESvcsLinkType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ARSAnalysis" type="ARSAnalysisType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ARSDigitConversion" type="ARSDigitConversionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AbbreviatedDialing7103" type="AbbreviatedDialing7103Type" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AbbreviatedDialingEnhanced" type="AbbreviatedDialingEnhancedType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AbbreviatedDialingGroup" type="AbbreviatedDialingGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AbbreviatedDialingPersonal" type="AbbreviatedDialingPersonalType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AbbreviatedDialingSystem" type="AbbreviatedDialingSystemType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Agent" type="AgentType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AliasStation" type="AliasStationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Amw" type="AmwType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Announcement" type="AnnouncementType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AudioGroup" type="AudioGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AudixNodeNames" type="AudixNodeNamesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="AuthorizationCode" type="AuthorizationCodeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="BCMSAgentReport" type="BCMSAgentReportType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="BCMSSkillReport" type="BCMSSkillReportType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="BCMSTrunkReport" type="BCMSTrunkReportType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="BCMSVDNReport" type="BCMSVDNReportType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="BestServiceRouting" type="BestServiceRoutingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Board" type="BoardType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CAMANumbering" type="CAMANumberingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="COR" type="CORType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="COS" type="COSType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CTILink" type="CTILinkType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Cabinet" type="CabinetType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Capacity" type="CapacityType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Configuration" type="ConfigurationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CoverageAnswerGroup" type="CoverageAnswerGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CoveragePath" type="CoveragePathType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CoverageRemote" type="CoverageRemoteType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CoverageTimeOfDay" type="CoverageTimeOfDayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CustomerOptions" type="CustomerOptionsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="DataModule" type="DataModuleType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="DefaultRegion" type="DefaultRegionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="DialPlan" type="DialPlanType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="DialPlanParameters" type="DialPlanParametersType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="DisplayParameters" type="DisplayParametersType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="EcdControlledSkills" type="EcdControlledSkillsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ExtendedPickUpGroup" type="ExtendedPickUpGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ExtensionStation" type="ExtensionStationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ExtensionType" type="ExtensionTypeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FeatureAccessCodes" type="FeatureAccessCodesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FileTransfer" type="FileTransferType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="HolidayTable" type="HolidayTableType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="HuntGroup" type="HuntGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPAddressUsage" type="IPAddressUsageType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPCodec" type="IPCodecType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPHoteling" type="IPHotelingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPInterface" type="IPInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPNetworkMap" type="IPNetworkMapType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPNetworkRegion" type="IPNetworkRegionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPNetworkRegionStatus" type="IPNetworkRegionStatusType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPNodeNames" type="IPNodeNamesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPOptions" type="IPOptionsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPRegTTI" type="IPRegTTIType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPRegistration" type="IPRegistrationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPServerInterface" type="IPServerInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPServices" type="IPServicesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPStations" type="IPStationsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPStations5" type="IPStations5Type" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IPStations6" type="IPStations6Type" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IncomingCallHandling" type="IncomingCallHandlingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="IntercomGroup" type="IntercomGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListExtensionType" type="ListExtensionTypeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListHistory" type="ListHistoryType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListIPInterface" type="ListIPInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListIPNetworkRegionMonitor" type="ListIPNetworkRegionMonitorType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListNodeNames" type="ListNodeNamesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListSurvivable" type="ListSurvivableType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListTTIRegistration" type="ListTTIRegistrationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ListUsageExtension" type="ListUsageExtensionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Locations" type="LocationsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Logins" type="LoginsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="MOHGroup" type="MOHGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="MediaGateway" type="MediaGatewayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="OffPbxFeatureNameExtensions" type="OffPbxFeatureNameExtensionsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="OffPbxStationMapping" type="OffPbxStationMappingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="PersonalCOLine" type="PersonalCOLineType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="PickUpGroup" type="PickUpGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Port" type="PortType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ProcessorIPInterface" type="ProcessorIPInterfaceType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="PublicUnknownNumbering" type="PublicUnknownNumberingType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="RHNPA" type="RHNPAType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ReasonCodeNames" type="ReasonCodeNamesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="RegisteredIPStations" type="RegisteredIPStationsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="RemoteAccess" type="RemoteAccessType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="RoutePattern" type="RoutePatternType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ServiceHoursTable" type="ServiceHoursTableType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SignalingGroup" type="SignalingGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SiteData" type="SiteDataType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SoftwareVersion" type="SoftwareVersionType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SpecialApplications" type="SpecialApplicationsType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Station" type="StationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="StationStatus" type="StationStatusType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="System" type="SystemType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SystemFeatures" type="SystemFeaturesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SystemParameters" type="SystemParametersType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SystemParametersCustomer" type="SystemParametersCustomerType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SystemParametersFeatures" type="SystemParametersFeaturesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SystemParametersSpecial" type="SystemParametersSpecialType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="SystemSecurity" type="SystemSecurityType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Tenant" type="TenantType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TerminatingExtensionGroup" type="TerminatingExtensionGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TollAnalysis" type="TollAnalysisType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Translation" type="TranslationType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TrunkGroup" type="TrunkGroupType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="TrunkStatus" type="TrunkStatusType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="UniformDialplan" type="UniformDialplanType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VDN" type="VDNType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VRT" type="VRTType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Vector" type="VectorType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VectorVariables" type="VectorVariablesType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="WitnessStation" type="WitnessStationType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:choice>
+	</xsd:complexType>
+</xsd:schema>

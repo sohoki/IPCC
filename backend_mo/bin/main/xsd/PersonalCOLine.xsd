@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="PersonalCOLineArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Extension" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Ext_Name" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="PersonalCOLineType">
+		<xsd:sequence>
+			<xsd:element name="Group_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Trunk_Group_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Trunk_Access_Code" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Number_Members" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Coverage_Path" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="CDR_Reports" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_Display" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Data_Restriction" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Security_Code" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Trunk_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Trunk_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Trunk_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_Dial_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Prefix1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Disconnect_Supervision" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Gain" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Chrarge_Conversion" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Decimal_Point" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Currency_Symbol" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Charge_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Trunk_Group_Direction" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Disconnect_Timing" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Trunk_Termination" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Analog_Loss" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Digital_Loss" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Call_Still_Held" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Receive_Answer_Supervision" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Country" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="In_Disconnect_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="In_Glare_Guard_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ring_Monitor_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_End_Dial_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Programmed_Dial_Pause_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Flash_Length" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_Disconnect_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_Dial_Gaurd_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_Glare_Guard_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_Rotary_Dial_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="In_Seize_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Out_Seize_Response_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Disconnect_Signal_Error_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="End_2_End_Signaling_Tone_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="End_2_End_Signaling_Pause_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Answer_Supervision_Timeout" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="PPS" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Make" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Make1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Break" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Break1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Periodic_Pulse_Meter" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="DS1_Echo_Cancel" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="PersonalCOLineArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

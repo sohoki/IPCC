@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="AESvcsLinkType">
+		<xsd:sequence>
+			<xsd:element name="Server_Link" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Server" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Remote_IP" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Remote_Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Local_Node" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Msgs_Sent" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Msgs_Received" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

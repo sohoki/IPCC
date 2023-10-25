@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sym.voc.mapper.VocInfoManageMapper">
+	<select id="selectVocInfoPageList" resultType="camelmap">     	      
+		SELECT * FROM 
+		( 
+			SELECT 	
+				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				TB.* 
+			FROM 	
+			(	
+				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+					   A.VOC_SEQ, A.VOC_SUBJECT, A.VOC_GUBUN, A.VOC_LOCATION, A.VOC_STATUS,
+					   A.VOC_REQ_REGDATE, A.VOC_REQ_USERID, A.VOC_RES_REGDATE, A.VOC_RES_USERID, A.VOC_RESPONSE, A.VOC_REQ
+				FROM TB_VOCINFO A,  (select @ROWNUM := 0) RN_TB
+				WHERE 1=1
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+					AND 
+					( 
+						A.SERVER_NAME LIKE '%'|| #{params.searchKeyword} || '%' 
+						OR
+						A.SERVER_DC LIKE '%' ||  #{params.searchKeyword} || '%'
+					) 
+				</if>
+			) TB 
+		) TA
+		ORDER BY TA.RNUM DESC 
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+		
+   	</select>
+   	<select id="selectVocInfoDetail" resultType="VocInfo">
+		SELECT   VOC_SEQ, VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_STATUS,
+				VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_RES_REGDATE, VOC_RES_USERID, VOC_RESPONSE, VOC_REQ
+		FROM TB_VOCINFO A
+		WHERE VOC_REQ = #{vocSeq}
+   	</select>
+   	<insert id="insertVocInfo">
+		INSERT INTO TB_VOCINFO	
+		(
+		    VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_STATUS, VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_REQ
+		)
+		VALUES 
+		(
+			#{vocSubject}, #{vocGubun}, #{vocLocation,jdbcType=VARCHAR}, 'VOC_STATUS_1',	
+			NOW(), #{userId}, #{vocReq,jdbcType=VARCHAR}
+		)
+   	</insert>
+	<update id="updateServerResponse">
+		UPDATE TB_VOCINFO SET VOC_RES_REGDATE = NOW(),
+					 		  VOC_RES_USERID = #{userId},
+					 		  VOC_STATUS = #{vocStatus,jdbcType=VARCHAR},
+					 		  VOC_RESPONSE = #{vocResponse}  	
+		WHERE VOC_REQ = #{vocSeq}
+	</update>
+	<update id="updateServerReq">
+		UPDATE TB_VOCINFO SET VOC_RES_REGDATE = NOW(),
+					 		  VOC_RES_USERID = #{userId},
+					 		  VOC_RESPONSE = #{vocResponse},
+					 		  VOC_SUBJECT = #{vocSubject},
+					 		  VOC_GUBUN = #{vocGubun},
+					 		  VOC_LOCATION = #{vocLocation,jdbcType=VARCHAR},
+					 		  VOC_STATUS = 'VOC_STATUS_3'   	
+		WHERE VOC_REQ = #{vocSeq}
+	</update>
+	<update id="updateVocInfo">
+		UPDATE TB_VOCINFO SET  VOC_SUBJECT = #{vocSubject}, 
+							   VOC_GUBUN = #{vocGubun}, 
+							   VOC_LOCATION = #{vocLocation}, 
+							   VOC_STATUS = #{vocStatus,jdbcType=VARCHAR},
+							   VOC_RESPONSE = #{vocResponse,jdbcType=VARCHAR}
+       	WHERE VOC_REQ = #{vocSeq}
+   	</update>
+   	
+   	<delete id="deleteVocInfo">
+   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+   		DELETE FROM TB_VOCINFO
+   		WHERE VOC_REQ = #{vocSeq}
+   	</delete>
+</mapper>

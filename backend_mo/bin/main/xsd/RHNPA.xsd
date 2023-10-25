@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="RHNPAArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Pattern_Choices" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Pattern_Choice_Assignments" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="RHNPAType">
+		<xsd:sequence>
+			<xsd:group ref="RHNPAArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

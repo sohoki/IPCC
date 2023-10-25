@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="IPStations5Type">
+		<xsd:sequence>
+			<xsd:element name="Reset_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Phone_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Reset_Type_Option" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Starting_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ending_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IP_Network_Region_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

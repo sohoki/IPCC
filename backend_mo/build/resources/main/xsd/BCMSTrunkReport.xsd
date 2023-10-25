@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="BCMSTrunkReportType">
+		<xsd:sequence>
+			<xsd:element name="Switch_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Date" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Group_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Number_Of_Trunks" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Report_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Interval" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Incoming_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Incoming_Abandoned" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Incoming_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Incoming_Usage_CCS" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outgoing_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outgoing_Completed" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outgoing_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Outgoing_Usage_CCS" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Pct_All_Busy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Pct_Time_Maintenance" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

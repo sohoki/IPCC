@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:submitRequest xmlns:ns2="http://xml.avaya.com/ws/SystemManagementService/2008/07/01" xmlns:ns3="http://xml.avaya.com/ws/session">
+    <modelFields>
+        <Station>
+            <Extension></Extension>
+            <Type></Type>
+            <Port></Port>
+            <Name></Name>
+        </Station>
+    </modelFields>
+    <operation>list</operation>
+    <objectname></objectname>
+    <qualifier>count 5</qualifier>
+</ns2:submitRequest>

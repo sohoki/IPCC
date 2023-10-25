@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="ListExtensionTypeArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Unused_Extensions" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="ListExtensionTypeType">
+		<xsd:sequence>
+			<xsd:group ref="ListExtensionTypeArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

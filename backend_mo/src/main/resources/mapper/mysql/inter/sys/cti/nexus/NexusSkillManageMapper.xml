@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.ipcc.cti.nexus.mapper.NexusSkillManageMapper">
+	<select id="selectNexusSkillInfoPageList" resultType="camelmap">
+		SELECT R.* FROM
+		(
+			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+			       ROW_NUMBER() OVER (ORDER BY A.SKILL_ID ASC) AS RNUM, 
+				   A.CENTER_ID, A.TENANT_ID, A.SKILL_ID, A.SKILL_NAME, A.SKILL_DESC, B.CENTER_NAME
+			FROM MA_SKILL A	, MA_CENTER B			     
+			WHERE A.CENTER_ID = B.CENTER_ID 
+			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+				AND (A.SKILL_NAME LIKE  CONCAT ('%', #{params.searchKeyword},'%')  
+					 OR A.SKILL_DESC LIKE  CONCAT ('%', #{params.searchKeyword},'%')  )
+			</if>					
+		) R
+		ORDER BY RNUM ASC
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+		
+	</select>
+	
+
+	<select id="selectNexusSkillEmployeeInfoPageList" resultType="camelmap">
+		SELECT R.* FROM
+		(
+			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+			       ROW_NUMBER() OVER (ORDER BY A.EMPLOYEE_ID ASC) AS RNUM, 
+				   A.CENTER_ID, A.TENANT_ID, A.EMPLOYEEGRP_ID, A.EMPLOYEEPART_ID, A.EMPLOYEE_ID, A.SKILL_LEVEL, A.SKILL_ID,
+				   B.EMPLOYEE_NAME , C.EMPLOYEEGRP_NAME , D.EMPLOYEEPART_NAME, E.SKILL_NAME  
+			FROM MA_EMPLOYEE_SKILL A, MA_EMPLOYEE B, MA_EMPLOYEEGRP C, MA_EMPLOYEEPART D, MA_SKILL E		     
+			WHERE A.CENTER_ID= #{centerId} 
+			  	  AND A.TENANT_ID= #{tenantId} 
+			      AND A.SKILL_ID= #{skillId}
+			      AND A.EMPLOYEE_ID  = B.EMPLOYEE_ID 
+			      AND A.CENTER_ID  = B.CENTER_ID 
+			      AND A.TENANT_ID  = B.TENANT_ID 
+			      AND A.EMPLOYEEGRP_ID = C.EMPLOYEEGRP_ID
+			      AND A.CENTER_ID  = C.CENTER_ID 
+			      AND A.TENANT_ID  = C.TENANT_ID 
+			      AND A.EMPLOYEEPART_ID = D.EMPLOYEEPART_ID
+			      AND A.CENTER_ID  = D.CENTER_ID 
+			      AND A.TENANT_ID  = D.TENANT_ID 
+			      AND C.EMPLOYEEGRP_ID  = D.EMPLOYEEGRP_ID 
+			      AND A.SKILL_ID = E.SKILL_ID
+			      AND A.CENTER_ID  = E.CENTER_ID 
+			      AND A.TENANT_ID  = E.TENANT_ID 
+		) R
+		ORDER BY RNUM asc
+	</select>
+	
+	
+	<select id="selectNexusSkillExistInfo" resultType="Integer">
+		SELECT IFNULL(COUNT(SKILL_ID),0)
+		FROM MA_SKILL 
+		WHERE CENTER_ID=#{centerId} AND TENANT_ID=#{tenantId} AND SKILL_ID=#{skillId}
+	</select>
+	<select id="selectParentNexusSkillInfoDetail" resultType="Integer">
+		SELECT 
+		(
+			SELECT COUNT(1) 
+			FROM MA_TENANT 
+			WHERE TENANT_ID=#{tenantId} AND CENTER_ID=#{centerId}
+		) FROM DUAL
+	</select>
+	
+	<select id="selectNexusSkillInfoDetail" resultType="NexusSkillInfo">
+		SELECT  A.CENTER_ID, A.TENANT_ID, A.SKILL_ID, A.SKILL_NAME, A.SKILL_DESC
+		FROM MA_SKILL A		   
+		WHERE A.SKILL_ID = #{skillId}
+	</select>
+	
+	
+	<insert id="insertNexusSkillEmployeeInfo">
+		INSERT INTO MA_EMPLOYEE_SKILL
+		(
+			CENTER_ID, TENANT_ID, EMPLOYEEGRP_ID, EMPLOYEEPART_ID, EMPLOYEE_ID, SKILL_LEVEL, SKILL_ID
+		)
+		VALUES
+		(
+			#{centerId}, #{tenantId}, #{employeegrpId}, #{employeepartId}, #{employeeId}, #{skillLevel}, #{skillId}
+		)
+	</insert>	
+	
+	<insert id="insertNexusSkillInfo">
+		INSERT INTO MA_SKILL
+		(
+			CENTER_ID,TENANT_ID,SKILL_ID,SKILL_NAME,SKILL_DESC
+		)
+		VALUES
+		(
+			#{centerId}, #{tenantId}, #{skillId}, #{skillName}, #{skillDesc}
+		)
+	</insert>	
+	
+	<update id="updateNexusSkillInfo">
+		UPDATE MA_SKILL SET CENTER_ID=#{centerId},
+							TENANT_ID=#{tenantId},
+							SKILL_ID=#{skillId},
+							SKILL_NAME=#{skillName},
+							SKILL_DESC=#{skillDesc} 
+		WHERE CENTER_ID=#{centerId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND SKILL_ID=#{skillId}
+	</update>
+	<update id="updateNexusSkillEmployeeInfo">
+		UPDATE MA_EMPLOYEE_SKILL SET CENTER_ID=#{centerId},
+									 TENANT_ID=#{tenantId},
+									 EMPLOYEEGRP_ID=#{employeegrpId},
+									 EMPLOYEEPART_ID=#{employeepartId},
+									 EMPLOYEE_ID=#{employeeId}, 
+									 SKILL_LEVEL=#{skillLevel},
+									 SKILL_ID=#{skillId} 
+		WHERE CENTER_ID=#{centerId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND SKILL_ID=#{skillId}
+			  AND EMPLOYEE_ID=#{employeeId}
+	</update>	
+	
+	<delete id="deleteNexusSkillInfo">
+   		DELETE FROM MA_SKILL 
+   		WHERE CENTER_ID=#{centerId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND SKILL_ID=#{skillId};
+		
+		DELETE FROM MA_EMPLOYEE_SKILL 
+   		WHERE CENTER_ID=#{centerId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND SKILL_ID=#{skillId};
+	</delete>
+	<delete id="deleteNexusSkillEmployeeInfo">
+   		DELETE FROM MA_EMPLOYEE_SKILL 
+   		WHERE CENTER_ID=#{centerId} 
+			  AND TENANT_ID=#{tenantId} 
+			  AND SKILL_ID=#{skillId}
+			  AND EMPLOYEE_ID=#{employeeId}
+	</delete>
+</mapper>

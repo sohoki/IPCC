@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="LoginsType">
+		<xsd:sequence>
+			<xsd:element name="Current_User" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Login" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Profile" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Users_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Active_Command" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Session" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="ConfigurationType">
+		<xsd:sequence>
+			<xsd:element name="Board_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Board_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Code1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Code2" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Code3" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Vintage" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports2" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports3" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports4" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports5" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports6" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports7" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports8" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports9" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports10" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports11" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports12" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports13" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports14" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports15" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports16" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports17" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports18" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports19" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports20" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports21" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports22" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports23" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports24" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports25" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports26" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports27" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports28" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports29" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports30" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports31" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Ports32" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

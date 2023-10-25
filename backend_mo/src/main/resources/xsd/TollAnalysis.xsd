@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="TollAnalysisArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Dialed_String" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Min" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Max" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="RCL" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Toll_List" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="CDR_FEAC" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_1" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_4" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_5" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_6" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_7" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_8" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_9" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Unrestricted_Call_List_10" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="TollAnalysisType">
+		<xsd:sequence>
+			<xsd:element name="Location" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="TollAnalysisArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

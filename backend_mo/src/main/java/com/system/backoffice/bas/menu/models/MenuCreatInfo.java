@@ -1,0 +1,22 @@
+package com.system.backoffice.bas.menu.models;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class MenuCreatInfo {
+
+    /** 메뉴번호 */
+    private   String   menuNo;
+    /** 맵생성ID */
+    private   String   mapCreatId;
+    /** 권한코드 */
+    private   String   roleId;
+}

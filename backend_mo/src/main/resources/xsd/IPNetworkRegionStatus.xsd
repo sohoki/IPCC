@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="IPNetworkRegionStatusType">
+		<xsd:sequence>
+			<xsd:element name="Source_Region" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Destination_Region" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Connection_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Connection_Status" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="BW_Limit_A" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="BW_Limit_B" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="KBits_Tx" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="KBits_Rx" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Connections_Tx" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Connections_Rx" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Times_BW_Limit_Hit_Today" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IGAR_Now" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="IGAR_Today" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

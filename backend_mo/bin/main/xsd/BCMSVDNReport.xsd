@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="BCMSVDNReportType">
+		<xsd:sequence>
+			<xsd:element name="Switch_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Date" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="VDN" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="VDN_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Acceptable_Service_Level" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Report_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Calls_Offered" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="ACD_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Avg_Speed_Answered" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Abandoned_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Avg_Abandoned_Time" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Avg_Talk_Hold" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Connected_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Flow_Out" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Calls_Busy_Disconnected" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Pct_In_Svc_Level" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

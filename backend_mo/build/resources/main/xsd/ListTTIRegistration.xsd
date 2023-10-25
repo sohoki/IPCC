@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:complexType name="ListTTIRegistrationType">
+		<xsd:sequence>
+			<xsd:element name="Station_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Product_ID" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Prod_Release" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Network_Region" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Port" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Gatekeeper_IP_Address" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

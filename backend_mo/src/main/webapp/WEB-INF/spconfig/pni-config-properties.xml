@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+	<comment>SSO Agent properties</comment>
+	<entry key="product">Pass-Ni SSO v4.0.007</entry>
+	<entry key="appliation">Pass-Ni SSO Agent for JAVA v4.0.007</entry>
+	<entry key="server.id">call-sso-server</entry>
+	<entry key="server.version">4.0.007</entry>
+	<entry key="server.domain">192.168.90.92</entry>
+	<entry key="server.port">80</entry>
+	<entry key="server.context.root">/sso</entry>
+	<entry key="server.ssl.yn">N</entry>
+	<entry key="server.self.url">CF6183DCB77D4E2D7A4A1577B705E361</entry>
+	<entry key="server.login.url">BF9FFBF66D9E48E8D5C863458299FDD3</entry>
+	<entry key="server.logout.url">E8810D7E19191E5FCFB7421414C556502C2CBB8CEDF78D42559CB6132083773D</entry>
+	<entry key="server.api.url">BB8B3D5ABEEDE12CD6C2213B2E0C548A</entry>
+	<entry key="agent.id">call-ipcc</entry>
+	<entry key="agent.version">4.0.007</entry>
+	<entry key="agent.domain">192.168.90.58</entry>
+	<entry key="agent.port">80</entry>
+	<entry key="agent.context.root">/</entry>
+	<entry key="agent.ssl.yn">N</entry>
+	<entry key="agent.proc.url">/passni/sample/loginProc.jsp</entry>
+	<entry key="agent.logout.url">/passni/sample/logout.jsp</entry>
+	<entry key="agent.redirect.url">/passni/sso/spRedirect.jsp</entry>
+	<entry key="agent.error.url">/passni/sample/error.jsp</entry>
+	<!--  agent path 파일 위치 -->
+	<entry key="agent.root.path">/usr/local/jar</entry>
+	<entry key="agent.secky">2DB2C419C148444F4F0CE23AB968619A6E7EF403D44616CCE81DAB256A4A20D4F916B903D719C54FD40C6C21FD1A0531</entry>
+	<entry key="cert.file.path">/usr/local/jar/sso-cert/call-ipcc</entry>
+	<entry key="cert.file.server.name">call-sso-server-cert</entry>
+	<entry key="cert.file.agent.name">call-ipcc-cert</entry>
+	<entry key="cert.pni.type">9</entry>
+	<!--  로드 파일 위치 -->
+	<entry key="logger.file.path">/usr/local/jar/log</entry>
+	<entry key="logger.file.name">passni_log</entry>
+	<entry key="logger.file.limit">500000</entry>
+	<entry key="logger.file.count">1</entry>
+	<entry key="logger.level">ALL</entry>
+	<!--  lib path 파일 위치 -->
+	<entry key="crypto.file.path">/usr/local/jar/lib</entry>
+	<entry key="crypto.algorithm">871210E84A253AEC5FAB12C901D2B486</entry>
+	<entry key="crypto.algorithm.mode">E93BD0109295450224883BFD0C6547FC</entry>
+	<entry key="crypto.digest">0D43EE761BB130233A3FC2133DAB165E</entry>
+	<entry key="crypto.rsasize">AF4CD915325E724844965033E3A87CD5</entry>
+	<entry key="crypto.ec.type">758331A45FB5955111261C614658E93C</entry>
+	<entry key="crypto.encoding">UTF-8</entry>
+	<entry key="agent.action.url">/SSOService.do</entry>
+</properties>

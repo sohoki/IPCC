@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="ARSDigitConversionArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Matching_Pattern" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Min" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Max" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Del" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Replacement_String" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Net" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Conv" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ANI_Req" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="ARSDigitConversionType">
+		<xsd:sequence>
+			<xsd:element name="Location" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Percent_Full" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="ARSDigitConversionArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

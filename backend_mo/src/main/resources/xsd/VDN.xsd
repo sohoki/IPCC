@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="VDNArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Skill" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Var_Description" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Var_Assignment" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="VDNType">
+		<xsd:sequence>
+			<xsd:element name="Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Destination" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Vector_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Attendant_Vectoring" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Meet_me_Conferencing" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Allow_VDN_Override" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="COR" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="TN" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Measured" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Report_Adjunct_Calls_as_ACD" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Acceptable_Service_Level" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Service_Objective" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="VDN_of_Origin_Annc_Ext" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_1" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_2" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_3" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_4" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_5" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Native_Name_Scripts" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="AUDIX_Name" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Return_Destination" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="VDN_Timed_ACW_Interval" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="After_Xfer_or_Held_Call_Drops" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="BSR_Application" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="BSR_Available_Agent_Strategy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="BSR_Tie_Strategy" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Delay_PSTN_Connect_Message" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Observe_on_Agent_Answer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Delay_PSTN_Connect_Message_On_Agent_Answer" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Send_VDN_as_Called_Ringing_Name_Over_QSIG" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Forward_Held_Call_CPN" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Display_VDN_for_Route_To_DAC" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="VDN_Override_for_IDSN_Trunk_ASAI_Msgs" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Background_BSR_Polling" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Unassigned_Extension" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="BSR_Local_Treatment" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Reporting_for_PC_Predictive_Calls" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Pass_Prefixed_CPN_to_VDN_Vector" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Conference_Access_Code" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Conference_Controller" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Conference_Type" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Route_To_Number" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Time_Zone_Offset" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Offset_Hours" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Offset_Minutes" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="Daylight_savings_rule" type="xsd:string" minOccurs="0" maxOccurs="1"/>
+			<xsd:group ref="VDNArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

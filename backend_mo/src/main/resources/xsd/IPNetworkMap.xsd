@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="IPNetworkMapArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="FromIPAddress" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress1" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress1_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress2_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress3_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress4" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="FromIPAddress4_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress1" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress1_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress2" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress2_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress3" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress3_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress4" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ToIPAddress4_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Mask" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Mask_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Region" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Region_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VLAN" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="VLAN_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ELIN" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ELIN_A" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="IPNetworkMapType">
+		<xsd:sequence>
+			<xsd:group ref="IPNetworkMapArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>

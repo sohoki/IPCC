@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
+<xsd:include schemaLocation="./ArrayType.xsd"/>
+	<xsd:group name="LocationsArrayGroup">
+		<xsd:sequence>
+			<xsd:element name="Location__Number" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Name" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Timezone_Offset" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Timezone_Offset_Hours" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Timezone_Offset_Minutes" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Rule_or_DST" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="NPA_or_Area_or_City" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Nth_Am" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Proxy_Select_Route_Pattern" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="ARS_FAC" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Attd_FAC" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Disp_Param" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Loc_Param" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="Prefix" type="arrayType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:group>
+	<xsd:complexType name="LocationsType">
+		<xsd:sequence>
+			<xsd:group ref="LocationsArrayGroup"/>
+		</xsd:sequence>
+	</xsd:complexType>
+</xsd:schema>
