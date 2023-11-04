@@ -1,22 +1,24 @@
-package com.system.backoffice.sys.svr.models;
-
+package com.system.backoffice.sym.svr.models.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ServerInfo {
+public class ServerInfoRequestDto {
 
 	private String mode;
 	private String serverSeq;
+	@NotBlank(message="서버 이름을 입력해 주세요.")
 	private String serverName;
+	@NotBlank(message="서버 IP을 입력해 주세요.")
 	private String serverIp;
 	private String serverPort;
 	private String serverMethod;
@@ -28,4 +30,6 @@ public class ServerInfo {
 	private String lastUpdusrId;
 	private String serverDc;
 	private String serverUseyn;
+	
+	private String userId;
 }

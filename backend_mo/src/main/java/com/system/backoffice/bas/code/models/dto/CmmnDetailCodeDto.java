@@ -26,6 +26,7 @@ public class CmmnDetailCodeDto {
     private String searchCodedc;
     private String codeEtc1;
     private String codeEtc2;
+    private String systemCode;
     
 	// 공통
 	private String mode; 			// 등록/수정 식별값 

@@ -93,8 +93,10 @@ public class JwtVerification {
 	        	log.debug("Unable to get JWT Token");
 	        } catch (ExpiredJwtException e) {
 	        	log.debug("JWT Token has expired");
+	       
 	        } catch (MalformedJwtException e) {
 	        	log.debug("JWT strings must contain exactly 2 period characters");
+	     
 	        } catch (UnsupportedJwtException e) {
 	        	log.debug("not support JWT token.");
 	        }

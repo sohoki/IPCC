@@ -1,4 +1,4 @@
-package com.system.backoffice.sys.svr.service;
+package com.system.backoffice.sym.svr.service;
 
 import java.util.List;
 import java.util.Map;
@@ -7,10 +7,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.system.backoffice.sys.svr.mapper.ServerInfoManageMapper;
-import com.system.backoffice.sys.svr.models.dto.ServerInfoRequestDto;
-import com.system.backoffice.sys.svr.models.dto.ServerStatusDto;
-import com.system.backoffice.sys.svr.models.ServerInfo;
+import com.system.backoffice.sym.svr.mapper.ServerInfoManageMapper;
+import com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto;
+import com.system.backoffice.sym.svr.models.dto.ServerStatusDto;
+import com.system.backoffice.sym.svr.models.ServerInfo;
 
 import lombok.RequiredArgsConstructor;
 

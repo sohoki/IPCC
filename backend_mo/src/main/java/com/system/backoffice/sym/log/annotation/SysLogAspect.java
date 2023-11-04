@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
@@ -136,9 +135,9 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 				.filter(not(BeanPropertyBindingResult.class::isInstance))
 				.forEach(arg -> {
 					try {
-						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + objectMapper.writeValueAsString(arg));
+						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: mapper " + objectMapper.writeValueAsString(arg));
 					} catch (JsonProcessingException e) {
-						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + arg);
+						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: arg " + arg);
 					}
 			});
 			
@@ -185,6 +184,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			sysLog.setProcessTime(processTime);
 			sysLog.setRqesterIp(ipAddr);
 			sysLog.setRqesterId(userId);
+			sysLog.setSqlParam(ParamToJson.paramToJson(sqlId));
 			sysLogService.logInsertSysLog(sysLog);
 		}
 	}
@@ -239,19 +239,24 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			final String processSeCode = Globals.SYSLOG_PROCESS_SE_CODE_SELECT;
 			final String ipAddr = EgovClntInfo.getClntIP(request);
 			final String processTime = Long.toString(stopWatch.getTotalTimeMillis());
-			final String userId =  jwtVerification.getTokenUserName(request);
-			// 시스템 로그 기록
-			SysLog sysLog = new SysLog();
-			sysLog.setErrorCode(HttpStatus.OK.value()+"");
-			sysLog.setSrvcNm(clazz.getSimpleName());
-			sysLog.setMethodNm(joinPoint.getSignature().getName());
-			sysLog.setProcessSeCode(processSeCode);
-			sysLog.setProcessTime(processTime);
-//			sysLog.setSqlParam(ParamToJson.paramToJson(sqlId));
-			sysLog.setRqesterIp(ipAddr);
-			sysLog.setRqesterId(userId);
-			sysLog.setMethodResult(ParamToJson.paramToJson(result));
-			sysLogService.logInsertSysLog(sysLog);
+			if (jwtVerification.isVerificationAdmin(request)) {
+				
+				final String userId =  jwtVerification.getTokenUserName(request);
+				// 시스템 로그 기록
+				SysLog sysLog = new SysLog();
+				sysLog.setErrorCode(HttpStatus.OK.value()+"");
+				sysLog.setSrvcNm(clazz.getSimpleName());
+				sysLog.setMethodNm(joinPoint.getSignature().getName());
+				sysLog.setProcessSeCode(processSeCode);
+				sysLog.setProcessTime(processTime);
+				sysLog.setRqesterIp(ipAddr);
+				sysLog.setRqesterId(userId);
+				sysLog.setMethodResult(ParamToJson.paramToJson(result));
+				sysLogService.logInsertSysLog(sysLog);
+			}else {
+				LOGGER.debug("====================== TOKEN 만료");
+			}
+			
 		}
 	}
 	/**
@@ -300,7 +305,6 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			sysLog.setMethodNm(joinPoint.getSignature().getName());
 			sysLog.setProcessSeCode(processSeCode);
 			sysLog.setProcessTime(processTime);
-//			sysLog.setSqlParam(ParamToJson.paramToJson(sqlId));
 			sysLog.setRqesterIp(ipAddr);
 			sysLog.setRqesterId(userId);
 			sysLogService.logInsertSysLog(sysLog);

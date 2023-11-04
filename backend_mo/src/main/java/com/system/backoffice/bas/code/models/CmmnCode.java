@@ -19,7 +19,7 @@ public class CmmnCode implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private String clCode = "";
+	private String clCode;
 	private String mode;
 	private String codeId;
 	private String codeIdNm;
@@ -29,4 +29,6 @@ public class CmmnCode implements Serializable {
     private String frstRegisterId;
     private String lastUpdusrId;
     private String userId;
+    private String systemCode;
+    
 }

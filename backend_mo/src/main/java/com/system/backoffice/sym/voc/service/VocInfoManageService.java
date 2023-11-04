@@ -3,16 +3,12 @@ package com.system.backoffice.sym.voc.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.system.backoffice.sym.voc.mapper.VocInfoManageMapper;
 import com.system.backoffice.sym.voc.models.VocInfo;
 import com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto;
-import com.system.backoffice.sys.svr.mapper.ServerInfoManageMapper;
-
 import lombok.RequiredArgsConstructor;
 
 

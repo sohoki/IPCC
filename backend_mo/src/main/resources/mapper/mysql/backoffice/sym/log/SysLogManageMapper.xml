@@ -7,61 +7,58 @@
         	<result property="METHOD_RESULT" column="METHOD_RESULT" jdbcType="CLOB" javaType="java.lang.String" />
     </resultMap>
     
-    <select id="selectSysLogList"  resultType="lmap" >
+    <select id="selectSysLogList"  resultType="camelmap" >
           SELECT TB.* 
 		 	FROM (
 		 	           SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
-		 	                      ROWNUM RNUM, X.* 
+	 	                      X.* 
 		 	           FROM (
-		 	                       SELECT a.REQUST_ID,  a.OCCRRNC_DE  OCCRRNC_DE, a.SRVC_NM,
-		 	                                  a.METHOD_NM, a.PROCESS_SE_CODE, a.PROCESS_TIME, 
-		 	                                  a.ERROR_SE,  a.ERROR_CODE, a.ERROR_CO, a.RSPNS_CODE, a.RQESTER_IP, a.RQESTER_ID, 
-		 	                                  a.SQL_PARAM, a.SQL_QUERY, a.METHOD_RESULT,
-		 	                                  b.ADMIN_NAME, c.PART_ID, c.PART_NM,
-		 	                                  CASE  a.PROCESS_SE_CODE 
-		 	                                         WHEN 'I' then '입력' 
-		 	                                         WHEN 'U' then '수정' 
-		 	                                         WHEN 'D' then '삭제'
-		 	                                         WHEN 'S' then '조회' 
-		 	                                         ELSE '에러'
-		 	                                  END  PROCESS_SE_CODE_TXT
-		 	                       FROM COMTNSYSLOG a, TB_MANAGERINFO b, TB_PARTINFO c
+	 	                       SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+	 	                       		  a.REQUST_ID,  a.OCCRRNC_DE  OCCRRNC_DE, a.OCCRRNC_DATE, a.SRVC_NM, a.SVC_NM, 
+ 	                                  a.METHOD_NM, a.PROCESS_SE_CODE, a.PROCESS_TIME, 
+ 	                                  a.ERROR_SE,  a.ERROR_CODE, a.ERROR_CO, a.RSPNS_CODE, a.RQESTER_IP, a.RQESTER_ID, 
+ 	                                  a.SQL_PARAM, a.SQL_QUERY, a.METHOD_RESULT,
+ 	                                  b.ADMIN_NAME, c.PART_ID, c.PART_NM,
+ 	                                  CASE  a.PROCESS_SE_CODE 
+ 	                                         WHEN 'I' then '입력' 
+ 	                                         WHEN 'U' then '수정' 
+ 	                                         WHEN 'D' then '삭제'
+ 	                                         WHEN 'S' then '조회' 
+ 	                                         ELSE '에러'
+ 	                                  END  PROCESS_SE_CODE_TXT
+		 	                       FROM COMTNSYSLOG a, TB_MANAGERINFO b, TB_PARTINFO c, (select @ROWNUM := 0) RN_TB
 		 	                       WHERE a.RQESTER_ID = b.ADMIN_ID 
-		 	                                  AND b.PART_ID = c.PART_ID
-		 	                                  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchStartdday)">
-											  AND a.OCCRRNC_DE  >= #{searchStartdday}
-											  </if>
-											  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchEndday)">
-											  <![CDATA[
-											  AND a.OCCRRNC_DE  <= #{searchEndday}
-											  ]]>
-											  </if>
-											  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchKeyword)">
-											       <choose>
-															<when test="searchCondition == 'userNm'">
-																AND b.ADMIN_NAME LIKE '%' || #{searchKeyword} || '%'
-															</when>
-															<otherwise>
-																AND a.CONECT_ID LIKE  '%' || #{searchKeyword} || '%' 
-															</otherwise>
-														</choose>
-											</if>
-											<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchProcessGubun)">
-											  AND a.PROCESS_SE_CODE  = #{searchProcessGubun}
-											 </if>
-											 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchIp)">
-											    AND a.RQESTER_IP =  #{searchIp} 
-											    AND TO_CHAR(OCCRRNC_DATE, 'YYYYMMDDHH24MISS')  BETWEEN  TO_CHAR(SYSDATE-2/24/60, 'YYYYMMDDHH24MISS') AND TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS')
-											 </if>
-											 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchId)">
-											    AND a.RQESTER_ID = #{searchId}
-											 </if>
+	 	                                 AND b.PART_ID = c.PART_ID
+	 	                                  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchStartdday)">
+										  AND a.OCCRRNC_DE  >= #{searchStartdday}
+										  </if>
+										  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchEndday)">
+										  <![CDATA[
+										  AND a.OCCRRNC_DE  <= #{searchEndday}
+										  ]]>
+										  </if>
+										  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+										       <choose>
+														<when test="searchCondition == 'userNm'">
+															AND b.ADMIN_NAME LIKE '%' || #{params.searchKeyword} || '%'
+														</when>
+														<otherwise>
+															AND a.CONECT_ID LIKE  '%' || #{params.searchKeyword} || '%' 
+														</otherwise>
+													</choose>
+										</if>
+										<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchProcessGubun)">
+										  AND a.PROCESS_SE_CODE  = #{params.searchProcessGubun}
+										 </if>
+										 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchId)">
+										    AND a.RQESTER_ID = #{params.searchId}
+										 </if>
 											
 									ORDER BY a.REQUST_ID DESC
 		 	                     )X
 	        )TB
-	        WHERE TB.RNUM  BETWEEN #{firstIndex} + 1 AND #{firstIndex} + #{recordCountPerPage}  
 	        ORDER BY  TB.REQUST_ID  DESC
+	        LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
     </select>
     <!-- 시스템 로그 상세 조회 -->
 	<select id="selectSysLogInfo" resultType="lmap" resultMap="clobMap">
@@ -102,12 +99,14 @@
 				  , SQL_PARAM
 				  , SQL_QUERY
 				  , METHOD_RESULT
+				  , SVC_NM
+				  , OCCRRNC_DATE
 				  )
 			VALUES ( #{requstId}
 				  , #{srvcNm}
 				  , #{methodNm}
 				  , #{processSeCode}
-				  , #{processTime}
+				  , DATE_FORMAT(NOW(), '%Y%m%d%H%i%s')
 				  , #{rqesterId}
 				  , #{rqesterIp}
 				  , #{errorCode}
@@ -116,6 +115,8 @@
 				  , #{sqlParam, jdbcType=VARCHAR}
 				  , #{sqlQuery, jdbcType=VARCHAR}
 				   , #{methodResult, jdbcType=VARCHAR}
+				   , 'IPCC'
+				   , NOW()
 	        	  )
 		]]>
 		

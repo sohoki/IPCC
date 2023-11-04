@@ -10,6 +10,7 @@ import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
 import com.system.backoffice.bas.program.mapper.ProgrameChangeManageMapper;
 import com.system.backoffice.bas.program.mapper.ProgrmInfoManageMapper;
 import com.system.backoffice.bas.program.models.ProgrmInfo;
+import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.util.service.UtilInfoService;
 
 import lombok.RequiredArgsConstructor;
@@ -132,12 +133,12 @@ public class MenuInfoManageService {
 		return menuMapper.selectMenuListT_D();
 	}
 
-	
+	@NoLogging
 	public List<Map<String, Object>> selectMainMenuHead(String empNo) throws Exception {
 		return menuMapper.selectMainMenuHead(empNo);
 	}
 
-	
+	@NoLogging
 	public List<Map<String, Object>> selectMainMenuLeft(String empNo) throws Exception {
 		return menuMapper.selectMainMenuLeft(empNo);
 	}

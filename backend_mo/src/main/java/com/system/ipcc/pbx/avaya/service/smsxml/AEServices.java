@@ -378,7 +378,6 @@ class AEServices
         catch ( Exception e )
         {
            System.out.println("SMSTest failed with an unexpected exception:");
-           e.printStackTrace(System.out);
         }
         sms.releaseSession(); // attempt to release session, no matter what
         return;

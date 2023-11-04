@@ -17,6 +17,7 @@ public class RoleInfo {
 	private String roleName;
 	private String roleDc;
 	private String roleUseyn;
+	private String systemCode;
 	private String frstRegistPnttm;
 	private String frstRegisterId;
 	private String lastUpdtPnttm;

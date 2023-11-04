@@ -22,7 +22,7 @@
 		<typeAlias alias="AdminLoginVO"		type="egovframework.com.cmm.AdminLoginVO" />
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
-		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sys.svr.models.ServerInfo" />
+		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sym.svr.models.ServerInfo" />
 		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
 		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
 		<typeAlias alias="CmmnCode"			type="com.system.backoffice.bas.code.models.CmmnCode" />
@@ -51,8 +51,8 @@
 		<typeAlias alias="UserRoleInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.UserRoleInfoRequestDto" />
 		
 		
-		<package name="com.system.backoffice.sys.svr.models"/>
-		<package name="com.system.backoffice.sys.svr.models.dto"/>
+		<package name="com.system.backoffice.sym.svr.models"/>
+		<package name="com.system.backoffice.sym.svr.models.dto"/>
 		
 		<package name="com.system.backoffice.uat.log.models.dto"/>
 		<package name="com.system.backoffice.uat.log.models"/>
@@ -71,6 +71,9 @@
 		
 		<package name="com.system.backoffice.bas.program.models"/>	
 		<package name="com.system.backoffice.bas.program.models.dto"/>	
+		
+		<package name="com.system.backoffice.bas.system.models"/>	
+		<package name="com.system.backoffice.bas.system.models.dto"/>	
 		
 		<package name="com.system.backoffice.uat.role.models"/>	
 		<package name="com.system.backoffice.uat.uia.models"/>		

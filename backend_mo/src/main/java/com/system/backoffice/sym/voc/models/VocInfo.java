@@ -19,6 +19,7 @@ public class VocInfo {
 	private String vocSubject;
 	private String vocGubun;
 	private String vocLocation;
+	private String vocProcess;
 	private String vocStatus;
 	private String vocReqRegdate;
 	private String vocReqUserid;

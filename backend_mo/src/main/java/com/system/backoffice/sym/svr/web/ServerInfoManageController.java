@@ -1,4 +1,4 @@
-package com.system.backoffice.sys.svr.web;
+package com.system.backoffice.sym.svr.web;
 
 import java.util.List;
 import java.util.Map;
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import com.system.backoffice.sys.svr.models.dto.ServerInfoRequestDto;
-import com.system.backoffice.sys.svr.models.ServerInfo;
-import com.system.backoffice.sys.svr.service.ServerInfoManageService;
+import com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto;
+import com.system.backoffice.sym.svr.models.ServerInfo;
+import com.system.backoffice.sym.svr.service.ServerInfoManageService;
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 

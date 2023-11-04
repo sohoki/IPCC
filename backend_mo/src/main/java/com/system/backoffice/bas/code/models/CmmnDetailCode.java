@@ -29,4 +29,5 @@ public class CmmnDetailCode implements Serializable{
     private String codeEtc1;
     private String codeEtc2;
     private String userId;
+    private String systemCode;
 }

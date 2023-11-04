@@ -143,15 +143,19 @@ public class MenuInfoManageController {
 		
 		return model;
 	}
+	@NoLogging
 	@GetMapping("menuNoLeft.do")
 	public ModelAndView selectMenuLeftInfo( HttpServletRequest request) throws Exception {
 		
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
     	if (!jwtVerification.isVerificationAdmin(request)) {
-
+    		System.out.println("jwtVerification  isVerificationAdmin");
     		ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
     	}else {
+    		
+    		
+    		
     		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
     		model.addObject(Globals.ADMIN_INFO, jwtVerification.getTokenUserName(request));
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);

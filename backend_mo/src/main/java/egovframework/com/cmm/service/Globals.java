@@ -52,10 +52,7 @@ public class Globals {
 	public static final String JSON_RETURN_RESULT_LIST = "resultList";
 	public static final String JSON_PAGEINFO = "paginationInfo";
 	
-	public static final String PAGE_INFO = "paginationInfo";
-	public static final String PAGE_SIZE = "pageSize";
-	public static final String PAGE_UNIT = "pageUnit";
-	public static final String PAGE_TOTAL_COUNT = "totalCnt";
+	
 	
 	public static final String NEXUS_CENTER_COMBO = "centerlist";
 	
@@ -81,5 +78,14 @@ public class Globals {
 	
 	public static final String STATUS_LOGINFAIL = "LOGIN FAIL";
 	
+	public static final String PAGE_FIRST_INDEX =  "firstIndex";
+	public static final String PAGE_LAST_INDEX =  "lastRecordIndex";
+	public static final String PAGE_RECORD_PER_PAGE =  "recordCountPerPage";
+	public static final String PAGE_INDEX =  "pageIndex";
+	public static final String PAGE_TOTAL_RECORD_COUNT =  "totalRecordCount";
+	public static final String PAGE_INFO = "paginationInfo";
+	public static final String PAGE_SIZE = "pageSize";
+	public static final String PAGE_UNIT = "pageUnit";
+	public static final String PAGE_TOTAL_COUNT = "totalCnt";
 	
 }

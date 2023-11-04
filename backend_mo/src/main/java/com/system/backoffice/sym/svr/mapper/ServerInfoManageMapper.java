@@ -1,11 +1,11 @@
-package com.system.backoffice.sys.svr.mapper;
+package com.system.backoffice.sym.svr.mapper;
 
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
-import com.system.backoffice.sys.svr.models.dto.ServerInfoRequestDto;
-import com.system.backoffice.sys.svr.models.dto.ServerStatusDto;
-import com.system.backoffice.sys.svr.models.ServerInfo;
+import com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto;
+import com.system.backoffice.sym.svr.models.dto.ServerStatusDto;
+import com.system.backoffice.sym.svr.models.ServerInfo;
 
 import java.util.List;
 import java.util.Map;

@@ -31,5 +31,7 @@ public class CmmnClCode implements Serializable {
     private String mode;
     
     private String userId;
+    
+    private String systemCode;
 
 }

@@ -24,6 +24,8 @@ public class RoleInfoRequestDto {
 	private String roleName;
 	private String userId;
 	private String roleDc;
+	@NotBlank(message="시스템 코드를 입력해 주세요.")
+	private String systemCode;
 	private String roleUseyn;
 	private String frstRegistPnttm;
 	private String frstRegisterId;

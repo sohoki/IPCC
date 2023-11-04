@@ -1,4 +1,4 @@
-package com.system.backoffice.sys.svr.models.dto;
+package com.system.backoffice.sym.svr.models.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

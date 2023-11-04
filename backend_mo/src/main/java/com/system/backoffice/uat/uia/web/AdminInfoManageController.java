@@ -8,9 +8,7 @@ import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.service.AdminInfoManageService;
 import com.system.backoffice.uat.uia.models.AdminInfoVO;
 import com.system.backoffice.uat.uia.models.PartInfoVO;
-import com.system.backoffice.uat.uia.service.GroupInfoManageService;
 import com.system.backoffice.uat.uia.service.PartInfoManageService;
-import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import egovframework.com.cmm.EgovMessageSource;
@@ -19,8 +17,6 @@ import egovframework.com.cmm.EgovMessageSource;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +29,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import org.springmodules.validation.commons.DefaultBeanValidator;
-
-
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
@@ -63,10 +56,6 @@ public class AdminInfoManageController {
     
     @Resource(name="egovMessageSource")
 	protected EgovMessageSource egovMessageSource;
-	
-	@Autowired
-	private UniUtilManageService utilService;
-	
 	
 	@Autowired
 	private PartInfoManageService partService;
