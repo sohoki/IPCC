@@ -35,6 +35,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.system.backoffice.sym.voc.models.VocInfo;
 import com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto;
 import com.system.backoffice.sym.voc.models.dto.VocProcessInfoReqDto;
+import com.system.backoffice.sym.voc.models.dto.VocProcessInfoResDto;
 import com.system.backoffice.sym.voc.service.VocInfoManageService;
 import com.system.backoffice.sym.voc.service.VocProcessInfoManageService;
 
@@ -79,7 +80,7 @@ public class VocInfoManageController {
     		
     		Optional<VocInfo> info = vocMangeServiec.selectVocInfoDetail(vocSeq);
     		
-    		info.orElseThrow(() -> new IllegalArgumentException("해당하는 VOC 정보가가 없습니다. 잘못된 입력하셨스빈다."));
+    		info.orElseThrow(() -> new IllegalArgumentException("해당하는 VOC 정보가가 없습니다. 잘못된 입력하셨습니다."));
     		
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
     		model.addObject(Globals.STATUS_REGINFO, info);
@@ -254,6 +255,7 @@ public class VocInfoManageController {
     		paginationInfo.setTotalRecordCount(totCnt);
     		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
     		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
+    		 model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
     	}catch(Exception e) {
 	   		 model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		 model.addObject(Globals.STATUS_MESSAGE, e.toString());
@@ -279,6 +281,31 @@ public class VocInfoManageController {
     		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.delete") : egovMessageSource.getMessage("fail.request.msg");
     		model.addObject(Globals.STATUS, status);
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
+    	}catch(Exception e) {
+    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    }
+    @GetMapping("vocProcess/{vocProcessSeq}.do")
+    public ModelAndView selectVocProcessDetailInfo(@PathVariable String vocProcessSeq,
+    											HttpServletRequest request)throws Exception {
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		
+    		Optional<VocProcessInfoResDto> info = vocProcessMangeServiec.selectVocProcessDetail(vocProcessSeq);
+    		
+    		info.orElseThrow(() -> new IllegalArgumentException("해당하는 VOC 정보가가 없습니다. 잘못된 입력하셨습니다."));
+    		
+    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+    		model.addObject(Globals.STATUS_REGINFO, info);
+    		
     	}catch(Exception e) {
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());

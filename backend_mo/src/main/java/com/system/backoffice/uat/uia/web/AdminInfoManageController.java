@@ -168,7 +168,23 @@ public class AdminInfoManageController {
     	return model;
     }
 	
-	
+	@ApiOperation(value="사용자 combobox ", notes="사용자 combobox")
+	@GetMapping("adminCombo.do")
+	public ModelAndView selectAdminCombo(HttpServletRequest request) throws Exception{
+		
+		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+    	if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
+    	
+		//공용 확인 하기 
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+        
+    	model.addObject(Globals.JSON_RETURN_RESULT_LIST, userManagerService.selectAdminUserCombo()); 
+        model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		return model;
+	}
 	@ApiOperation(value="사용자 상세 정보", notes="사용자 상세 정보")
 	@GetMapping("{adminId}.do")
 	public ModelAndView userView( @PathVariable String adminId, HttpServletRequest request) throws Exception{

@@ -24,6 +24,8 @@ public  interface AdminInfoManageService {
 	
 	List<?> selectAdminUserManageListByPagination(Map<String, Object> params) throws Exception;  
 	
+	List<Map<String, Object>> selectAdminUserCombo() throws Exception;
+	
     //int selectAdminUserManageListTotCnt_S(Map<String, Object> params) throws Exception;
     
     int selectAdminUserMangerIDCheck(String code) throws Exception;

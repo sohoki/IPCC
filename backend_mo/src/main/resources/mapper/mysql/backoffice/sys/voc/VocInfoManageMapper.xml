@@ -18,9 +18,9 @@
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 					AND 
 					( 
-						A.SERVER_NAME LIKE '%'|| #{params.searchKeyword} || '%' 
+						A.VOC_SUBJECT LIKE '%'|| #{params.searchKeyword} || '%' 
 						OR
-						A.SERVER_DC LIKE '%' ||  #{params.searchKeyword} || '%'
+						A.VOC_LOCATION LIKE '%' ||  #{params.searchKeyword} || '%'
 					) 
 				</if>
 			) TB 
@@ -38,18 +38,18 @@
    	<insert id="insertVocInfo">
 		INSERT INTO TB_VOCINFO	
 		(
-		    VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_STATUS, VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_REQ
+		    VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_PROCESS, VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_REQ
 		)
 		VALUES 
 		(
-			#{vocSubject}, #{vocGubun}, #{vocLocation,jdbcType=VARCHAR}, 'VOC_STATUS_1',	
+			#{vocSubject}, #{vocGubun}, #{vocLocation,jdbcType=VARCHAR}, 'VOC_PROCESS_1',	
 			NOW(), #{userId}, #{vocReq,jdbcType=VARCHAR}
 		)
    	</insert>
 	<update id="updateServerResponse">
 		UPDATE TB_VOCINFO SET VOC_RES_REGDATE = NOW(),
 					 		  VOC_RES_USERID = #{userId},
-					 		  VOC_STATUS = #{vocStatus,jdbcType=VARCHAR},
+					 		  VOC_PROCESS = #{vocProcess,jdbcType=VARCHAR},
 					 		  VOC_RESPONSE = #{vocResponse}  	
 		WHERE VOC_REQ = #{vocSeq}
 	</update>

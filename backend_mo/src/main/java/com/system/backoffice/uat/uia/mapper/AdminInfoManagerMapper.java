@@ -30,6 +30,8 @@ public interface AdminInfoManagerMapper {
 	
 	public int selectAdminUserMangerIDCheck(String code) throws Exception;
 	
+	public List<Map<String, Object>> selectAdminUserCombo() throws Exception;
+	
 	public int selectAdminPasswordCheck(@Param("params") Map<String, Object> params) throws Exception;
 	
 }

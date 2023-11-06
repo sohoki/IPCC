@@ -54,6 +54,13 @@
 	  FROM   TB_MANAGERINFO
 	  WHERE  ADMIN_ID = #{adminId}
    </select>
+   <select id="selectAdminUserCombo" resultType="camelmap">
+	  SELECT  ADMIN_ID, ADMIN_NAME
+     FROM   TB_MANAGERINFO
+	  WHERE  USE_YN = 'Y;
+   </select>
+   
+   
    <select id="selectAdminPasswordCheck" resultType="java.lang.Integer">
 	  SELECT  IFNULL(COUNT(*),0)      
 	  FROM   TB_MANAGERINFO

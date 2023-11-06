@@ -38,7 +38,8 @@ public class EgovConfigAppProperties {
 		properties.put("posblAtchFileSize", "5242880");
 		properties.put("Globals.fileStorePath", "/user/file/sht/");
 		properties.put("Globals.addedOptions", "false");
-
+		properties.put("Globals.editorPath", "C:\\dev\\eGovFrameDev-4.1.0-64bit\\workspace\\IPCC\\IPCC\\backend_mo\\src\\main\\webapp\\upload\\editor");
+		
 		egovPropertyServiceImpl.setProperties(properties);
 		return egovPropertyServiceImpl;
 	}
