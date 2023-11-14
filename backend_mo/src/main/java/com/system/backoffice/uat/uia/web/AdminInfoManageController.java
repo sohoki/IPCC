@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import egovframework.com.cmm.service.Globals;
@@ -80,35 +81,28 @@ public class AdminInfoManageController {
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
 	    	}
 
-			
-	    	searchVO.put("pageUnit", propertiesService.getInt("pageUnit"));
-	    	searchVO.put("pageSize", propertiesService.getInt("pageSize"));
+	    	
+	    	searchVO.put(Globals.PAGE_UNIT, propertiesService.getInt(Globals.PAGE_UNIT));
+	    	searchVO.put(Globals.PAGE_SIZE, propertiesService.getInt(Globals.PAGE_SIZE));
 	       
 	      
 	   	   PaginationInfo paginationInfo = new PaginationInfo();
-		   paginationInfo.setCurrentPageNo(Integer.parseInt(searchVO.get("pageIndex").toString()));
+		   paginationInfo.setCurrentPageNo(Integer.parseInt(searchVO.get(Globals.PAGE_INDEX).toString()));
 		   
-		   paginationInfo.setRecordCountPerPage(propertiesService.getInt("pageUnit"));
-		   paginationInfo.setPageSize(propertiesService.getInt("pageUnit"));
+		   paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_UNIT));
+		   paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_UNIT));
 		   
-		   searchVO.put("firstIndex", paginationInfo.getFirstRecordIndex());
-		   searchVO.put("lastIndex", paginationInfo.getLastRecordIndex());
-		   searchVO.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
+		   searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+		   searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+		   searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
 		   
 		   model.addObject(Globals.STATUS_REGINFO, searchVO);
 		   
 		   List<AdminInfoVO> adminList =  (List<AdminInfoVO>) userManagerService.selectAdminUserManageListByPagination(searchVO);
-	       model.addObject("resultList",  adminList);      	       
+	       model.addObject(Globals.JSON_RETURN_RESULT_LIST,  adminList);      	       
 	       int totCnt = adminList.size() > 0 ? adminList.get(0).getTotalRecordCount() : 0;  
 	       paginationInfo.setTotalRecordCount(totCnt);
-	       model.addObject("paginationInfo", paginationInfo);
-	       model.addObject("totalCnt", totCnt);
-	       //List<AuthorInfo> authInfos = authorInfoManageService.selectAuthorIInfoManageCombo();
-	       //model.addObject("selectState", authInfos);	
-
-	       List<PartInfoVO> partCombo = partService.selectPartInfoCombo();
-		   model.addObject("selectGroup", partCombo);
-	       
+	       model.addObject(Globals.PAGE_INFO, paginationInfo);	       
 		   
 	   }catch (Exception e){
 			LOGGER.debug("selectUserManagerList error:" + e.toString());
@@ -170,7 +164,8 @@ public class AdminInfoManageController {
 	
 	@ApiOperation(value="사용자 combobox ", notes="사용자 combobox")
 	@GetMapping("adminCombo.do")
-	public ModelAndView selectAdminCombo(HttpServletRequest request) throws Exception{
+	public ModelAndView selectAdminCombo(@RequestParam  Map<String, Object> searchVO,
+										 HttpServletRequest request) throws Exception{
 		
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
     	if (!jwtVerification.isVerificationAdmin(request)) {
@@ -181,7 +176,7 @@ public class AdminInfoManageController {
 		//공용 확인 하기 
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
         
-    	model.addObject(Globals.JSON_RETURN_RESULT_LIST, userManagerService.selectAdminUserCombo()); 
+    	model.addObject(Globals.JSON_RETURN_RESULT_LIST, userManagerService.selectAdminUserCombo(searchVO)); 
         model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		return model;
 	}
@@ -215,7 +210,7 @@ public class AdminInfoManageController {
 	//추후 .do 파일 확인 하기 
 	@ApiOperation(value="사용자 업데이트", notes="관리자 업데이트")
 	@PostMapping("managerUpdate.do")
-	public ModelAndView mangerUpdate (@RequestBody  AdminInfoVO vo,
+	public ModelAndView updatemanger (@RequestBody  AdminInfoVO vo,
 									  HttpServletRequest request, 
 									  BindingResult bindingResult) throws Exception{
 		

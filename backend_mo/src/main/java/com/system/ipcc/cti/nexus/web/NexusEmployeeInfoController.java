@@ -167,7 +167,6 @@ public class NexusEmployeeInfoController {
 			
 			
 			int ret = employeeService.checkNexusEmployeesInfo(vo);
-			System.out.println("ret: ============" + ret);
 			String sStatus = (ret > -1) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String sMessage = (ret > -1) ? "common.idcheck.success" : "common.idcheck.fail";
 			model.addObject(Globals.STATUS,sStatus);
@@ -434,7 +433,7 @@ public class NexusEmployeeInfoController {
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확
         	}
         	
-        	model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectEmployeesExistInfoDetail(employeeId));
+        	//model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectEmployeesExistInfoDetail(employeeId));
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);

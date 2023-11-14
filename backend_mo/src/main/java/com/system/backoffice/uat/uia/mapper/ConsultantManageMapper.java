@@ -17,6 +17,8 @@ public interface ConsultantManageMapper {
 
 	public List<Map<String, Object>> selectConstantCombo() throws Exception;
 	
+	public List<Map<String, Object>> selectConstantEmpCombo(String empExtension) throws Exception;
+	
 	public int deleteConsultantrManage(String extension) throws Exception;
 	
 	public int insertConsultantrManage(ConsultantInfoRequestDto vo) throws Exception;
@@ -31,7 +33,7 @@ public interface ConsultantManageMapper {
 
 	public Optional<ConsultantInfo> selectConsultantrManageDetail(String extension) throws Exception;
 	
-	public List<?> selectConsultantrManageListByPagination(@Param("params") Map<String, Object> params) throws Exception;
+	public List<Map<String, Object>> selectConsultantrManageListByPagination(@Param("params") Map<String, Object> params) throws Exception;
 	
 	public int selectConsultantrMangerIDCheck(String extension) throws Exception;
 }

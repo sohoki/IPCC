@@ -8,27 +8,22 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.system.backoffice.bas.code.models.CmmnClCode;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnClCodeManageService;
-
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.exception.NotFoundException;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.ApiOperation;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.ui.ModelMap;
 
 
 @RestController
@@ -61,6 +56,7 @@ public class EgovCcmCmmnClCodeManageController {
 	 * @return "forward:/sym/ccm/ccc/EgovCcmCmmnClCodeList.do"
 	 * @throws Exception
 	 */
+	@ApiOperation(value="삭제", notes = "성공시 대 분류 코드를 삭제 합니다.")
     @DeleteMapping("{clCode}.do")
 	public ModelAndView deleteCmmnClCode (@PathVariable String clCode, 
 										  HttpServletRequest request) throws Exception {
@@ -76,13 +72,19 @@ public class EgovCcmCmmnClCodeManageController {
         	
     		cmmnClCodeManageService.deleteCmmnClCode(clCode);
 	    	int ret = cmmnClCodeManageService.deleteCmmnClCode(clCode);
-	    	String status = cmmnClCodeManageService.deleteCmmnClCode(clCode) > 0 ?
-	    			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
-	    	String message = status.equals( Globals.STATUS_SUCCESS) ?
-	    			 	 egovMessageSource.getMessage("success.common.delete") :
-	    				 egovMessageSource.getMessage("fail.common.delete") ;
-	    	model.addObject(Globals.STATUS, status);
-	    	model.addObject(Globals.STATUS_MESSAGE, Globals.STATUS_SUCCESS);
+	    	if (ret > 0) {
+	    		String status = cmmnClCodeManageService.deleteCmmnClCode(clCode) > 0 ?
+   			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+			   	String message = status.equals( Globals.STATUS_SUCCESS) ?
+			   			 	 egovMessageSource.getMessage("success.common.delete") :
+			   				 egovMessageSource.getMessage("fail.common.delete") ;
+			   	model.addObject(Globals.STATUS, status);
+			   	model.addObject(Globals.STATUS_MESSAGE, message);
+	    	}else {
+	    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	    		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
+	    	}
+	    	
     	}catch(Exception e) {
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
     		model.addObject(Globals.STATUS_MESSAGE, e.toString());
@@ -98,6 +100,7 @@ public class EgovCcmCmmnClCodeManageController {
 	 * @return "/cmm/sym/ccm/EgovCcmCmmnClCodeRegist"
 	 * @throws Exception
 	 */
+	@ApiOperation(value="업데이트", notes = "성공시 대 분류 코드를 업데이트 합니다.")
     @PostMapping("code/update.do")
 	public ModelAndView updateCmmnClCode(@RequestBody CmmnClCode clCode, 
 			  							 HttpServletRequest request) throws Exception {
@@ -137,6 +140,7 @@ public class EgovCcmCmmnClCodeManageController {
 	 * @return "cmm/sym/ccm/EgovCcmCmmnClCodeDetail"
 	 * @throws Exception
 	 */
+	@ApiOperation(value="상세 조회", notes = "공통분류코드 상세항목을 조회한다.")
     @GetMapping("{clCode}.do")
 	public ModelAndView selectCmmnClCodeDetail(@PathVariable String clCode, 
 			  									HttpServletRequest request) throws Exception {
@@ -144,10 +148,8 @@ public class EgovCcmCmmnClCodeManageController {
 		//공용 확인 하기 
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
-    		LOGGER.debug("=======================");
     		if (!jwtVerification.isVerificationAdmin(request)) {
-    			LOGGER.debug("=======================1");
-        		ResultVO resultVO = new ResultVO();
+    			ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
         	}
         	CmmnClCode detail = cmmnClCodeManageService.selectCmmnClCodeDetail(clCode).orElseThrow(() 
@@ -173,6 +175,7 @@ public class EgovCcmCmmnClCodeManageController {
      * @return "/cmm/sym/ccm/EgovCcmCmmnClCodeList"
      * @throws Exception
      */
+	@ApiOperation(value="목록 조회", notes = "공통분류코드 목록을 조회한다.")
     @PostMapping("code/list.do")
 	public ModelAndView selectCmmnClCodeList(@RequestBody Map<String, Object> searchMap, 
 											HttpServletRequest request) throws Exception {
@@ -187,27 +190,27 @@ public class EgovCcmCmmnClCodeManageController {
         	}
         	
         	
-            int pageUnit = searchMap.get("pageUnit") == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get("pageUnit"));
-    		int pageSize = searchMap.get("pageSize") == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get("pageSize"));  
+            int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
+    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
     	   
     	    
         	/** pageing */
         	PaginationInfo paginationInfo = new PaginationInfo();
-    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get("pageIndex").toString() ));
+    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX).toString() ));
     		paginationInfo.setRecordCountPerPage(pageUnit);
     		paginationInfo.setPageSize(pageSize);
 
-    		searchMap.put("firstIndex", paginationInfo.getFirstRecordIndex());
-    		searchMap.put("lastRecordIndex", paginationInfo.getLastRecordIndex());
-    		searchMap.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
+    		searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+    		searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+    		searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
     	    
     	    List<Map<String, Object>> codeList = (List<Map<String, Object>>) cmmnClCodeManageService.selectCmmnClCodeListByPagination(searchMap);
-    	    int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).get("totalRecordCount").toString().replace("-", "") ) :0;
+    	    int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).get(Globals.PAGE_TOTAL_COUNT).toString().replace("-", "") ) :0;
             
 
     		paginationInfo.setTotalRecordCount(totCnt);
-    		model.addObject("resultList", codeList);
-    		model.addObject("paginationInfo", paginationInfo);
+    		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
+    		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
     	}catch (Exception e){
 			LOGGER.debug("selectCmmnClCodeList error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	

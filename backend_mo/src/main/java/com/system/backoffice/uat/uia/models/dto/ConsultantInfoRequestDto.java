@@ -28,13 +28,14 @@ public class ConsultantInfoRequestDto {
 	private String pbxCor;
 	private String pbxCos;
 	private String pbxName;
+
 	private String pbxSecurityCode;	
 	private String pbxLoginId;
 	private String pbxStatus;
 	private String pbxRegDate;
 	private String pbxUpdateDate;
 	
-	
+	private String ctiLoginid;
 	private String ctiCenterId;
 	private String ctiTenantId;
 	private String ctiEmployeegrpid;
@@ -54,5 +55,13 @@ public class ConsultantInfoRequestDto {
 	private String lastUpdtPnttm;
 	private String lastUpdusrId;
 	private String counRemark;
+	
+	private String ctiCenterName;
+	private String ctiEmployeegrpName;
+	private String ctiEmployeepartName;
+	private String ctiTenantName;
+	private String counUseyn;
+	
+	
 	private List<ConsultantAgentInfo> agentInfo;
 }

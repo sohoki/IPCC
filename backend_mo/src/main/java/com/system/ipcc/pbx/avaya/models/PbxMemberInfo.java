@@ -22,6 +22,7 @@ public class PbxMemberInfo {
 	private String name;
 	private String SecurityCode;
 	private String status;
+	private String mode;
 	
 	private List<pbxType> sn;
 	private List<pbxType> sr;

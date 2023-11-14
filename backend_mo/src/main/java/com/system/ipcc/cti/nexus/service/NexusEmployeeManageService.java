@@ -63,8 +63,8 @@ public class NexusEmployeeManageService {
 		return nexusMapper.selectPermitCombo(params);
 	}
 	
-	public Optional<NexusAgentInfoResponseDto> selectEmployeesExistInfoDetail(String employeeId){
-		return employMapper.selectEmployeesExistInfoDetail(employeeId);
+	public Optional<NexusAgentInfoResponseDto> selectEmployeesExistInfoDetail(NexusAgentInfo vo){
+		return employMapper.selectEmployeesExistInfoDetail(vo);
 	}
     public int updateNexusEmployeesInfo(NexusAgentRequestInfoDto vo) {
     	int ret = 0;
@@ -108,7 +108,13 @@ public class NexusEmployeeManageService {
     	return employMapper.selectEmployeesInfoComboList(centerId);
     }
     public int deleteNexusEmployeesInfo(NexusAgentInfo vo) {
-    	return employMapper.deleteNexusEmployeesInfo(vo);
+    	int ret = employMapper.selectEmployeesExistInfoDetailCnt(vo);
+    	if (ret > 0) {
+    		return employMapper.deleteNexusEmployeesInfo(vo);
+    	}else {
+    		return 1;
+    	}
+    	
     }
 	
 }

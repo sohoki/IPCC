@@ -11,8 +11,9 @@
 								A.CTI_EMPLOYEEGRPID, A.CTI_EMPLOYEEPARTID, A.CTI_EMPLOYEEID, 
 								A.CTI_NAME, A.CTI_PASSWORD, A.CTI_BLEND_KIND, A.CTI_PERMIT_ID,
 								A.CTI_MONITER_FLAG, A.CTI_DEFAULT_QUEUE, A.CTI_UPDATE_DATE,
-								A.COUN_STATUS, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID,
-								A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.COUN_REMARK
+								A.COUN_STATUS, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.AGENT_STATUS,
+								A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.COUN_REMARK, A.COUN_USEYN,
+								A.CTI_CENTER_NAME, A.CTI_EMPLOYEEGRP_NAME, A.CTI_EMPLOYEEPART_NAME, CTI_TENANT_NAME
 					    FROM   TB_CONSULTANT A
 						WHERE  1=1
 		        <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -39,6 +40,20 @@
    		FROM TB_CONSULTANT
    		WHERE  PBX_EXTENSION NOT IN (SELECT  PBX_EXTENSION FROM TB_MANAGERINFO WHERE USE_YN = 'Y' AND PBX_EXTENSION IS NOT NULL )
    </select>   
+   <select id="selectConstantEmpCombo" resultType="camelmap">
+   		SELECT PBX_EXTENSION, CTI_NAME
+   		FROM TB_CONSULTANT
+   		WHERE  PBX_EXTENSION NOT IN (SELECT  PBX_EXTENSION 
+   									 FROM TB_MANAGERINFO 
+   									 WHERE USE_YN = 'Y' AND PBX_EXTENSION IS NOT NULL 
+   									 	   <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(empExtension)">	
+   									 	   AND PBX_EXTENSION != #{empExtension} 
+   									 	   </if>
+									 )
+   		       AND 
+   </select>   
+   
+   
    <select id="selectConsultantrManageDetail" resultType="ConsultantInfo">
       SELECT PBX_EXTENSION,
 			 PBX_TYPE,
@@ -100,7 +115,7 @@
    </update>
    <update id="updateConsultantrPbxAgentManage">
       UPDATE TB_CONSULTANT SET PBX_LOGIN_ID = #{pbxLoginId}
-                                , PBX_STATUS = 'OK'
+                                , AGENT_STATUS = 'OK'
                                 , PBX_UPDATE_DATE =  NOW()
                                 , LAST_UPDT_PNTTM  = NOW()
        							, LAST_UPDUSR_ID = #{userId}
@@ -129,7 +144,13 @@
 						       CTI_DEFAULT_QUEUE= #{ctiDefaultQueue},
 						       CTI_UPDATE_DATE =  NOW(),
 						       LAST_UPDT_PNTTM  = NOW(),
-       						   LAST_UPDUSR_ID = #{userId}
+       						   LAST_UPDUSR_ID = #{userId},
+       						   COUN_USEYN = #{counUseyn},
+							   CTI_CENTER_NAME = #{ctiCenterName},
+							   CTI_EMPLOYEEGRP_NAME = #{ctiEmployeegrpName},
+							   CTI_EMPLOYEEPART_NAME = #{ctiEmployeepartName},
+							   CTI_TENANT_NAME = #{ctiTenantName},
+							   COUN_STATUS = 'Y'
       WHERE PBX_EXTENSION = #{pbxExtension}
    </update>
    <update id="updateConsultantrManage">

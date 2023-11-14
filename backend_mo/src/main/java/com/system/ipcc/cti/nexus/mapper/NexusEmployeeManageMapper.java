@@ -24,7 +24,9 @@ public interface NexusEmployeeManageMapper {
 	
 	public int selectPermitExistsInfo(NexusAgentRequestInfoDto vo);
 	
-	public Optional<NexusAgentInfoResponseDto> selectEmployeesExistInfoDetail(String employeeId);
+	public Optional<NexusAgentInfoResponseDto> selectEmployeesExistInfoDetail(NexusAgentInfo vo);
+	
+	public int selectEmployeesExistInfoDetailCnt(NexusAgentInfo vo);
 	
     public int insertNexusEmployeesInfo(NexusAgentRequestInfoDto vo);
 	

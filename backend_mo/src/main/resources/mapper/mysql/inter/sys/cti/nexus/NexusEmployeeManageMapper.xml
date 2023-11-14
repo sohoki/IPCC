@@ -75,19 +75,24 @@
 		WHERE A.EMPLOYEE_ID = #{employeeId}
 			  AND A.CENTER_ID=#{centerId} 
 			  AND A.TENANT_ID=#{tenantId} 
-			  AND A.CENTER_ID = B.CENTER_ID
-			  
+			  AND A.CENTER_ID = B.CENTER_ID 
+			  AND A.EMPLOYEEGRP_ID = C.EMPLOYEEGRP_ID
 			  AND A.CENTER_ID = C.CENTER_ID
 			  AND A.TENANT_ID = C.TENANT_ID
-			  AND A.EMPLOYEEGRP_ID = C.EMPLOYEEGRP_ID
-			  
+			  AND A.EMPLOYEEGRP_ID = D.EMPLOYEEGRP_ID 
+			  AND A.EMPLOYEEPART_ID = D.EMPLOYEEPART_ID 
 			  AND A.CENTER_ID = D.CENTER_ID
 			  AND A.TENANT_ID = D.TENANT_ID
-			  AND A.EMPLOYEEGRP_ID = D.EMPLOYEEGRP_ID
-			  AND A.EMPLOYEEGRP_ID = D.EMPLOYEEPART_ID
-			  
-			  AND A.CENTER_ID = E.CENTER_ID
+			  AND A.CENTER_ID = E.CENTER_ID 
 			  AND A.TENANT_ID = E.TENANT_ID
+	</select>
+	<select id="selectEmployeesExistInfoDetailCnt" resultType="Integer">
+		SELECT IFNULL(COUNT(*),0)
+		FROM MA_EMPLOYEE A	   
+		WHERE A.EMPLOYEE_ID = #{employeeId}
+			  AND A.CENTER_ID=#{centerId} 
+			  AND A.TENANT_ID=#{tenantId} 
+			  
 	</select>
 	
 	

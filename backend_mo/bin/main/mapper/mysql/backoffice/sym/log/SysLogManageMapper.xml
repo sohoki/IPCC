@@ -14,7 +14,7 @@
 	 	                      X.* 
 		 	           FROM (
 	 	                       SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
-	 	                       		  a.REQUST_ID,  a.OCCRRNC_DE  OCCRRNC_DE, a.OCCRRNC_DATE, a.SRVC_NM, a.SVC_NM, 
+	 	                       		  a.REQUST_ID,   DATE_FORMAT( a.OCCRRNC_DATE, '%Y-%m%d %H:%i:%s') OCCRRNC_DATE, a.SRVC_NM, a.SVC_NM, 
  	                                  a.METHOD_NM, a.PROCESS_SE_CODE, a.PROCESS_TIME, 
  	                                  a.ERROR_SE,  a.ERROR_CODE, a.ERROR_CO, a.RSPNS_CODE, a.RQESTER_IP, a.RQESTER_ID, 
  	                                  a.SQL_PARAM, a.SQL_QUERY, a.METHOD_RESULT,
@@ -29,31 +29,27 @@
 		 	                       FROM COMTNSYSLOG a, TB_MANAGERINFO b, TB_PARTINFO c, (select @ROWNUM := 0) RN_TB
 		 	                       WHERE a.RQESTER_ID = b.ADMIN_ID 
 	 	                                 AND b.PART_ID = c.PART_ID
-	 	                                  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchStartdday)">
-										  AND a.OCCRRNC_DE  >= #{searchStartdday}
+	 	                                  
+	 	                                  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchStartday)">
+										  AND a.OCCRRNC_DE  >= #{params.searchStartday}
 										  </if>
 										  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchEndday)">
 										  <![CDATA[
-										  AND a.OCCRRNC_DE  <= #{searchEndday}
+										  AND a.OCCRRNC_DE   <= #{params.searchEndday}
 										  ]]>
 										  </if>
 										  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
-										       <choose>
-														<when test="searchCondition == 'userNm'">
-															AND b.ADMIN_NAME LIKE '%' || #{params.searchKeyword} || '%'
-														</when>
-														<otherwise>
-															AND a.CONECT_ID LIKE  '%' || #{params.searchKeyword} || '%' 
-														</otherwise>
-													</choose>
-										</if>
-										<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchProcessGubun)">
-										  AND a.PROCESS_SE_CODE  = #{params.searchProcessGubun}
-										 </if>
-										 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchId)">
+										  	AND ( a.SQL_PARAM LIKE CONCAT ('%', #{params.searchKeyword},'%') 	 
+										       	   OR
+										       	  a.METHOD_RESULT LIKE CONCAT ('%', #{params.searchKeyword},'%') 	
+										       	) 
+										  </if>
+										  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchProcessGubun)">
+										  	AND a.PROCESS_SE_CODE  = #{params.searchProcessGubun}
+										  </if>
+										  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchId)">
 										    AND a.RQESTER_ID = #{params.searchId}
-										 </if>
-											
+										  </if>
 									ORDER BY a.REQUST_ID DESC
 		 	                     )X
 	        )TB

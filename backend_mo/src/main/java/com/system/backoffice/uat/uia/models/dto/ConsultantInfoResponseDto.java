@@ -42,5 +42,10 @@ public class ConsultantInfoResponseDto {
 	private String lastUpdusrId;
 	private String counRemark;
 	private String centerName;
+	//신규 
+	private String ctiCenterName;
+	private String ctiEmployeegrpName;
+	private String ctiEmployeepartName;
+	private String ctiTenantName;
 	private List<ConsultantAgentInfo> agentInfo;
 }

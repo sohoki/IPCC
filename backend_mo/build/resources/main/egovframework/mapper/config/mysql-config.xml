@@ -22,7 +22,7 @@
 		<typeAlias alias="AdminLoginVO"		type="egovframework.com.cmm.AdminLoginVO" />
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
-		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sys.svr.models.ServerInfo" />
+		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sym.svr.models.ServerInfo" />
 		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
 		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
 		<typeAlias alias="CmmnCode"			type="com.system.backoffice.bas.code.models.CmmnCode" />
@@ -49,10 +49,14 @@
 		<typeAlias alias="UserToken"  type="com.system.backoffice.uat.uia.models.UserToken" />
 		<typeAlias alias="ConsultantInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto" />
 		<typeAlias alias="UserRoleInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.UserRoleInfoRequestDto" />
+		<typeAlias alias="SystemInfoResDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoResDto" />
+		<typeAlias alias="SystemInfoRequestDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto" />
+		<typeAlias alias="SystemInfo"  type="com.system.backoffice.bas.system.models.SystemInfo" />
+		<typeAlias alias="SysLog"  type="com.system.backoffice.sym.log.models.SysLog" />
 		
 		
-		<package name="com.system.backoffice.sys.svr.models"/>
-		<package name="com.system.backoffice.sys.svr.models.dto"/>
+		<package name="com.system.backoffice.sym.svr.models"/>
+		<package name="com.system.backoffice.sym.svr.models.dto"/>
 		
 		<package name="com.system.backoffice.uat.log.models.dto"/>
 		<package name="com.system.backoffice.uat.log.models"/>
@@ -71,6 +75,9 @@
 		
 		<package name="com.system.backoffice.bas.program.models"/>	
 		<package name="com.system.backoffice.bas.program.models.dto"/>	
+		
+		<package name="com.system.backoffice.bas.system.models"/>	
+		<package name="com.system.backoffice.bas.system.models.dto"/>	
 		
 		<package name="com.system.backoffice.uat.role.models"/>	
 		<package name="com.system.backoffice.uat.uia.models"/>		

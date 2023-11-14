@@ -34,6 +34,11 @@ public class ConsultantInfo {
 	private String ctiName;
 	private String ctiPassword;
 	private String ctiBlendKind;
+	
+	private String ctiCenterName;
+	private String ctiEmployeegrpName;
+	private String ctiEmployeepartName;
+	private String ctiTenantName;
 	//강제 입력 
 	private String ctiPermitId;
 	private String ctiMoniterFlag;
@@ -49,6 +54,8 @@ public class ConsultantInfo {
 	private String lastUpdusrId;
 	private String counRemark;
 	private String counUseyn;
+	
+	
 	
 	private List<ConsultantAgentInfo> agentInfo;
 }

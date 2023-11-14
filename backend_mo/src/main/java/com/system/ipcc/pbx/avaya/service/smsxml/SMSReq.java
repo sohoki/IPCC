@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -38,6 +39,7 @@ import com.system.ipcc.pbx.avaya.models.pbxType;
 import com.avaya.smsxml.AgentType;
 import com.avaya.smsxml.ObjectFactory;
 
+import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 
 
@@ -48,6 +50,11 @@ public class SMSReq {
 		private static String WEB_REFERENCE_PACKAGE = "com.avaya.smsxml";
 		
 		
+	    /** EgovMessageSource */
+		@Resource(name = "egovMessageSource")
+		EgovMessageSource egovMessageSource;
+		
+
 		private ObjectFactory objectFactory;
 		
 		// Class Loader
@@ -73,12 +80,7 @@ public class SMSReq {
 		private String root = "";
 		private String login = "";
 		private String pw = "";
-		
-		// Set a timeout for the web service response. Here we allow
-		// 10,000 MS (10 seconds)
-		// AES-16028 We were having issues with timeout in listpublicunknownnumbering
-		// So we decided to increase the timeout. By trial & error I am setting it 
-		// to 50 seconds now.
+
 		private Integer responseTimeout = new Integer(50000);
 
 		// Request parameters
@@ -254,6 +256,58 @@ public class SMSReq {
 		
 			return result;
 		}
+		
+		
+		
+		public ModelAndView execRequestMemberUpdate(PbxMemberInfo info) {
+			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+			if (!setup()) {
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				return models; 
+			}
+			if (info.getMode().equals("PBX")) {
+				String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
+				Result submitResult = this.submitRequest("Station", addType, "", "change", info.getExtension());
+				if (submitResult.getResultCode() == 0) {
+					models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+					try {
+						models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.extension.update"));
+					}catch (Exception e1) {
+						models.addObject(Globals.STATUS_MESSAGE, "내선번호가 수정되었습니다.");
+					}
+					
+					System.out.println("======pbx 2");
+					models.setStatus(HttpStatus.OK);
+					System.out.println("======pbx 3");
+				}else {
+					models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+					try {
+						models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.extension.fail"));
+					}catch (Exception e1) {
+						models.addObject(Globals.STATUS_MESSAGE, "내선번호 처리중 문제가 발생하였습니다.");
+					}
+					
+					
+				}
+			}else {
+				Result submitResult = submitAgentRequest("Agent", "Extension", "", "change", info);
+				if (submitResult.getResultCode() != 0) {
+					models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
+					models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				}else {
+					models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+					try {
+						models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.agent.update"));
+					}catch (Exception e1) {
+						models.addObject(Globals.STATUS_MESSAGE, "agent가 수정되었습니다.");
+						System.out.println("======pbx error:" + e1.toString());
+					}
+					models.setStatus(HttpStatus.OK);
+				}
+			}
+			
+			return models; 
+		}
 		//사용자 등록
 		public ModelAndView execRequestMemberInsert(PbxMemberInfo info) {
 			// Step 1: Initial SOAP setup, done once (typically) per session.
@@ -279,7 +333,7 @@ public class SMSReq {
 				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				return models; 
 			}
-			System.out.println("===== 내선번호 업데이트 ");
+			System.out.println("===== 내선번호 등록 ");
 			String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
 			System.out.println("addType:" + addType);
 			submitResult = this.submitRequest("Station", addType, "", "add", info.getExtension());
@@ -287,16 +341,16 @@ public class SMSReq {
 			
 			if (submitResult.getResultCode() == 0) {
 				
-				System.out.println("===== Agent 업데이트 ");
+				System.out.println("===== Agent 등록 ");
 				
 				submitResult = submitAgentRequest("Agent", "Extension", "", "add", info);
 				if (submitResult.getResultCode() != 0) {
-					models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다.");
+					models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
 					models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 					return models;
 				}
 			}else {
-				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록중 문제가 발생 하였습니다.");
+				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
 				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				return models; 
 				
@@ -327,20 +381,23 @@ public class SMSReq {
 				return models; 
 			}
 			System.out.println("============ 사용자 삭제:" + info.getExtension());
-			
+			String resutMessage = "";
 			Result submitResult = this.submitRequest("Station", "extension", "", "remove", info.getExtension());
-			/*
+			
 			if (submitResult.getResultCode() != 0) {
-				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 삭제시 문제가 발생 하였습니다.");
+				resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
+				
+				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 삭제시 문제가 발생 하였습니다." + resutMessage);
 				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				return models; 
 			}
-			*/
+			
 			System.out.println("============ Agent 삭제" + info.getLoginId());
 			// Agent 값 체크 하기 
 			submitResult = this.submitRequest("Agent", "Login_ID", "", "remove", info.getLoginId());
 			if (submitResult.getResultCode() != 0) {
-				models.addObject(Globals.STATUS_MESSAGE, "Agent가 삭제시 문제가 있습니다.");
+				resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
+				models.addObject(Globals.STATUS_MESSAGE, "Agent가 삭제시 문제가 있습니다." + resutMessage);
 				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				return models; 
 			}
@@ -370,11 +427,6 @@ public class SMSReq {
 		 */
 		boolean setup() {
 			try {
-				
-				// Create Model JAX-B Context -- 
-				// Creation of the JAX-B context is expensive so only create if needed.
-				System.out.println("Creating JAXBContext ...");
-				System.out.println("root:" + root + "===============");
 				modelContext = JAXBContext.newInstance(WEB_REFERENCE_PACKAGE);
 				System.out.println("WEB_REFERENCE_PACKAGE:" + WEB_REFERENCE_PACKAGE + "===============");
 				// Specify End-Point URL 
@@ -384,11 +436,6 @@ public class SMSReq {
 				// copy of the WSDL
 				URL localWSDL;
 				
-				System.out.println("login" + login);
-				System.out.println("pw" + pw);
-				System.out.println("port:" + port);
-				
-
 				if (cl != null){
 					localWSDL = cl.getResource("wsdl_xml/SystemManagementService.wsdl");
 				}
@@ -512,7 +559,6 @@ public class SMSReq {
 				submitRequest.setModelFields(modelChoices);
 				submitRequest.setObjectname(sObjectName); 
 				submitRequest.setOperation(sOperation);
-				//submitRequest.setQualifier(info.getExtension());
 				submitRequest.setQualifier(info.getLoginId());
 				
 				result = port.submitRequest(submitRequest.getModelFields(), submitRequest.getOperation(),
@@ -543,11 +589,9 @@ public class SMSReq {
 					
 					// Is result null 
 					if (mc != null) { 
-						// We'll use a routine to illustrate processing the return values
 						printResult(mc, model); 
-						} 
 					} 
-				else { 
+				}else { 
 					
 					faultRaised = true; 
 					// In case CM rejected the request, the message text will contain CM's explanation

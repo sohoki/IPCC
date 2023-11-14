@@ -74,12 +74,6 @@ public class EgovCcmCmmnDetailCodeManageController {
 	@Autowired
 	private DefaultBeanValidator beanValidator;
 
-	/*
-	private List<?> rightList(String codeId)throws Exception{
-		List<CmmnDetailCode> codeDetail = (List<CmmnDetailCode>) cmmnDetailCodeManageService.selectCmmnDetailCodeList(codeId);
-		return codeDetail;
-	}
-    */
     @DeleteMapping("{code}.do")
 	public ModelAndView deleteCmmnDetailCode (@PathVariable String code, 
 			                                  ModelMap modelMe,
@@ -215,8 +209,7 @@ public class EgovCcmCmmnDetailCodeManageController {
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
 	   		
   	    }catch (Exception e){
-  	    	System.out.println("error:"+ e.toString()  );
-  	    	model.addObject("status", Globals.STATUS_FAIL);
+  	    	model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.insert"));		
   	    }
   	    finally{

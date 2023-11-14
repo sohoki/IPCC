@@ -94,52 +94,6 @@ public class SmsXmlTest {
     	
     }
 
-	/*
-	 * @PostMapping("/SmsTrank/realTrank.do") public ModelAndView SmsTrank(
-	 * HttpServletRequest request ) throws Exception {
-	 * 
-	 * ModelAndView model = new ModelAndView(Globals.JSON_VIEW); try { //SMSXMLTest
-	 * client = new SMSXMLTest(); SMSReq client = new SMSReq();
-	 * 
-	 * String message = "";
-	 * 
-	 * 
-	 * 
-	 * Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail("49);
-	 * 
-	 * if (models.isPresent()) {
-	 * 
-	 * 
-	 * 
-	 * boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type",
-	 * ""), models.get().getSmsFields(), searchMap.get("status").toString(),
-	 * searchMap.get("qualifier").toString()); if ( (!client.isValid()) || !loaded)
-	 * // any args invalid {
-	 * 
-	 * model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	 * model.addObject(Globals.STATUS_MESSAGE,
-	 * "Usage (smsxml.properties):  sms.root=<http(s)://smshostaddr> cm.login=<cmlogin@cmhostaddr[:port]> cm.password=<cmpassword>"
-	 * ); } else { try {
-	 * 
-	 * model = client.execRequest(models.get().getSmsModel().replace("Type", ""),
-	 * models.get().getSmsFields(), searchMap.get("objectName").toString(),
-	 * searchMap.get("status").toString(), searchMap.get("qualifier").toString()); }
-	 * catch (Exception e) {
-	 * System.out.println("SMSXMLTest failed with an unexpected exception:");
-	 * 
-	 * model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	 * model.addObject(Globals.STATUS_MESSAGE,
-	 * "SMSXMLTest failed with an unexpected exception:");
-	 * 
-	 * } } }else { model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	 * model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다."); }
-	 * 
-	 * }catch(Exception e) { model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	 * model.addObject(Globals.STATUS_MESSAGE, e.toString()); } return model;
-	 * 
-	 * 
-	 * }
-	 */ 
 	@PostMapping("/SmsTrank/notiSeq")
     public ModelAndView SmsTrank(@RequestBody Map<String, Object> searchMap 
 			 					 , HttpServletRequest request ) throws Exception {
@@ -169,8 +123,6 @@ public class SmsXmlTest {
         			try {
         				
         				model = client.execRequest(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), searchMap.get("objectName").toString(), searchMap.get("status").toString(), searchMap.get("qualifier").toString());
-        				
-        				
         				
             		} catch (Exception e) {
             			System.out.println("SMSXMLTest failed with an unexpected exception:");
@@ -246,7 +198,6 @@ public class SmsXmlTest {
         				pbxinfoR.setSr(sr);
         				model = client.execRequestMemberInsert(pbxinfoR);
         				
-        				System.out.println(model);
         				
         				//if (model.getStatus().equals("SUCCESS")) {
         					consoltService.insertConsultantrManage(pbxInfo) ;
@@ -259,8 +210,8 @@ public class SmsXmlTest {
         							                         .tenantId(pbxInfo.getCtiTenantId())
         							                         .employeegrpId(pbxInfo.getCtiEmployeegrpid())
         							                         .employeepartId(pbxInfo.getCtiEmployeepartid())
-        							                         .employeeId(pbxInfo.getCtiEmployeeid())
-        							                         .loginId(pbxInfo.getPbxLoginId() )
+        							                         .employeeId(pbxInfo.getPbxLoginId())
+        							                         .loginId(pbxInfo.getCtiLoginid() )
         							                         .employeeName(pbxInfo.getCtiName())
         							                         .employeePawd(pbxInfo.getCtiPassword())
         							                         .blendKind(pbxInfo.getCtiBlendKind())

@@ -17,6 +17,8 @@ public	interface ConsultantManageService {
 	
 	List<Map<String, Object>> selectConstantCombo() throws Exception;
 	
+	List<Map<String, Object>> selectConstantEmpCombo(String empExtension) throws Exception;
+	
 	int insertConsultantrManage(ConsultantInfoRequestDto vo) throws Exception;
 	
 	int updateConsultantrPbxStatusManage(ConsultantInfoRequestDto adminInfo) throws Exception;

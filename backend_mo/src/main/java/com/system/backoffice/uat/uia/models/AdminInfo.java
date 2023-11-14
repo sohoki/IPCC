@@ -33,8 +33,15 @@ public class AdminInfo implements Serializable {
 	private String roleId;
 	private String pbxExtension;
 	private String consultantUseyn;
+	private String lastUpdtPnttm;
 	
-    private List<UserRoleInfo> roleInfo;
+    public String getLastUpdtPnttm() {
+		return lastUpdtPnttm;
+	}
+	public void setLastUpdtPnttm(String lastUpdtPnttm) {
+		this.lastUpdtPnttm = lastUpdtPnttm;
+	}
+	private List<UserRoleInfo> roleInfo;
 	
 	
 	public List<UserRoleInfo> getRoleInfo() {

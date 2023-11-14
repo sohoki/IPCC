@@ -127,19 +127,20 @@ public class EgovCcmCmmnCodeManageController {
         	}
         	
         	
-            int pageUnit = searchMap.get("pageUnit") == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get("pageUnit"));
-    		int pageSize = searchMap.get("pageSize") == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get("pageSize"));  
+        	int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
+    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
     	   
+    		
     	    
         	/** pageing */
-        	PaginationInfo paginationInfo = new PaginationInfo();
-    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get("pageIndex").toString() ));
+    		PaginationInfo paginationInfo = new PaginationInfo();
+    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX).toString() ));
     		paginationInfo.setRecordCountPerPage(pageUnit);
     		paginationInfo.setPageSize(pageSize);
-    		
-    		searchMap.put("firstIndex", paginationInfo.getFirstRecordIndex());
-    		searchMap.put("lastRecordIndex", paginationInfo.getLastRecordIndex());
-    		searchMap.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
+
+    		searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+    		searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+    		searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
     	    
     	    List<CmmnCodeDto> codeList = cmmnCodeManageService.selectCmmnCodeListByPagination(searchMap);
     	    int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).getTotalRecordCount().toString()) :0;

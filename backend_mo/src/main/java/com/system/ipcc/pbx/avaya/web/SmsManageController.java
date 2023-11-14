@@ -30,6 +30,7 @@ import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
 import com.system.backoffice.uat.uia.service.ConsultantManageService;
 import com.system.backoffice.util.service.UtilInfoService;
 import com.system.ipcc.cti.nexus.models.NexusAgentInfo;
+import com.system.ipcc.cti.nexus.models.dto.NexusAgentInfoResponseDto;
 import com.system.ipcc.cti.nexus.models.dto.NexusAgentRequestInfoDto;
 import com.system.ipcc.cti.nexus.service.NexusEmployeeManageService;
 import com.system.ipcc.pbx.avaya.models.PbxMemberInfo;
@@ -124,6 +125,16 @@ public class SmsManageController {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
+			
+			//상담사 수정 
+			if (!jwtVerification.isVerificationAdmin(request)) {
+	    		ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+	    	}else {
+
+	    		pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
+	    	}
+			
 			SMSReq client = new SMSReq();
 			String notiSeq = "101";
     		String status = "list";
@@ -131,7 +142,6 @@ public class SmsManageController {
     		Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail(notiSeq);
     		
     		if (models.isPresent()) {
-    			
     			
     			
     			boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), status, qualifier);
@@ -175,11 +185,9 @@ public class SmsManageController {
         				}
         				
         				
-        				
-        				if (model.getStatus().equals(HttpStatus.OK)) {
+        				if (model.getStatus().equals(HttpStatus.OK) ) {
         					consoltService.insertConsultantrManage(pbxInfo) ;
         					consoltService.updateConsultantrPbxAgentManage(pbxInfo);
-        					
         					//cti 저장 
         					
         					NexusAgentRequestInfoDto cti = NexusAgentRequestInfoDto.builder().mode("Ins")
@@ -187,8 +195,8 @@ public class SmsManageController {
         							                         .tenantId(pbxInfo.getCtiTenantId())
         							                         .employeegrpId(pbxInfo.getCtiEmployeegrpid())
         							                         .employeepartId(pbxInfo.getCtiEmployeepartid())
-        							                         .employeeId(pbxInfo.getCtiEmployeeid())
-        							                         .loginId(pbxInfo.getPbxLoginId() )
+        							                         .employeeId(pbxInfo.getCtiLoginid())
+        							                         .loginId(pbxInfo.getPbxLoginId())
         							                         .employeeName(pbxInfo.getCtiName())
         							                         .employeePawd(pbxInfo.getCtiPassword())
         							                         .blendKind(pbxInfo.getCtiBlendKind())
@@ -220,15 +228,29 @@ public class SmsManageController {
         							                         .build();
         					
         					int ret = ctiService.updateNexusEmployeesInfo(cti);
-        					System.out.println("cti ret:" + ret);
         					if (ret > 0) {
-        						consoltService.updateConsultantrCtisManage(pbxInfo);
+        						NexusAgentInfo agentinfo = new NexusAgentInfo();
+        						agentinfo.setCenterId(cti.getCenterId());
+        						agentinfo.setEmployeeId(pbxInfo.getCtiEmployeeid());
+        						agentinfo.setTenantId(pbxInfo.getCtiTenantId());
+        						
+        						Optional<NexusAgentInfoResponseDto> nexus =  ctiService.selectEmployeesExistInfoDetail(agentinfo);
+        						if (nexus.isPresent()){
+        							pbxInfo.setCtiCenterName(nexus.get().getCenterName());
+        							pbxInfo.setCtiTenantName(nexus.get().getTenantName());
+        							pbxInfo.setCtiEmployeegrpName(nexus.get().getEmployeegrpName());
+        							pbxInfo.setCtiEmployeepartName(nexus.get().getEmployeepartName());
+        							consoltService.updateConsultantrCtisManage(pbxInfo);
+        						}
         					}
-        					
+        					model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+            		   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));
+        				}else {
+        					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+            		   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg"));
         				}
         				
-        				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-        		   		model.addObject(Globals.STATUS_MESSAGE, "정상적으로 처리 되었습니다.");
+        				
         				
         				
             		} catch (Exception e) {
@@ -240,7 +262,7 @@ public class SmsManageController {
         		}
     		}else {
     			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-    	   		model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
+    	   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.value.notexits"));
     		}
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -250,12 +272,23 @@ public class SmsManageController {
 		
 	}
 	/// 상담사 수정 
-	@PostMapping("/consultantUpdate.do")
+	@PostMapping("/consultant/consultantUpdate.do")
 	public ModelAndView UserUpdateConsultant(@RequestBody  ConsultantInfoRequestDto pbxInfo,
-									  HttpServletRequest request ) throws Exception {
+									  		HttpServletRequest request ) throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
-			if (pbxInfo.getMode().equals("CTI_UP")) {
+			
+			//상담사 수정 
+			if (!jwtVerification.isVerificationAdmin(request)) {
+	    		ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+	    	}else {
+
+	    		pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
+	    	}
+			
+			
+			if (pbxInfo.getMode().equals("CTI")) {
 				//수정 구문 정리 하기 
 				NexusAgentRequestInfoDto cti = NexusAgentRequestInfoDto.builder().mode("Edt")
 					                        .centerId(pbxInfo.getCtiCenterId())
@@ -295,15 +328,95 @@ public class SmsManageController {
 					                        .build();
 				
 				int ret = ctiService.updateNexusEmployeesInfo(cti);
-				System.out.println("cti ret:" + ret);
+				//센터 값 넣기 
+				
 				if (ret > 0) {
-					consoltService.updateConsultantrCtisManage(pbxInfo);
+					NexusAgentInfo agentinfo = new NexusAgentInfo();
+					agentinfo.setCenterId(cti.getCenterId());
+					agentinfo.setEmployeeId(pbxInfo.getCtiEmployeeid());
+					agentinfo.setTenantId(pbxInfo.getCtiTenantId());
+					
+					Optional<NexusAgentInfoResponseDto> nexus =  ctiService.selectEmployeesExistInfoDetail(agentinfo);
+					if (nexus.isPresent()){
+						pbxInfo.setCtiCenterName(nexus.get().getCenterName());
+						pbxInfo.setCtiTenantName(nexus.get().getTenantName());
+						pbxInfo.setCtiEmployeegrpName(nexus.get().getEmployeegrpName());
+						pbxInfo.setCtiEmployeepartName(nexus.get().getEmployeepartName());
+						consoltService.updateConsultantrCtisManage(pbxInfo);
+					}
+					model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));
 				}else {
-					throw new Exception("해당 갑이 없습니다.");
+					throw new Exception( egovMessageSource.getMessage("fail.value.notexits"));
+					
 				}
 
-				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-		   		model.addObject(Globals.STATUS_MESSAGE, "정상적으로 처리 되었습니다.");
+				
+			}else if (pbxInfo.getMode().equals("PBX")) {
+				//내선번호 변경 
+				
+				PbxMemberInfo pbxinfoR = PbxMemberInfo.builder().extension(pbxInfo.getPbxExtension())
+					  .type(pbxInfo.getPbxType())
+					  .cor(pbxInfo.getPbxCor())
+					  .cos(pbxInfo.getPbxCos())
+					  .name(pbxInfo.getPbxName())
+					  .mode("PBX")
+					  .SecurityCode(pbxInfo.getPbxSecurityCode())
+					  .build();
+    			SMSReq client = new SMSReq();
+				String addType = "Extension="+pbxinfoR.getExtension()+"|Type="+pbxinfoR.getType() +"|COR="+pbxinfoR.getCor()+"|COS="+pbxinfoR.getCos()+"|Name="+pbxinfoR.getName()+"|SecurityCode="+pbxinfoR.getSecurityCode()+"";
+				
+				boolean loaded = client.loadProps("Station",addType, "change", pbxInfo.getPbxExtension());
+    			if ( (!client.isValid()) || !loaded) // any args invalid
+        		{
+        			
+        			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+    		   		model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):");
+        		} else {
+	  				model = client.execRequestMemberUpdate(pbxinfoR);
+	  				LOGGER.debug("model.getStatus()");
+	  				if (model.getStatus() == HttpStatus.OK) {
+    					consoltService.updateConsultantrPbxStatusManage(pbxInfo);
+    					
+	  				}
+	  			}
+			}else {
+				PbxMemberInfo pbxinfoR = PbxMemberInfo.builder()
+						  .loginId(pbxInfo.getPbxLoginId())
+						  .mode("AGENT")
+						  .build();
+				List<pbxType> sn = new ArrayList<pbxType>();
+				List<pbxType> sr = new ArrayList<pbxType>();
+				
+				
+				for(ConsultantAgentInfo agent : pbxInfo.getAgentInfo()) {
+					pbxType pbxsn = new pbxType();
+					pbxsn.setValue(agent.getPbxSnType());
+					pbxsn.setIndex(Integer.parseInt( agent.getPbxSnIndex()));
+					sn.add(pbxsn);
+					
+					pbxType pbxsr = new pbxType();
+					pbxsr.setValue(agent.getPbxSrType());
+					pbxsr.setIndex(Integer.parseInt( agent.getPbxSrIndex()));
+					sr.add(pbxsr);
+				}
+				pbxinfoR.setSn(sn);
+				pbxinfoR.setSr(sr);
+				
+				SMSReq client = new SMSReq();
+				
+				boolean loaded = client.loadProps("Agent","Login_ID|Name|Extension", "display", pbxinfoR.getLoginId());
+    			if ( (!client.isValid()) || !loaded) // any args invalid
+        		{
+        			
+        			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+    		   		model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):");
+        		} else {
+	  				model = client.execRequestMemberUpdate(pbxinfoR);
+	  				if (model.getStatus() == HttpStatus.OK) {
+    					consoltService.updateConsultantrPbxAgentManage(pbxInfo);
+	  				}
+	  			}
 			}
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -326,13 +439,13 @@ public class SmsManageController {
 				
 				if (!info.isPresent()) {
 					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			   		model.addObject(Globals.STATUS_MESSAGE, "사용자 내역이 없습니다.");
+			   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.user.notexits"));
 			   	}
 				//사용자 삭제 
 				SMSReq client = new SMSReq();
 				String notiSeq = "101";
 	    		String status = "list";
-	    		String qualifier = "count 10";
+	    		String qualifier = "count 1";
 	    		Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail(notiSeq);
 	    		if (models.isPresent()) {
 	    			boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), status, qualifier);
@@ -343,13 +456,14 @@ public class SmsManageController {
 	    		   		model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):");
 	        		} else {
 	        			try {
-	        				System.out.println("============ 사용자 삭제 시작1:"  + info.get().getPbxExtension());
-	        				//사용자 삭제
-	        				System.out.println("============ 사용자 삭제 시작2:" + info.get().getPbxLoginId());
 	        				
-	        				//if (model.getStatus() == HttpStatus.OK) {
+	        				PbxMemberInfo pbxInfo = new PbxMemberInfo();
+	        				pbxInfo.setExtension(info.get().getPbxExtension());
+	        				pbxInfo.setLoginId(info.get().getPbxLoginId());
+	        				//사용자 삭제
+	        				model = client.execRequestMemberDelete(pbxInfo);
+	        				if (model.getStatus() == HttpStatus.OK) {
 	        					
-	        					System.out.println(info.get().getCtiCenterId() + ":" + info.get().getCtiTenantId());
 	        					//cti 삭제 
 	        					NexusAgentInfo delInfo = NexusAgentInfo.builder().centerId(info.get().getCtiCenterId())
 	        																	 .tenantId(info.get().getCtiTenantId())
@@ -363,17 +477,16 @@ public class SmsManageController {
 	        					if (ret> 0) {
 	        						consoltService.deleteConsultantrManage(info.get().getPbxExtension());
 	        						model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-	        						model.addObject(Globals.STATUS_MESSAGE, "정상적으로 삭제 되었습니다.");
+	        						model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.delete"));
 	        					}else {
 	        						model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	                		   		model.addObject(Globals.STATUS_MESSAGE, "CTI 사용자 삭제 도중 문제가 발생 하였습니다.");
+	                		   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("cti.delete.fail") );
 	        					}
-	        				/*
+	        				
 	        				}else {
 	        					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	            		   		model.addObject(Globals.STATUS_MESSAGE, "PBX 사용자 삭제 도중 문제가 발생 하였습니다.");
+	            		   		model.addObject(Globals.STATUS_MESSAGE,  egovMessageSource.getMessage("pbx.delete.fail"));
 	        				}
-	        				*/
 	            		} catch (Exception e) {
 	            			
 	            			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -383,7 +496,7 @@ public class SmsManageController {
 	        		}
 	    		}else {
 	    			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	    	   		model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
+	    	   		model.addObject(Globals.STATUS_MESSAGE,egovMessageSource.getMessage("fail.value.notexits"));
 	    		}
 	    		
 		}catch (Exception e1) {
@@ -403,7 +516,7 @@ public class SmsManageController {
 			
 			if (!info.isPresent()) {
 				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		   		model.addObject(Globals.STATUS_MESSAGE, "사용자 내역이 없습니다.");
+		   		model.addObject(Globals.STATUS_MESSAGE,  egovMessageSource.getMessage("fail.value.notexits") );
 		   	}
 			//사용자 삭제 
 			SMSReq client = new SMSReq();
@@ -441,7 +554,7 @@ public class SmsManageController {
         		}
     		}else {
     			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-    	   		model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
+    	   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.value.notexits"));
     		}
     		
 			
@@ -464,12 +577,11 @@ public class SmsManageController {
     		
     		String notiSeq = "115";
     		String status = "list";
-    		String qualifier = "count 1000";
+    		String qualifier = "count 10000";
     		Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail(notiSeq);
     		
     		if (models.isPresent()) {
     			//나중에 학인 하기 
-    			System.out.println("===========  loadProps 값 하기");
     			boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), status, qualifier);
         		if ( (!client.isValid()) || !loaded) // any args invalid
         		{
@@ -478,12 +590,9 @@ public class SmsManageController {
     		   		model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):  sms.root=<http(s)://smshostaddr> cm.login=<cmlogin@cmhostaddr[:port]> cm.password=<cmpassword>");
         		} else {
         			try {
-        				System.out.println("===========  loadProps trank 조회 ");
         				model = client.execRequestTrank(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), "", status, qualifier);
         				
             		} catch (Exception e) {
-            			System.out.println("SMSXMLTest failed with an unexpected exception:");
-            			
             			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
         		   		model.addObject(Globals.STATUS_MESSAGE, "SMSXMLTest failed with an unexpected exception:");
         		   		
@@ -491,7 +600,7 @@ public class SmsManageController {
         		}
     		}else {
     			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-    	   		model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
+    	   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.value.notexits"));
     		}
     		
     	}catch(Exception e) {

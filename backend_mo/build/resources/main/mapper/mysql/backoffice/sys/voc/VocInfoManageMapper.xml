@@ -10,16 +10,17 @@
 			FROM 	
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
-					   A.VOC_SEQ, A.VOC_SUBJECT, A.VOC_GUBUN, A.VOC_LOCATION, A.VOC_STATUS,
-					   A.VOC_REQ_REGDATE, A.VOC_REQ_USERID, A.VOC_RES_REGDATE, A.VOC_RES_USERID, A.VOC_RESPONSE, A.VOC_REQ
+					   A.VOC_SEQ, A.VOC_SUBJECT, A.VOC_GUBUN, A.VOC_LOCATION, A.VOC_STATUS, A.VOC_PROCESS,
+					   A.VOC_REQ_REGDATE, A.VOC_REQ_USERID, A.VOC_RES_REGDATE, A.VOC_RES_USERID, A.VOC_RESPONSE, A.VOC_REQ,
+					   fn_DetailCodeNm( A.VOC_GUBUN) VOC_GUBUN_TXT, fn_DetailCodeNm( A.VOC_PROCESS) VOC_PROCESS_TXT
 				FROM TB_VOCINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 					AND 
 					( 
-						A.SERVER_NAME LIKE '%'|| #{params.searchKeyword} || '%' 
+						A.VOC_SUBJECT LIKE '%'|| #{params.searchKeyword} || '%' 
 						OR
-						A.SERVER_DC LIKE '%' ||  #{params.searchKeyword} || '%'
+						A.VOC_LOCATION LIKE '%' ||  #{params.searchKeyword} || '%'
 					) 
 				</if>
 			) TB 
@@ -37,18 +38,18 @@
    	<insert id="insertVocInfo">
 		INSERT INTO TB_VOCINFO	
 		(
-		    VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_STATUS, VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_REQ
+		    VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_PROCESS, VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_REQ
 		)
 		VALUES 
 		(
-			#{vocSubject}, #{vocGubun}, #{vocLocation,jdbcType=VARCHAR}, 'VOC_STATUS_1',	
+			#{vocSubject}, #{vocGubun}, #{vocLocation,jdbcType=VARCHAR}, 'VOC_PROCESS_1',	
 			NOW(), #{userId}, #{vocReq,jdbcType=VARCHAR}
 		)
    	</insert>
 	<update id="updateServerResponse">
 		UPDATE TB_VOCINFO SET VOC_RES_REGDATE = NOW(),
 					 		  VOC_RES_USERID = #{userId},
-					 		  VOC_STATUS = #{vocStatus,jdbcType=VARCHAR},
+					 		  VOC_PROCESS = #{vocProcess,jdbcType=VARCHAR},
 					 		  VOC_RESPONSE = #{vocResponse}  	
 		WHERE VOC_REQ = #{vocSeq}
 	</update>

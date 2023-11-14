@@ -20,7 +20,6 @@ import javax.xml.ws.handler.Handler;
 
 import com.avaya.smsxml.ArrayType;
 import com.avaya.smsxml.ModelChoices;
-import com.avaya.smsxml.TrunkGroupType;
 import com.avaya.smsxml.Result;
 import com.avaya.smsxml.ReturnType;
 import com.avaya.smsxml.SubmitRequestType;

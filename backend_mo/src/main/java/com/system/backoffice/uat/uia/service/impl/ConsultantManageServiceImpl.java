@@ -12,6 +12,10 @@ import com.system.backoffice.uat.uia.mapper.ConsultantManageMapper;
 import com.system.backoffice.uat.uia.models.ConsultantInfo;
 import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
 import com.system.backoffice.uat.uia.service.ConsultantManageService;
+import com.system.backoffice.util.service.UtilInfoService;
+import com.system.ipcc.cti.nexus.mapper.NexusEmployeeManageMapper;
+import com.system.ipcc.cti.nexus.models.NexusAgentInfo;
+import com.system.ipcc.cti.nexus.models.dto.NexusAgentInfoResponseDto;
 
 
 
@@ -21,6 +25,9 @@ public class ConsultantManageServiceImpl extends EgovAbstractServiceImpl impleme
 	
 	@Autowired
 	private ConsultantManageMapper conMapper;
+	
+	@Autowired
+	private NexusEmployeeManageMapper nexMapper;
 
 	@Override
 	public int deleteConsultantrManage(String extension) throws Exception {
@@ -80,5 +87,11 @@ public class ConsultantManageServiceImpl extends EgovAbstractServiceImpl impleme
 	public List<Map<String, Object>> selectConstantCombo() throws Exception {
 		// TODO Auto-generated method stub
 		return conMapper.selectConstantCombo();
+	}
+
+	@Override
+	public List<Map<String, Object>> selectConstantEmpCombo(String empExtension) throws Exception {
+		// TODO Auto-generated method stub
+		return conMapper.selectConstantEmpCombo(empExtension);
 	}
 }

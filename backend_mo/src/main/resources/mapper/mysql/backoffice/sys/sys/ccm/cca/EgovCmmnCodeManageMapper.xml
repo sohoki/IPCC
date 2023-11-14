@@ -12,7 +12,7 @@
 			FROM COMTCCMMNCODE A				     
 			WHERE A.CL_CODE = #{params.clCode}
 			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
-				AND (A.CODE_ID LIKE '%' #{params.searchKeyword} '%' OR A.CODE_ID_NM LIKE '%' #{params.searchKeyword} '%')
+				AND (A.CODE_ID LIKE CONCAT('%', #{params.searchKeyword},'%') OR A.CODE_ID_NM LIKE CONCAT('%', #{params.searchKeyword},'%'))
 			</if>					
 		) R
 		WHERE RNUM BETWEEN #{params.firstIndex} + 1 AND #{params.firstIndex} + #{params.recordCountPerPage}    

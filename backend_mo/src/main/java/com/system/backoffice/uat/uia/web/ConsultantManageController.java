@@ -15,12 +15,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.system.backoffice.uat.uia.models.PartInfoVO;
 import com.system.backoffice.uat.uia.service.ConsultantManageService;
 import com.system.backoffice.uat.uia.service.PartInfoManageService;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
+import com.system.backoffice.util.service.UtilInfoService;
 import com.system.ipcc.cti.nexus.service.NexusEmployeeManageService;
 
 import egovframework.com.cmm.EgovMessageSource;
@@ -76,19 +78,21 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 	    	}
 
 			
-	    	searchVO.put("pageUnit", propertiesService.getInt("pageUnit"));
-	    	searchVO.put("pageSize", propertiesService.getInt("pageSize"));
+	    	searchVO.put(Globals.PAGE_UNIT, propertiesService.getInt(Globals.PAGE_UNIT));
+	    	searchVO.put(Globals.PAGE_SIZE, propertiesService.getInt(Globals.PAGE_SIZE));
 	       
 	      
 	   	   PaginationInfo paginationInfo = new PaginationInfo();
-		   paginationInfo.setCurrentPageNo(Integer.parseInt(searchVO.get("pageIndex").toString()));
+		   paginationInfo.setCurrentPageNo(Integer.parseInt(searchVO.get(Globals.PAGE_INDEX).toString()));
 		   
-		   paginationInfo.setRecordCountPerPage(propertiesService.getInt("pageUnit"));
-		   paginationInfo.setPageSize(propertiesService.getInt("pageUnit"));
+		   paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_UNIT));
+		   paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_UNIT));
 		   
-		   searchVO.put("firstIndex", paginationInfo.getFirstRecordIndex());
-		   searchVO.put("lastIndex", paginationInfo.getLastRecordIndex());
-		   searchVO.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
+		   
+		   searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+		   searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+		   searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+		   
 		   
 		   model.addObject(Globals.STATUS_REGINFO, searchVO);
 		   
@@ -132,6 +136,27 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 			}
 			
 			model.addObject(Globals.JSON_RETURN_RESULT, consulService.selectConstantCombo());
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}catch(Exception e){
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, e.toString());
+		}
+		return model;
+	}
+	@GetMapping("conCombo.do")
+	public ModelAndView selectConsultantAdminCombo (@RequestParam("extenNumber") String extenNumber,
+													HttpServletRequest request)	throws Exception {
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			
+			if (!jwtVerification.isVerificationAdmin(request)) {
+			ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확
+			}
+			
+			
+			model.addObject(Globals.JSON_RETURN_RESULT, consulService.selectConstantEmpCombo(UtilInfoService.NVL("extenNumber", "")));
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);

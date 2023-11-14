@@ -49,6 +49,10 @@
 		<typeAlias alias="UserToken"  type="com.system.backoffice.uat.uia.models.UserToken" />
 		<typeAlias alias="ConsultantInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto" />
 		<typeAlias alias="UserRoleInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.UserRoleInfoRequestDto" />
+		<typeAlias alias="SystemInfoResDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoResDto" />
+		<typeAlias alias="SystemInfoRequestDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto" />
+		<typeAlias alias="SystemInfo"  type="com.system.backoffice.bas.system.models.SystemInfo" />
+		<typeAlias alias="SysLog"  type="com.system.backoffice.sym.log.models.SysLog" />
 		
 		
 		<package name="com.system.backoffice.sym.svr.models"/>

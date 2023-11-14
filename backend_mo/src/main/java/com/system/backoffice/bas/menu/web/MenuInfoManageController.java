@@ -246,7 +246,7 @@ public class MenuInfoManageController {
 	 */
 	@NoLogging
 	@GetMapping("menuCheck/{menuNo}.do")
-	public ModelAndView menuNoCheck(@RequestParam("menuNo") String menuNo) throws Exception {
+	public ModelAndView menuNoCheck(@PathVariable String menuNo) throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		
 		int ret = uniMangeServiec.selectIdDoubleCheckString("MENU_NO", "COMTNMENUINFO", "MENU_NO = [" + menuNo + "[");

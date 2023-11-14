@@ -123,8 +123,8 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		return adminMapper.selectAdminPasswordCheck(params);
 	}
 	@Override
-	public List<Map<String, Object>> selectAdminUserCombo() throws Exception {
+	public List<Map<String, Object>> selectAdminUserCombo(Map<String, Object> params) throws Exception {
 		// TODO Auto-generated method stub
-		return adminMapper.selectAdminUserCombo();
+		return adminMapper.selectAdminUserCombo(params);
 	}
 }

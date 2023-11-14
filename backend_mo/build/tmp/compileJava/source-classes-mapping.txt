@@ -36,6 +36,8 @@ egovframework/com/cmm/web/EgovMultipartResolver.java
  egovframework.com.cmm.web.EgovMultipartResolver
 com/system/backoffice/uat/uia/mapper/UserTokenMapper.java
  com.system.backoffice.uat.uia.mapper.UserTokenMapper
+com/system/backoffice/sym/voc/service/VocProcessInfoManageService.java
+ com.system.backoffice.sym.voc.service.VocProcessInfoManageService
 egovframework/com/cmm/service/impl/EgovFileMngServiceImpl.java
  egovframework.com.cmm.service.impl.EgovFileMngServiceImpl
 com/system/ipcc/pbx/avaya/smsxml/SystemManagementPort.java
@@ -44,9 +46,6 @@ com/system/ipcc/pbx/avaya/smsxml/TranslationType.java
  com.system.ipcc.pbx.avaya.smsxml.TranslationType
 com/system/backoffice/uat/uia/models/AdminInfoVO.java
  com.system.backoffice.uat.uia.models.AdminInfoVO
-com/system/backoffice/sys/svr/models/dto/ServerStatusDto.java
- com.system.backoffice.sys.svr.models.dto.ServerStatusDto
- com.system.backoffice.sys.svr.models.dto.ServerStatusDto$ServerStatusDtoBuilder
 com/system/backoffice/bas/uniCode/mapper/UniSystemInfoManageMapper.java
  com.system.backoffice.bas.uniCode.mapper.UniSystemInfoManageMapper
 com/system/ipcc/cti/util/InterfaceLowerKeyMap.java
@@ -72,6 +71,8 @@ egovframework/com/config/EgovConfigAppValidator.java
  egovframework.com.config.EgovConfigAppValidator
 com/system/ipcc/cti/nexus/service/NexusSkillManageService.java
  com.system.ipcc.cti.nexus.service.NexusSkillManageService
+com/system/backoffice/bas/code/service/ClassificationInfoManageService.java
+ com.system.backoffice.bas.code.service.ClassificationInfoManageService
 egovframework/com/cmm/ComDefaultCodeVO.java
  egovframework.com.cmm.ComDefaultCodeVO
 com/system/backoffice/uat/role/service/RoleTService.java
@@ -86,10 +87,14 @@ com/system/ipcc/pbx/avaya/smsxml/IPHotelingType.java
  com.system.ipcc.pbx.avaya.smsxml.IPHotelingType
 egovframework/let/cop/bbs/service/impl/BBSManageDAO.java
  egovframework.let.cop.bbs.service.impl.BBSManageDAO
+com/system/backoffice/sym/svr/models/ServerInfo.java
+ com.system.backoffice.sym.svr.models.ServerInfo
+ com.system.backoffice.sym.svr.models.ServerInfo$ServerInfoBuilder
 com/system/ipcc/service/SessionIDLogicalHandler.java
  com.system.ipcc.service.SessionIDLogicalHandler
-com/system/backoffice/sys/svr/service/ServerInfoManageService.java
- com.system.backoffice.sys.svr.service.ServerInfoManageService
+com/system/backoffice/bas/system/models/dto/SystemInfoRequestDto.java
+ com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto
+ com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto$SystemInfoRequestDtoBuilder
 com/system/backoffice/uat/uia/service/PartInfoManageService.java
  com.system.backoffice.uat.uia.service.PartInfoManageService
 com/system/ipcc/cti/nexus/mapper/NexusSkillManageMapper.java
@@ -123,6 +128,9 @@ egovframework/let/cop/bbs/service/impl/BBSAttributeManageDAO.java
  egovframework.let.cop.bbs.service.impl.BBSAttributeManageDAO
 com/system/backoffice/bas/code/service/EgovCcmCmmnDetailCodeManageService.java
  com.system.backoffice.bas.code.service.EgovCcmCmmnDetailCodeManageService
+com/system/backoffice/sym/voc/models/dto/VocProcessInfoResDto.java
+ com.system.backoffice.sym.voc.models.dto.VocProcessInfoResDto
+ com.system.backoffice.sym.voc.models.dto.VocProcessInfoResDto$VocProcessInfoResDtoBuilder
 com/system/backoffice/uat/uia/service/impl/UniUtilManageServiceImpl.java
  com.system.backoffice.uat.uia.service.impl.UniUtilManageServiceImpl
 egovframework/let/sym/cal/service/Restde.java
@@ -139,14 +147,15 @@ com/system/ipcc/cti/nexus/models/NexusDnSubInfo.java
 com/system/backoffice/bas/uniCode/models/dto/UniSystemInfoRequestDto.java
  com.system.backoffice.bas.uniCode.models.dto.UniSystemInfoRequestDto
  com.system.backoffice.bas.uniCode.models.dto.UniSystemInfoRequestDto$UniSystemInfoRequestDtoBuilder
+com/system/backoffice/bas/system/models/SystemInfo.java
+ com.system.backoffice.bas.system.models.SystemInfo
+ com.system.backoffice.bas.system.models.SystemInfo$SystemInfoBuilder
 com/system/ipcc/pbx/avaya/smsxml/ListHistoryType.java
  com.system.ipcc.pbx.avaya.smsxml.ListHistoryType
 egovframework/com/cmm/service/EgovFileMngUtil.java
  egovframework.com.cmm.service.EgovFileMngUtil
 com/system/backoffice/uat/uia/mapper/ConsultantManageMapper.java
  com.system.backoffice.uat.uia.mapper.ConsultantManageMapper
-com/system/backoffice/sys/svr/web/ServerInfoManageController.java
- com.system.backoffice.sys.svr.web.ServerInfoManageController
 com/system/ipcc/ivr/rapeech/service/IvrDisplayOnlineManageService.java
  com.system.ipcc.ivr.rapeech.service.IvrDisplayOnlineManageService
 egovframework/com/cmm/service/impl/EgovTestUserDetailsServiceImpl.java
@@ -165,9 +174,6 @@ com/system/ipcc/cti/nexus/mapper/NexusEmployeeManageMapper.java
  com.system.ipcc.cti.nexus.mapper.NexusEmployeeManageMapper
 com/system/backoffice/bas/menu/mapper/MenuInfoManageMapper.java
  com.system.backoffice.bas.menu.mapper.MenuInfoManageMapper
-com/system/backoffice/sys/svr/models/dto/ServerInfoRequestDto.java
- com.system.backoffice.sys.svr.models.dto.ServerInfoRequestDto
- com.system.backoffice.sys.svr.models.dto.ServerInfoRequestDto$ServerInfoRequestDtoBuilder
 com/system/ipcc/pbx/avaya/smsxml/SpecialApplicationsType.java
  com.system.ipcc.pbx.avaya.smsxml.SpecialApplicationsType
 com/system/ipcc/pbx/avaya/service/smsxml/AEServices.java
@@ -210,6 +216,9 @@ com/system/ipcc/pbx/avaya/smsxml/CTILinkType.java
  com.system.ipcc.pbx.avaya.smsxml.CTILinkType
 com/system/ipcc/pbx/avaya/smsxml/package-info.java
  com.system.ipcc.pbx.avaya.smsxml.package-info
+com/system/backoffice/bas/system/models/dto/SystemInfoResDto.java
+ com.system.backoffice.bas.system.models.dto.SystemInfoResDto
+ com.system.backoffice.bas.system.models.dto.SystemInfoResDto$SystemInfoResDtoBuilder
 com/system/ipcc/pbx/avaya/service/smsxml/SMSReq.java
  com.system.ipcc.pbx.avaya.service.smsxml.SMSReq
 com/system/backoffice/bas/code/models/CmmnClCode.java
@@ -220,6 +229,8 @@ com/system/ipcc/pbx/avaya/smsxml/RHNPAType.java
  com.system.ipcc.pbx.avaya.smsxml.RHNPAType
 com/system/backoffice/sym/log/service/EgovSysLogService.java
  com.system.backoffice.sym.log.service.EgovSysLogService
+egovframework/let/utl/sim/service/EgovClntInfo.java
+ egovframework.let.utl.sim.service.EgovClntInfo
 com/system/backoffice/bas/program/service/ProgrameChangeManageService.java
  com.system.backoffice.bas.program.service.ProgrameChangeManageService
 com/system/ipcc/pbx/avaya/smsxml/ExtensionTypeType.java
@@ -230,6 +241,9 @@ com/system/ipcc/pbx/avaya/service/smsxml/SessionIDLogicalHandler.java
  com.system.ipcc.pbx.avaya.service.smsxml.SessionIDLogicalHandler
 com/system/backoffice/sys/pbx/avaya/web/SmsModelInfoManageController.java
  com.system.backoffice.sys.pbx.avaya.web.SmsModelInfoManageController
+com/system/backoffice/sym/voc/models/dto/VocProcessInfoReqDto.java
+ com.system.backoffice.sym.voc.models.dto.VocProcessInfoReqDto
+ com.system.backoffice.sym.voc.models.dto.VocProcessInfoReqDto$VocProcessInfoReqDtoBuilder
 com/system/ipcc/cti/nexus/models/NexusTenantInfo.java
  com.system.ipcc.cti.nexus.models.NexusTenantInfo
  com.system.ipcc.cti.nexus.models.NexusTenantInfo$NexusTenantInfoBuilder
@@ -260,6 +274,8 @@ com/system/ipcc/pbx/avaya/smsxml/TenantType.java
 com/system/ipcc/ivr/rapeech/models/ChannelOnline.java
  com.system.ipcc.ivr.rapeech.models.ChannelOnline
  com.system.ipcc.ivr.rapeech.models.ChannelOnline$ChannelOnlineBuilder
+com/system/backoffice/sym/log/annotation/SysLogAspect.java
+ com.system.backoffice.sym.log.annotation.SysLogAspect
 egovframework/com/cmm/util/EgovAdminDetailsHelper.java
  egovframework.com.cmm.util.EgovAdminDetailsHelper
 egovframework/let/cop/smt/sim/service/IndvdlSchdulManageVO.java
@@ -267,6 +283,9 @@ egovframework/let/cop/smt/sim/service/IndvdlSchdulManageVO.java
 com/system/ipcc/cti/nexus/models/dto/NexusAgentComboInfo.java
  com.system.ipcc.cti.nexus.models.dto.NexusAgentComboInfo
  com.system.ipcc.cti.nexus.models.dto.NexusAgentComboInfo$NexusAgentComboInfoBuilder
+com/system/backoffice/sym/svr/models/dto/ServerStatusDto.java
+ com.system.backoffice.sym.svr.models.dto.ServerStatusDto
+ com.system.backoffice.sym.svr.models.dto.ServerStatusDto$ServerStatusDtoBuilder
 egovframework/let/utl/fcc/service/EgovFormBasedFileUtil.java
  egovframework.let.utl.fcc.service.EgovFormBasedFileUtil
 egovframework/let/cop/bbs/service/EgovBBSAttributeManageService.java
@@ -290,6 +309,11 @@ com/system/ipcc/pbx/avaya/smsxml/IPServerInterfaceType.java
  com.system.ipcc.pbx.avaya.smsxml.IPServerInterfaceType
 com/system/ipcc/pbx/avaya/smsxml/ListNodeNamesType.java
  com.system.ipcc.pbx.avaya.smsxml.ListNodeNamesType
+com/system/backoffice/sym/voc/models/VocProcessFileInfo.java
+ com.system.backoffice.sym.voc.models.VocProcessFileInfo
+ com.system.backoffice.sym.voc.models.VocProcessFileInfo$VocProcessFileInfoBuilder
+com/system/backoffice/sym/svr/web/ServerInfoManageController.java
+ com.system.backoffice.sym.svr.web.ServerInfoManageController
 com/system/ipcc/pbx/avaya/smsxml/IPStationsType.java
  com.system.ipcc.pbx.avaya.smsxml.IPStationsType
 egovframework/com/cmm/ResponseCode.java
@@ -302,6 +326,8 @@ egovframework/com/cmm/interceptor/AopExceptionTransfer.java
  egovframework.com.cmm.interceptor.AopExceptionTransfer
 com/system/ipcc/ivr/util/InterfaceLowerKeyMap.java
  com.system.ipcc.ivr.util.InterfaceLowerKeyMap
+com/system/backoffice/sym/svr/service/ServerInfoManageService.java
+ com.system.backoffice.sym.svr.service.ServerInfoManageService
 com/system/backoffice/uat/uia/models/AdminInfo.java
  com.system.backoffice.uat.uia.models.AdminInfo
 com/system/ipcc/pbx/avaya/smsxml/CoverageTimeOfDayType.java
@@ -340,6 +366,9 @@ egovframework/let/utl/fcc/service/EgovFormBasedFileVo.java
  egovframework.let.utl.fcc.service.EgovFormBasedFileVo
 egovframework/com/config/EgovConfigAppMapper.java
  egovframework.com.config.EgovConfigAppMapper
+com/system/backoffice/util/service/ParamToJson.java
+ com.system.backoffice.util.service.ParamToJson
+ com.system.backoffice.util.service.ParamToJson$1
 com/system/backoffice/sym/voc/models/dto/VocInfoRequestDto.java
  com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto
  com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto$VocInfoRequestDtoBuilder
@@ -351,6 +380,9 @@ com/system/ipcc/pbx/avaya/smsxml/HuntGroupType.java
  com.system.ipcc.pbx.avaya.smsxml.HuntGroupType
 com/system/ipcc/pbx/avaya/smsxml/SystemType.java
  com.system.ipcc.pbx.avaya.smsxml.SystemType
+com/system/backoffice/sym/voc/models/VocProcessInfo.java
+ com.system.backoffice.sym.voc.models.VocProcessInfo
+ com.system.backoffice.sym.voc.models.VocProcessInfo$VocProcessInfoBuilder
 com/system/ipcc/pbx/avaya/smsxml/IPServicesType.java
  com.system.ipcc.pbx.avaya.smsxml.IPServicesType
 egovframework/com/cmm/util/EgovBasicLogger.java
@@ -393,6 +425,8 @@ com/system/backoffice/bas/code/web/EgovCcmCmmnDetailCodeManageController.java
  com.system.backoffice.bas.code.web.EgovCcmCmmnDetailCodeManageController
 com/system/ipcc/web/SmsXmlTest.java
  com.system.ipcc.web.SmsXmlTest
+com/system/backoffice/bas/system/web/SystemInfoManageController.java
+ com.system.backoffice.bas.system.web.SystemInfoManageController
 egovframework/com/cmm/service/impl/EgovCmmUseServiceImpl.java
  egovframework.com.cmm.service.impl.EgovCmmUseServiceImpl
 com/system/ipcc/pbx/avaya/smsxml/BCMSAgentReportType.java
@@ -423,6 +457,8 @@ com/system/backoffice/sys/dis/service/DisplayManageService.java
  com.system.backoffice.sys.dis.service.DisplayManageService
 egovframework/com/cmm/service/impl/FileManageDAO.java
  egovframework.com.cmm.service.impl.FileManageDAO
+com/system/backoffice/bas/code/models/ClassificationInfo.java
+ com.system.backoffice.bas.code.models.ClassificationInfo
 com/system/ipcc/pbx/avaya/smsxml/IPNetworkMapType.java
  com.system.ipcc.pbx.avaya.smsxml.IPNetworkMapType
 com/system/backoffice/bas/program/models/ProgrameChangeInfo.java
@@ -499,6 +535,8 @@ com/system/backoffice/sym/log/mapper/InterfaceInfoManageMapper.java
  com.system.backoffice.sym.log.mapper.InterfaceInfoManageMapper
 egovframework/com/cmm/ImagePaginationRenderer.java
  egovframework.com.cmm.ImagePaginationRenderer
+com/system/backoffice/bas/code/mapper/ClassificationInfoManageMapper.java
+ com.system.backoffice.bas.code.mapper.ClassificationInfoManageMapper
 com/system/backoffice/uat/uia/service/impl/PartInfoManageServiceImpl.java
  com.system.backoffice.uat.uia.service.impl.PartInfoManageServiceImpl
 com/system/backoffice/bas/code/models/dto/CmmnCodeDto.java
@@ -538,6 +576,8 @@ egovframework/com/cmm/exception/BusinessException.java
  egovframework.com.cmm.exception.BusinessException
 egovframework/com/cmm/filter/SimpleCORSFilter.java
  egovframework.com.cmm.filter.SimpleCORSFilter
+com/system/backoffice/sym/voc/mapper/VocProcessFileInfoManageMapper.java
+ com.system.backoffice.sym.voc.mapper.VocProcessFileInfoManageMapper
 egovframework/com/config/ConfigAspect.java
  egovframework.com.config.ConfigAspect
 com/system/ipcc/pbx/avaya/smsxml/ArrayType.java
@@ -595,6 +635,8 @@ egovframework/com/config/EgovConfigAppDatasourceCti.java
  egovframework.com.config.EgovConfigAppDatasourceCti
 egovframework/let/cop/com/service/UserInfVO.java
  egovframework.let.cop.com.service.UserInfVO
+com/system/backoffice/bas/system/service/SystemInfoManageService.java
+ com.system.backoffice.bas.system.service.SystemInfoManageService
 com/system/ipcc/pbx/avaya/models/TrankStatus.java
  com.system.ipcc.pbx.avaya.models.TrankStatus
  com.system.ipcc.pbx.avaya.models.TrankStatus$TrankStatusBuilder
@@ -637,6 +679,9 @@ com/system/ipcc/pbx/avaya/smsxml/BCMSTrunkReportType.java
  com.system.ipcc.pbx.avaya.smsxml.BCMSTrunkReportType
 com/system/ipcc/pbx/avaya/smsxml/ListIPNetworkRegionMonitorType.java
  com.system.ipcc.pbx.avaya.smsxml.ListIPNetworkRegionMonitorType
+com/system/backoffice/bas/code/models/dto/ClassificationInfoReqDto.java
+ com.system.backoffice.bas.code.models.dto.ClassificationInfoReqDto
+ com.system.backoffice.bas.code.models.dto.ClassificationInfoReqDto$ClassificationInfoReqDtoBuilder
 com/system/backoffice/bas/menu/web/MenuInfoManageController.java
  com.system.backoffice.bas.menu.web.MenuInfoManageController
 egovframework/let/cop/bbs/service/impl/EgovBBSLoneMasterServiceImpl.java
@@ -664,9 +709,6 @@ com/system/ipcc/pbx/avaya/smsxml/BoardType.java
  com.system.ipcc.pbx.avaya.smsxml.BoardType
 com/system/ipcc/pbx/avaya/smsxml/WitnessStationType.java
  com.system.ipcc.pbx.avaya.smsxml.WitnessStationType
-com/system/backoffice/sys/svr/models/ServerInfo.java
- com.system.backoffice.sys.svr.models.ServerInfo
- com.system.backoffice.sys.svr.models.ServerInfo$ServerInfoBuilder
 egovframework/com/cmm/web/EgovComUtlController.java
  egovframework.com.cmm.web.EgovComUtlController
 com/system/ipcc/pbx/avaya/smsxml/ConfigurationType.java
@@ -677,6 +719,8 @@ egovframework/let/uat/uia/web/SsoLoginController.java
  egovframework.let.uat.uia.web.SsoLoginController
 egovframework/let/cop/bbs/service/BoardVO.java
  egovframework.let.cop.bbs.service.BoardVO
+com/system/backoffice/bas/code/web/ClassificationInfoManageController.java
+ com.system.backoffice.bas.code.web.ClassificationInfoManageController
 egovframework/com/cmm/service/EgovFileMngService.java
  egovframework.com.cmm.service.EgovFileMngService
 egovframework/com/jwt/config/JwtVerification.java
@@ -729,6 +773,8 @@ egovframework/let/cop/com/service/BoardUseInfVO.java
  egovframework.let.cop.com.service.BoardUseInfVO
 com/system/backoffice/bas/menu/service/MenuCreateManageService.java
  com.system.backoffice.bas.menu.service.MenuCreateManageService
+com/system/backoffice/bas/system/mapper/SystemInfoManageMapper.java
+ com.system.backoffice.bas.system.mapper.SystemInfoManageMapper
 egovframework/com/cmm/EgovComponentChecker.java
  egovframework.com.cmm.EgovComponentChecker
 egovframework/let/cop/com/service/impl/EgovUserInfManageDAO.java
@@ -737,6 +783,8 @@ com/system/ipcc/pbx/avaya/smsxml/IPNetworkRegionStatusType.java
  com.system.ipcc.pbx.avaya.smsxml.IPNetworkRegionStatusType
 com/system/backoffice/sym/log/mapper/SysLogManageMapper.java
  com.system.backoffice.sym.log.mapper.SysLogManageMapper
+com/system/backoffice/sym/log/web/SysLogManageController.java
+ com.system.backoffice.sym.log.web.SysLogManageController
 egovframework/com/cmm/service/Globals.java
  egovframework.com.cmm.service.Globals
 com/system/backoffice/uat/role/models/RoleInfo.java
@@ -810,6 +858,8 @@ com/system/ipcc/pbx/avaya/models/pbxType.java
  com.system.ipcc.pbx.avaya.models.pbxType
 egovframework/let/cop/smt/sim/service/impl/IndvdlSchdulManageDao.java
  egovframework.let.cop.smt.sim.service.impl.IndvdlSchdulManageDao
+com/system/backoffice/sym/voc/mapper/VocProcessInfoManageMapper.java
+ com.system.backoffice.sym.voc.mapper.VocProcessInfoManageMapper
 egovframework/com/config/EgovConfigAppIdGen.java
  egovframework.com.config.EgovConfigAppIdGen
 com/system/ipcc/cti/nexus/models/dto/NexusAgentInfoResponseDto.java
@@ -850,12 +900,13 @@ egovframework/com/cmm/EgovComOthersExcepHndlr.java
  egovframework.com.cmm.EgovComOthersExcepHndlr
 com/system/ipcc/pbx/avaya/smsxml/StationStatusType.java
  com.system.ipcc.pbx.avaya.smsxml.StationStatusType
+com/system/backoffice/sym/svr/models/dto/ServerInfoRequestDto.java
+ com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto
+ com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto$ServerInfoRequestDtoBuilder
 egovframework/com/cmm/service/impl/EgovUserDetailsSessionServiceImpl.java
  egovframework.com.cmm.service.impl.EgovUserDetailsSessionServiceImpl
 com/system/ipcc/pbx/avaya/smsxml/UniformDialplanType.java
  com.system.ipcc.pbx.avaya.smsxml.UniformDialplanType
-com/system/backoffice/sys/svr/mapper/ServerInfoManageMapper.java
- com.system.backoffice.sys.svr.mapper.ServerInfoManageMapper
 com/system/backoffice/uat/log/mapper/LoginLogInfoManageMapper.java
  com.system.backoffice.uat.log.mapper.LoginLogInfoManageMapper
 com/system/ipcc/pbx/avaya/smsxml/IntercomGroupType.java
@@ -864,6 +915,8 @@ egovframework/let/cop/bbs/service/BoardMaster.java
  egovframework.let.cop.bbs.service.BoardMaster
 com/system/backoffice/bas/code/web/EgovCcmCmmnClCodeManageController.java
  com.system.backoffice.bas.code.web.EgovCcmCmmnClCodeManageController
+com/system/backoffice/sym/svr/mapper/ServerInfoManageMapper.java
+ com.system.backoffice.sym.svr.mapper.ServerInfoManageMapper
 com/system/ipcc/cti/nexus/models/NexusSkillEmployeeInfo.java
  com.system.ipcc.cti.nexus.models.NexusSkillEmployeeInfo
  com.system.ipcc.cti.nexus.models.NexusSkillEmployeeInfo$NexusSkillEmployeeInfoBuilder
