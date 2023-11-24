@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sym.svr.mapper.ServerInfoManageMapper">
+	<select id="selectServerInfoPageList" resultType="lmap">     	      
+		SELECT * FROM 
+		( 
+			SELECT 	
+				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				TB.* 
+			FROM 	
+			(	
+				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+					 A.SERVER_SEQ, A.SERVER_NAME, A.SERVER_IP, A.SERVER_PORT, A.SERVER_METHOD,
+					 A.SERVER_END_TIME, A.SERVER_SYSTEM_INFO, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID,
+					 A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.SERVER_DC, A.SERVER_USEYN, B.SYSTEM_NAME
+				FROM TB_CONN_SERVERINFO A,  TB_SYSTEMINFO B, (select @ROWNUM := 0) RN_TB
+				WHERE A.SYSTEM_CODE = B.SYSTEM_CODE
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+					AND 
+					( 
+						A.SERVER_NAME LIKE '%'|| #{params.searchKeyword} || '%' 
+						OR
+						A.SERVER_DC LIKE '%' ||  #{params.searchKeyword} || '%'
+					) 
+				</if>
+			) TB 
+		) TA
+		ORDER BY TA.RNUM DESC 
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+		
+   	</select>
+   	<select id="selectServerInfoDetail" resultType="ServerInfo">
+		SELECT   A.SERVER_SEQ, A.SERVER_NAME, A.SERVER_IP, A.SERVER_PORT, A.SERVER_METHOD,
+				 A.SERVER_END_TIME, A.SERVER_SYSTEM_INFO, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID,
+				 A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.SERVER_DC, A.SERVER_USEYN, A.SERVER_ID, A.SERVER_PASSWORD, A.SYSTEM_CODE
+		FROM TB_CONN_SERVERINFO A
+		WHERE A.SERVER_SEQ = #{serverSeq}
+   	</select>
+   	<insert id="insertServerInfo">
+		INSERT INTO TB_CONN_SERVERINFO	
+		(
+		    SERVER_NAME, SYSTEM_CODE, SERVER_IP, SERVER_PORT, SERVER_METHOD,  SERVER_SYSTEM_INFO, 
+		    FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID, 
+		    SERVER_DC, SERVER_USEYN, SERVER_ID, SERVER_PASSWORD
+		)
+		VALUES 
+		(
+			#{serverName}, #{systemCode}, #{serverIp}, #{serverPort,jdbcType=VARCHAR}, #{serverMethod,jdbcType=VARCHAR},	
+			#{serverSystemInfo,jdbcType=VARCHAR},
+			NOW(), #{userId}, NOW(), #{userId},
+			#{serverDc,jdbcType=VARCHAR}, #{serverUseyn,jdbcType=VARCHAR}, #{serverId,jdbcType=VARCHAR}, #{serverPassword,jdbcType=VARCHAR}
+		)
+   	</insert>
+	<update id="updateServerStatus">
+		UPDATE TB_CONN_SERVERINFO SET SERVER_END_TIME = NOW()
+		WHERE A.SERVER_SEQ = #{serverSeq}
+	</update>
+	<update id="updateServerInfo">
+		UPDATE TB_CONN_SERVERINFO SET   SERVER_NAME = #{serverName}, 
+										SYSTEM_CODE = #{systemCode}, 
+										SERVER_ID = #{serverId,jdbcType=VARCHAR}, 
+										SERVER_PASSWORD = #{serverPassword,jdbcType=VARCHAR}, 
+									    SERVER_IP = #{serverIp}, 
+									    SERVER_PORT = #{serverPort}, 
+									    SERVER_METHOD = #{serverMethod,jdbcType=VARCHAR},
+									    SERVER_END_TIME = #{serverEndTime,jdbcType=VARCHAR},
+			                            LAST_UPDT_PNTTM = NOW(), 
+			                            LAST_UPDUSR_ID = #{userId, jdbcType=VARCHAR},   
+			                            SERVER_USEYN = #{serverUseyn, jdbcType=VARCHAR},  
+			                            SERVER_DC = #{serverDc, jdbcType=VARCHAR}             
+       	WHERE SERVER_SEQ = #{serverSeq}
+   	</update>
+   	
+   	<delete id="deleteServerInfo">
+   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+   		DELETE FROM TB_CONN_SERVERINFO
+   		WHERE SERVER_SEQ = #{serverSeq}
+   	</delete>
+</mapper>
