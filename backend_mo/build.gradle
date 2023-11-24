@@ -48,7 +48,6 @@ dependencies {
 		exclude(module: 'commons-logging')
     }
     
-    //compile fileTree(dir: 'resources/libs', include: ['*.jar'])
     compileOnly fileTree(dir: 'src/main/resources/libs', includes: ['*.jar'])
     
     compile group: 'org.egovframe.rte', name: 'org.egovframe.rte.psl.dataaccess', version:'4.1.0'
