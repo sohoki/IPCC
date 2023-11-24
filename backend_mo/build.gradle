@@ -47,7 +47,26 @@ dependencies {
     compile(group: 'org.egovframe.rte', name: 'org.egovframe.rte.ptl.mvc', version:'4.1.0') {
 		exclude(module: 'commons-logging')
     }
-    
+    /*
+    implementation files('lib/activation.jar')
+    implementation files('lib/bcprov-jdk15on-1.54.jar')
+    implementation files('lib/FastInfoset.jar')
+    implementation files('lib/jaxb-api.jar')
+    implementation files('lib/jaxws-api.jar')
+    implementation files('lib/jaxws-rt.jar')
+    implementation files('lib/nxcapi_v2_java1.7-v1.0.15.01.jar')
+    implementation files('lib/nxcapi.jar')
+    implementation files('lib/passni-sso-agent-4.0.007.jar')
+    implementation files('lib/passni-sso-agent-external-lib.jar')
+    implementation files('lib/PniccJNI_1.1_for_bcprov.jar')
+    implementation files('lib/resolver.jar')
+    implementation files('lib/saaj-api.jar')
+    implementation files('lib/saaj-impl.jar')
+    implementation files('lib/sjsxp.jar')
+    implementation files('lib/stax-ex.jar')
+    implementation files('lib/streambuffer.jar')
+    implementation files('lib/systemmanagementservice-xml-stubs.jar')
+    */
     compileOnly fileTree(dir: 'src/main/resources/libs', includes: ['*.jar'])
     
     compile group: 'org.egovframe.rte', name: 'org.egovframe.rte.psl.dataaccess', version:'4.1.0'

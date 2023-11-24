@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sym.voc.mapper.VocProcessInfoManageMapper">
+	<select id="selectVocProcessPageList" resultType="camelmap">     	      
+		SELECT * FROM 
+		( 
+			SELECT 	
+				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				TB.* 
+			FROM 	
+			(	
+				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+					    A.VOC_SEQ, A.VOC_PROCESS_SEQ, A.VOC_PROCESS_USERID, A.VOC_PROCESS_VISITED_DAY, A.VOC_PROCESS_VISITED_TIME, A.VOC_PROCESS_END_DATE, A.VOC_PROCESS,
+						A.PRODUCT_CODE, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID,
+						A.VOC_PROCESS_DC
+				FROM TB_VOC_PROCESSINFO A,  (select @ROWNUM := 0) RN_TB
+				WHERE A.VOC_SEQ = #{params.vocSeq}
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+					AND 
+					( 
+						A.SERVER_NAME LIKE   CONCAT ('%', #{params.searchKeyword},'%') 
+						OR
+						A.SERVER_DC LIKE CONCAT ('%', #{params.searchKeyword},'%') 
+					) 
+				</if>
+				
+				
+			) TB 
+		) TA
+		ORDER BY TA.RNUM DESC 
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+		
+   	</select>
+   	<select id="selectVocProcessDetail" resultType="VocInfo">
+		SELECT  VOC_SEQ, VOC_PROCESS_SEQ, VOC_PROCESS_USERID, VOC_PROCESS_VISITED_DAY, VOC_PROCESS_VISITED_TIME, VOC_PROCESS_END_DATE, VOC_PROCESS,
+				PRODUCT_CODE, FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID,
+				VOC_PROCESS_DC
+		FROM TB_VOC_PROCESSINFO A
+		WHERE VOC_PROCESS_SEQ = #{VocProcessSeq}
+   	</select>
+   	<insert id="insertVocProcess">
+		INSERT INTO TB_VOC_PROCESSINFO	
+		(
+		    VOC_SEQ, VOC_PROCESS_USERID, VOC_PROCESS_VISITED_DAY, VOC_PROCESS_VISITED_TIME, VOC_PROCESS_END_DATE, 
+		    VOC_PROCESS, PRODUCT_CODE, 
+			FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID,
+			VOC_PROCESS_DC
+		)
+		VALUES 
+		(
+			#{vocSeq}, #{vocProcessUserid}, #{vocProcessVisitedDay,jdbcType=VARCHAR},  #{vocProcessVisitedTime,jdbcType=VARCHAR}, #{vocProcessEndDate,jdbcType=VARCHAR}, 
+			#{vocProcess,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, 	
+			NOW(), #{userId}, NOW(), #{userId},
+			#{vocProcessDc,jdbcType=VARCHAR}
+		)
+   	</insert>
+	<update id="updateVocProcess">
+		UPDATE TB_VOC_PROCESSINFO SET  VOC_PROCESS_USERID = #{vocProcessUserid}, 
+									   VOC_PROCESS_VISITED_DAY = #{vocProcessVisitedDay,jdbcType=VARCHAR}, 
+									   VOC_PROCESS_VISITED_TIME = #{vocProcessVisitedTime,jdbcType=VARCHAR}, 
+									   VOC_PROCESS_END_DATE = #{vocProcessEndDate,jdbcType=VARCHAR}, 
+									   VOC_PROCESS = #{vocProcess}, 
+									   PRODUCT_CODE = #{productCode,jdbcType=VARCHAR},
+									   VOC_PROCESS_DC = #{vocProcessDc,jdbcType=VARCHAR},
+									   LAST_UPDT_PNTTM = NOW(),
+									   LAST_UPDUSR_ID =  #{userId}
+       	WHERE VOC_PROCESS_SEQ = #{vocProcessSeq}
+   	</update>
+   	
+   	<delete id="deleteVocProcess">
+   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+   		DELETE FROM TB_VOC_PROCESSINFO
+   		WHERE VOC_PROCESS_SEQ = #{vocProcessSeq}
+   	</delete>
+</mapper>
