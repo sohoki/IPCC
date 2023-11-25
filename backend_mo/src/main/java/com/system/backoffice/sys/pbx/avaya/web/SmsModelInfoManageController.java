@@ -40,7 +40,7 @@ public class SmsModelInfoManageController {
 	@Resource(name = "egovMessageSource")
 	EgovMessageSource egovMessageSource;
     
-    @GetMapping("/{notiSeq}")
+    @GetMapping("/{notiSeq}.do")
     public ModelAndView selectServerDetailInfo(@PathVariable String notiSeq)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
@@ -57,7 +57,7 @@ public class SmsModelInfoManageController {
     	}
     	return model;
     }
-    @DeleteMapping("/{notiSeq}")
+    @DeleteMapping("/{notiSeq}.do")
     public ModelAndView deleteServerDetailInfo(@PathVariable String notiSeq)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
