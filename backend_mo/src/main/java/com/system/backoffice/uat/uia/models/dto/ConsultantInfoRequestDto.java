@@ -61,6 +61,15 @@ public class ConsultantInfoRequestDto {
 	private String ctiEmployeepartName;
 	private String ctiTenantName;
 	private String counUseyn;
+	//신규 내용 
+	private String pbxButton01;
+	private String pbxButton02;
+	private String pbxButton03;
+	private String pbxButton04;
+	private String pbxButton05;
+	private String pbxButton06;
+	private String pbxButton07;
+	private String pbxDisplayLangage;
 	
 	
 	private List<ConsultantAgentInfo> agentInfo;

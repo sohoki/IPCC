@@ -106,8 +106,16 @@
                                 , PBX_COR = #{pbxCos}
                                 , PBX_NAME = #{pbxName }
                                 , PBX_SECURITY_CODE = #{pbxSecurityCode, jdbcType=VARCHAR }
+                                , PBX_DISPLAY_LANGAGE = #{pbxDisplayLangage, jdbcType=VARCHAR }
                                 , PBX_STATUS = 'OK'
                                 , PBX_UPDATE_DATE =  NOW()
+                                , PBX_BUTTON01 = #{pbxButton01, jdbcType=VARCHAR }
+                                , PBX_BUTTON02 = #{pbxButton01, jdbcType=VARCHAR }
+                                , PBX_BUTTON03 = #{pbxButton01, jdbcType=VARCHAR }
+                                , PBX_BUTTON04 = #{pbxButton01, jdbcType=VARCHAR }
+                                , PBX_BUTTON05 = #{pbxButton01, jdbcType=VARCHAR }
+                                , PBX_BUTTON06 = #{pbxButton01, jdbcType=VARCHAR }
+                                , PBX_BUTTON07 = #{pbxButton01, jdbcType=VARCHAR }
       WHERE PBX_EXTENSION = #{pbxExtension};
       
 				
