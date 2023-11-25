@@ -34,6 +34,8 @@ public class PbxMemberInfo {
 	private String pbxButton07;
 	private String pbxDisplayLangage;
 	
+	
+	//추가 수정 
 	private List<pbxType> sn;
 	private List<pbxType> sr;
 	private String loginId;
