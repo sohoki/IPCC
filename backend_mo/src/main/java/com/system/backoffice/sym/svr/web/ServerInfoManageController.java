@@ -24,6 +24,8 @@ import com.system.backoffice.sym.svr.models.ServerInfo;
 import com.system.backoffice.sym.svr.service.ServerInfoManageService;
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
+import egovframework.com.cmm.service.ResultVO;
+import egovframework.com.jwt.config.JwtVerification;
 
 
 @RestController
@@ -41,11 +43,23 @@ public class ServerInfoManageController {
     /** EgovMessageSource */
 	@Resource(name = "egovMessageSource")
 	EgovMessageSource egovMessageSource;
+	
+	/** JwtVerification */
+	@Autowired
+	private JwtVerification jwtVerification;
     
     @GetMapping("{serverSeq}")
-    public ModelAndView selectServerDetailInfo(@PathVariable String serverSeq)throws Exception {
+    public ModelAndView selectServerDetailInfo(@PathVariable String serverSeq
+    										, HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
+    		
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		
     		Optional<ServerInfo> info = serverMangeServiec.selectServerInfoDetail(serverSeq);
     		
     		info.orElseThrow(() -> new IllegalArgumentException("해당하는 서버 정보가가 없습니다. 잘못된 입력"));
@@ -60,9 +74,17 @@ public class ServerInfoManageController {
     	return model;
     }
     @DeleteMapping("{serverSeq}")
-    public ModelAndView deleteServerDetailInfo(@PathVariable String serverSeq)throws Exception {
+    public ModelAndView deleteServerDetailInfo(@PathVariable String serverSeq
+    											, HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
+    		
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		
     		int ret = serverMangeServiec.deleteServerInfo(serverSeq);
     		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
     		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.delete") : egovMessageSource.getMessage("fail.request.msg");
@@ -76,9 +98,20 @@ public class ServerInfoManageController {
     	return model;
     }
     @PostMapping("updateServer")
-    public ModelAndView updateServerInfo(@Valid @RequestBody ServerInfoRequestDto info)throws Exception {
+    public ModelAndView updateServerInfo(@Valid @RequestBody ServerInfoRequestDto info
+    									, HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
+    		
+    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+        	if (!jwtVerification.isVerificationAdmin(request)) {
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}else {
+        		info.setUserId(jwtVerification.getTokenUserName(request));
+        	}
+        	
+        	
     		int ret = serverMangeServiec.updateServerInfo(info);
     		
     		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
@@ -97,6 +130,11 @@ public class ServerInfoManageController {
 												 , BindingResult bindingResult) throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
     		
             int pageUnit = searchMap.get("pageUnit") == null ?   propertyService.getInt("pageUnit") : Integer.valueOf((String) searchMap.get("pageUnit"));
     		int pageSize = searchMap.get("pageSize") == null ?   propertyService.getInt("pageSize") : Integer.valueOf((String) searchMap.get("pageSize"));  

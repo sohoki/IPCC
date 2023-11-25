@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.ipcc.pbx.avaya.mapper.StationInfoManageMapper">
+	<select id="selectStationInfoPageList" resultType="camelmap">     	      
+		SELECT * FROM 
+		( 
+			SELECT 	
+				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				TB.* 
+			FROM 	
+			(	
+				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+					 A.EXTENSION, A.TYPE, A.COR, A.COS, A.NAME, A.SECURITY_CODE, A.DISPLAY_LANGAGE, A.CONSULT_USEYN, A.TN
+					 A.BUTTON01, A.BUTTON02, A.BUTTON03, A.BUTTON04, A.BUTTON05, A.BUTTON06, A.BUTTON07, A.UPDATE_DATE
+				FROM TB_STATIONINFO A,  (select @ROWNUM := 0) RN_TB
+				WHERE 1=1
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+					AND 
+					( 
+						A.SMS_NAME LIKE '%'|| #{params.searchKeyword} || '%' 
+						OR
+						A.SMS_FIELDS_DC LIKE '%' ||  #{params.searchKeyword} || '%'
+					) 
+				</if>
+			) TB 
+		) TA
+		ORDER BY TA.RNUM DESC 
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+		
+   	</select>
+   	<select id="selectStationInfoDetail" resultType="StationInfo">
+		SELECT  A.EXTENSION, A.TYPE, A.COR, A.COS, A.NAME, A.SECURITY_CODE, A.DISPLAY_LANGAGE, A.CONSULT_USEYN, A.TN
+				A.BUTTON01, A.BUTTON02, A.BUTTON03, A.BUTTON04, A.BUTTON05, A.BUTTON06, A.BUTTON07, A.UPDATE_DATE
+		FROM TB_STATIONINFO A
+		WHERE EXTENSION = #{extension}
+   	</select>
+   	<insert id="insertStationInfo">
+		INSERT INTO TB_STATIONINFO	
+		(
+		    EXTENSION, TYPE, COR, COS, NAME, TN, SECURITY_CODE, DISPLAY_LANGAGE, CONSULT_USEYN
+			BUTTON01, BUTTON02, BUTTON03, BUTTON04, BUTTON05, BUTTON06, BUTTON07, UPDATE_DATE
+		)
+		VALUES 
+		(
+			#{extension}, #{type}, #{cor,jdbcType=VARCHAR}, #{cos,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{tn,jdbcType=VARCHAR},
+			#{securityCode}, #{displayLangage,jdbcType=VARCHAR}, 'N',
+			#{button01,jdbcType=VARCHAR}, #{button02,jdbcType=VARCHAR}, #{button03,jdbcType=VARCHAR}, #{button04,jdbcType=VARCHAR},
+			#{button05,jdbcType=VARCHAR}, #{button06,jdbcType=VARCHAR}, #{button07,jdbcType=VARCHAR},  NOW()
+		)
+   	</insert>
+	<update id="updateStationInfo">
+		UPDATE TB_STATIONINFO SET  TYPE = #{type}, 
+								   COR = #{cor}, 
+								   COS = #{cos}, 
+								   NAME = #{name,jdbcType=VARCHAR},
+								   TN = #{tn, jdbcType=VARCHAR}, 
+								   SECURITY_CODE = #{securityCode}, 
+								   DISPLAY_LANGAGE = #{displayLangage,jdbcType=VARCHAR},
+								   BUTTON01 = #{button01,jdbcType=VARCHAR},
+								   BUTTON02 = #{button02,jdbcType=VARCHAR},
+								   BUTTON03 = #{button03,jdbcType=VARCHAR},
+								   BUTTON04 = #{button04,jdbcType=VARCHAR},
+								   BUTTON05 = #{button05,jdbcType=VARCHAR},
+								   BUTTON06 = #{button06,jdbcType=VARCHAR},
+								   BUTTON07 = #{button07,jdbcType=VARCHAR},
+		                           UPDATE_DATE = NOW()       
+       	WHERE EXTENSION = #{extension}
+   	</update>
+   	<update id="updateStationConsultInfo">
+		UPDATE TB_STATIONINFO SET  CONSULT_USEYN = #{consultUseyn}
+		                           UPDATE_DATE = NOW()       
+       	WHERE EXTENSION = #{extension}
+   	</update>
+   	
+   	<delete id="deleteStationInfo">
+   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+   		DELETE FROM TB_STATIONINFO
+   		WHERE EXTENSION = #{extension}
+   	</delete>
+
+</mapper>

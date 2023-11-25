@@ -27,6 +27,7 @@ import com.avaya.smsxml.Result;
 import com.avaya.smsxml.ArrayType;
 import com.avaya.smsxml.ModelChoices;
 import com.avaya.smsxml.ReturnType;
+import com.avaya.smsxml.StationType;
 import com.avaya.smsxml.SubmitRequestType;
 import com.avaya.smsxml.SystemManagementPort;
 import com.avaya.smsxml.SystemManagementService;
@@ -267,7 +268,7 @@ public class SMSReq {
 			}
 			if (info.getMode().equals("PBX")) {
 				String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
-				Result submitResult = this.submitRequest("Station", addType, "", "change", info.getExtension());
+				Result submitResult = submitStationRequest("Station", "", "change", info);
 				if (submitResult.getResultCode() == 0) {
 					models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 					try {
@@ -275,10 +276,7 @@ public class SMSReq {
 					}catch (Exception e1) {
 						models.addObject(Globals.STATUS_MESSAGE, "내선번호가 수정되었습니다.");
 					}
-					
-					System.out.println("======pbx 2");
 					models.setStatus(HttpStatus.OK);
-					System.out.println("======pbx 3");
 				}else {
 					models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 					try {
@@ -286,8 +284,6 @@ public class SMSReq {
 					}catch (Exception e1) {
 						models.addObject(Globals.STATUS_MESSAGE, "내선번호 처리중 문제가 발생하였습니다.");
 					}
-					
-					
 				}
 			}else {
 				Result submitResult = submitAgentRequest("Agent", "Extension", "", "change", info);
@@ -376,11 +372,9 @@ public class SMSReq {
 			// Step 1: Initial SOAP setup, done once (typically) per session.
 			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
 			if (!setup()) {
-				System.out.println("============ 사용자 안됨" );
 				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				return models; 
 			}
-			System.out.println("============ 사용자 삭제:" + info.getExtension());
 			String resutMessage = "";
 			Result submitResult = this.submitRequest("Station", "extension", "", "remove", info.getExtension());
 			
@@ -392,7 +386,6 @@ public class SMSReq {
 				return models; 
 			}
 			
-			System.out.println("============ Agent 삭제" + info.getLoginId());
 			// Agent 값 체크 하기 
 			submitResult = this.submitRequest("Agent", "Login_ID", "", "remove", info.getLoginId());
 			if (submitResult.getResultCode() != 0) {
@@ -410,9 +403,6 @@ public class SMSReq {
 			if (submitResult != null) {
 				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				models.setStatus(HttpStatus.OK);
-			}else {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				models.setStatus(HttpStatus.BAD_REQUEST);
 			}
 			
 			return models;
@@ -505,6 +495,185 @@ public class SMSReq {
 		 * service for processing.
 		 * 
 		 */
+		private Result submitStationRequest(String model, String sObjectName, String sOperation, PbxMemberInfo info) {
+			
+			// Initialize Types
+			Result result = null;
+			String mType = WEB_REFERENCE_PACKAGE + "." + model + "Type";			
+			faultRaised = false;
+			try {
+
+				modelClass = Class.forName(mType);
+				ModelChoices modelChoices = new ModelChoices();
+				modelChoicesClass = modelChoices.getClass();
+
+				String getModel = "get" + model;
+				Method getModelMethod = modelChoicesClass.getMethod(getModel,new Class[] {});
+				List<Object> modelList = (List<Object>) getModelMethod.invoke(modelChoices, new Object[] {});
+				
+				modelList.add(modelClass.newInstance());
+				
+				// 여기 부분이 에이전트 생성 
+				
+				objectFactory = new ObjectFactory();
+				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();//
+		        //AgentType ag_submit =objectFactory.createAgentType();
+		        StationType st_submit = objectFactory.createStationType();
+		        int a = 1;
+		        if (!info.getPbxButton01().equals("")  ) {
+		        	String[] button01s = info.getPbxButton01().split(",");
+		        	if (button01s.length > 0) {
+		        		ArrayType button01 = objectFactory.createArrayType();
+			        	for (String button : button01s) {
+			        		button01.setPosition(a);
+			        		button01.setValue(button);
+			        		a++;
+			        	}
+			        	st_submit.getButtonData1().add(button01);
+		        	}
+		        	
+		        }
+		        a = 1;
+		        if (!info.getPbxButton02().equals("")  ) {
+		        	String[] button02s = info.getPbxButton02().split(",");
+		        	if (button02s.length > 0) {
+		        		ArrayType button02 = objectFactory.createArrayType();
+			        	for (String button : button02s) {
+			        		button02.setPosition(a);
+			        		button02.setValue(button);
+			        		a++;
+			        	}
+			        	st_submit.getButtonData2().add(button02);
+		        	}
+		        	
+		        }
+		        a = 1;
+		        if (!info.getPbxButton03().equals("")  ) {
+		        	String[] button03s = info.getPbxButton03().split(",");
+		        	if (button03s.length > 0) {
+		        		ArrayType button03 = objectFactory.createArrayType();
+			        	for (String button : button03s) {
+			        		button03.setPosition(a);
+			        		button03.setValue(button);
+			        		a++;
+			        	}
+			        	st_submit.getButtonData3().add(button03);
+		        	}
+		        	
+		        }
+		        a = 1;
+		        if (!info.getPbxButton04().equals("")  ) {
+		        	String[] button04s = info.getPbxButton04().split(",");
+		        	if (button04s.length > 0) {
+		        		ArrayType button04 = objectFactory.createArrayType();
+			        	for (String button : button04s) {
+			        		button04.setPosition(a);
+			        		button04.setValue(button);
+			        		a++;
+			        	}
+			        	st_submit.getButtonData4().add(button04);
+		        	}
+		        	
+		        }
+		        a = 1;
+		        if (!info.getPbxButton05().equals("")  ) {
+		        	String[] button05s = info.getPbxButton05().split(",");
+		        	if (button05s.length > 0) {
+		        		ArrayType button05 = objectFactory.createArrayType();
+			        	for (String button : button05s) {
+			        		button05.setPosition(a);
+			        		button05.setValue(button);
+			        		a++;
+			        	}
+			        	st_submit.getButtonData5().add(button05);
+		        	}
+		        	
+		        }
+		        a = 1;
+		        if (!info.getPbxButton06().equals("")  ) {
+		        	String[] button06s = info.getPbxButton06().split(",");
+		        	if (button06s.length > 0) {
+		        		ArrayType button06 = objectFactory.createArrayType();
+			        	for (String button : button06s) {
+			        		button06.setPosition(a);
+			        		button06.setValue(button);
+			        		a++;
+			        	}
+			        	st_submit.getButtonData6().add(button06);
+		        	}
+		        	
+		        }
+		        a = 1;
+		        if (!info.getPbxButton07().equals("")  ) {
+		        	String[] button07s = info.getPbxButton07().split(",");
+		        	if (button07s.length > 0) {
+		        		ArrayType button07 = objectFactory.createArrayType();
+			        	for (String button : button07s) {
+			        		button07.setPosition(a);
+			        		button07.setValue(button);
+			        		a++;
+			        	}
+			        	st_submit.getButtonData7().add(button07);
+		        	}
+		        	
+		        }
+		        
+		        st_submit.setExtension(info.getExtension());
+		        st_submit.setType(info.getType());
+		        st_submit.setCOR(info.getCor());
+		        st_submit.setCOS(info.getCos());
+		        st_submit.setName(info.getName());
+		        st_submit.setSecurityCode(info.getSecurityCode());
+		        st_submit.setDisplayLanguage(info.getPbxDisplayLangage());
+	            
+		        mf_add.getStation().add(st_submit);
+		        modelList.set(0, st_submit);
+		       
+				
+				submitRequest = new SubmitRequestType();
+				
+					
+				submitRequest.setModelFields(modelChoices);
+				submitRequest.setObjectname(sObjectName); 
+				submitRequest.setOperation(sOperation);
+				submitRequest.setQualifier(info.getLoginId());
+				
+				result = port.submitRequest(submitRequest.getModelFields(), submitRequest.getOperation(),
+						                    submitRequest.getObjectname(), submitRequest.getQualifier());
+
+			} catch (ClassNotFoundException cnf) { 
+				  System.out.println("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
+				  System.out.println(cnf.getMessage()); 
+				  faultRaised = true; 
+			 } catch (Exception soapE) {
+				System.out.println("A SOAP fault was raised: ");
+
+				System.out.println("Cause: " + soapE.getCause());
+				System.out.println("Message: " + soapE );
+
+				faultRaised = true;
+			 }
+			
+			// If we got a result (not a fault) then we'll show it
+			if (!faultRaised) {
+				
+				if (result.getResultCode() == 0) { 
+					ModelChoices mc = result.getResultData(); 
+					if (mc != null) { 
+						printResult(mc, model); 
+					} 
+				}else { 
+					
+					faultRaised = true; 
+					System.out.println("The request returned an error (result_code == "+ result.getResultCode() + ")"); 
+					System.out.println("result_data == " + '"' + result.getResultData() + '"');
+					System.out.println("message_text == " + result.getMessageText() ); }
+				 
+			}
+			
+			return result;
+
+		}
 		private Result submitAgentRequest(String model, String sFIELDS, String sObjectName, String sOperation, PbxMemberInfo info) {
 			
 			// Initialize Types

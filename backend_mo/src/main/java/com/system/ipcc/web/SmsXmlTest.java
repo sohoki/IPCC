@@ -94,7 +94,7 @@ public class SmsXmlTest {
     	
     }
 
-	@PostMapping("/SmsTrank/notiSeq")
+	@PostMapping("/SmsTrank/notiSeq.do")
     public ModelAndView SmsTrank(@RequestBody Map<String, Object> searchMap 
 			 					 , HttpServletRequest request ) throws Exception {
     	
