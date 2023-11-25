@@ -24,6 +24,16 @@ public class PbxMemberInfo {
 	private String status;
 	private String mode;
 	
+	//신규 
+	private String pbxButton01;
+	private String pbxButton02;
+	private String pbxButton03;
+	private String pbxButton04;
+	private String pbxButton05;
+	private String pbxButton06;
+	private String pbxButton07;
+	private String pbxDisplayLangage;
+	
 	private List<pbxType> sn;
 	private List<pbxType> sr;
 	private String loginId;
