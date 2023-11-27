@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +34,9 @@ public class SystemInfoManageService {
 		return sysMapper.selectSystemInfoList(params);
 	}
 
+	public List<Map<String, Object>> selectSystemCombo(String useYn){
+		return sysMapper.selectSystemCombo(useYn);
+	}
 	
 	public Optional<SystemInfoResDto> selectSystemInfoDetail(String systemCode) throws Exception {
 		return sysMapper.selectSystemInfoDetail(systemCode);

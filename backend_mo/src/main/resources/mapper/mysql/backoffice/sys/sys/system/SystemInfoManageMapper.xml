@@ -11,7 +11,7 @@
 			FROM 	
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
-					 A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO
+					 A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN
 				FROM TB_SYSTEMINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -28,27 +28,36 @@
 		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
 		
    	</select>
-
+	<select id="selectSystemCombo" resultType="camelmap">
+		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME
+		FROM TB_SYSTEMINFO A
+		WHERE 1=1 
+		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchUseyn)">
+		      AND A.SYSTEM_USEYN = #{searchUseyn}
+		</if>
+	</select>
    	<select id="selectSystemInfoDetail" resultType="SystemInfoResDto">
-		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO
+		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN
 		FROM TB_SYSTEMINFO A
 		WHERE A.PROGRM_FILE_NM = #{progrmFileNm}
    	</select>
 	<insert id="insertSystemInfo">
 		INSERT INTO TB_SYSTEMINFO	
 		(
-		    SYSTEM_CODE, SYSTEM_NAME, SYSTEM_DC, SYSTEM_CREATEDC, DOMAIN_INFO
+		    SYSTEM_CODE, SYSTEM_NAME, SYSTEM_DC, SYSTEM_CREATEDC, DOMAIN_INFO ,SYSTEM_USEYN
 		)
 		VALUES 
 		(
 			#{systemCode}, #{systemName}, #{systemDc,jdbcType=VARCHAR}, NOW(), #{domainInfo,jdbcType=VARCHAR}
+			, #{systemUseyn,jdbcType=VARCHAR}
 		)
    	</insert>
 
 	<update id="updateSystemInfo">
 		UPDATE TB_SYSTEMINFO SET SYSTEM_NAME = #{systemName,jdbcType=VARCHAR}, 
 								 DOMAIN_INFO = #{domainInfo,jdbcType=VARCHAR}, 
-		                         SYSTEM_DC = #{systemDc, jdbcType=VARCHAR}  
+		                         SYSTEM_DC = #{systemDc, jdbcType=VARCHAR}  ,
+		                         SYSTEM_USEYN =#{systemUseyn,jdbcType=VARCHAR} 
        	WHERE SYSTEM_CODE = #{systemCode}
    	</update>
    	

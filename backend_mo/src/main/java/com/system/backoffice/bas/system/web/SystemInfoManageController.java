@@ -98,7 +98,25 @@ public class SystemInfoManageController {
 		
 		return model;
 	}
-	
+	@GetMapping("systemCombo.do")
+	public ModelAndView systemCombo(@PathVariable String searchUseyn,
+			HttpServletRequest request) throws Exception {
+		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
+		try {
+			if (!jwtVerification.isVerificationAdmin(request)) {
+	    		ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+	    	}
+			
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+    		model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(searchUseyn));
+			
+		}catch(Exception e){
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
+		}
+		return model;
+	}
 	/**
 	 * 프로그램 저장
 	 * @param SystemInfo
