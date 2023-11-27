@@ -1,4 +1,4 @@
-package com.system.ipcc.pbx.avaya.mapper;
+package com.system.backoffice.sys.pbx.avaya.mapper;
 
 import java.util.List;
 import java.util.Map;
@@ -6,8 +6,8 @@ import java.util.Optional;
 
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-import com.system.ipcc.pbx.avaya.models.StationInfo;
-import com.system.ipcc.pbx.avaya.models.dto.StationInfoReqDto;
+import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
+import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
 
 @Mapper
 public interface StationInfoManageMapper {

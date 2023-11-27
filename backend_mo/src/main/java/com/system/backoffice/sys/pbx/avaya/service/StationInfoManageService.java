@@ -1,4 +1,4 @@
-package com.system.ipcc.pbx.avaya.service;
+package com.system.backoffice.sys.pbx.avaya.service;
 
 import java.util.List;
 import java.util.Map;
@@ -7,9 +7,9 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.system.ipcc.pbx.avaya.mapper.StationInfoManageMapper;
-import com.system.ipcc.pbx.avaya.models.StationInfo;
-import com.system.ipcc.pbx.avaya.models.dto.StationInfoReqDto;
+import com.system.backoffice.sys.pbx.avaya.mapper.StationInfoManageMapper;
+import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
+import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 public class StationInfoManageService {
 
-	private StationInfoManageMapper stationMapper;
+	private final StationInfoManageMapper stationMapper;
 	
 	public List<Map<String, Object>> selectStationInfoPageList( Map<String, Object> params){
 		return stationMapper.selectStationInfoPageList(params);

@@ -268,7 +268,7 @@ public class SMSReq {
 			}
 			if (info.getMode().equals("PBX")) {
 				String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
-				Result submitResult = submitStationRequest("Station", "", "change", info);
+				Result submitResult = submitStationRequest("Station", "Extension","", "change", info);
 				if (submitResult.getResultCode() == 0) {
 					models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 					try {
@@ -495,7 +495,7 @@ public class SMSReq {
 		 * service for processing.
 		 * 
 		 */
-		private Result submitStationRequest(String model, String sObjectName, String sOperation, PbxMemberInfo info) {
+		private Result submitStationRequest(String model, String sFIELDS, String sObjectName, String sOperation, PbxMemberInfo info) {
 			
 			// Initialize Types
 			Result result = null;
@@ -512,21 +512,20 @@ public class SMSReq {
 				List<Object> modelList = (List<Object>) getModelMethod.invoke(modelChoices, new Object[] {});
 				
 				modelList.add(modelClass.newInstance());
-				
-				// 여기 부분이 에이전트 생성 
-				
 				objectFactory = new ObjectFactory();
-				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();//
-		        //AgentType ag_submit =objectFactory.createAgentType();
+				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();
 		        StationType st_submit = objectFactory.createStationType();
+		        
 		        int a = 1;
 		        if (!info.getPbxButton01().equals("")  ) {
 		        	String[] button01s = info.getPbxButton01().split(",");
 		        	if (button01s.length > 0) {
 		        		ArrayType button01 = objectFactory.createArrayType();
-			        	for (String button : button01s) {
-			        		button01.setPosition(a);
-			        		button01.setValue(button);
+		        		for (String button : button01s) {
+			        		if (!button.replace(" ", "").equals("")) {
+			        			button01.setPosition(a);
+				        		button01.setValue(button);	
+			        		}
 			        		a++;
 			        	}
 			        	st_submit.getButtonData1().add(button01);
@@ -539,8 +538,11 @@ public class SMSReq {
 		        	if (button02s.length > 0) {
 		        		ArrayType button02 = objectFactory.createArrayType();
 			        	for (String button : button02s) {
-			        		button02.setPosition(a);
-			        		button02.setValue(button);
+			        		if (!button.replace(" ", "").equals("")) {
+			        			button02.setPosition(a);
+				        		button02.setValue(button);	
+			        		}
+			        		
 			        		a++;
 			        	}
 			        	st_submit.getButtonData2().add(button02);
@@ -553,8 +555,11 @@ public class SMSReq {
 		        	if (button03s.length > 0) {
 		        		ArrayType button03 = objectFactory.createArrayType();
 			        	for (String button : button03s) {
-			        		button03.setPosition(a);
-			        		button03.setValue(button);
+			        		if (!button.replace(" ", "").equals("")) {
+			        			button03.setPosition(a);
+				        		button03.setValue(button);	
+			        		}
+			        		
 			        		a++;
 			        	}
 			        	st_submit.getButtonData3().add(button03);
@@ -567,8 +572,10 @@ public class SMSReq {
 		        	if (button04s.length > 0) {
 		        		ArrayType button04 = objectFactory.createArrayType();
 			        	for (String button : button04s) {
-			        		button04.setPosition(a);
-			        		button04.setValue(button);
+			        		if (!button.replace(" ", "").equals("")) {
+			        			button04.setPosition(a);
+				        		button04.setValue(button);	
+			        		}
 			        		a++;
 			        	}
 			        	st_submit.getButtonData4().add(button04);
@@ -581,8 +588,10 @@ public class SMSReq {
 		        	if (button05s.length > 0) {
 		        		ArrayType button05 = objectFactory.createArrayType();
 			        	for (String button : button05s) {
-			        		button05.setPosition(a);
-			        		button05.setValue(button);
+			        		if (!button.replace(" ", "").equals("")) {
+			        			button05.setPosition(a);
+				        		button05.setValue(button);	
+			        		}
 			        		a++;
 			        	}
 			        	st_submit.getButtonData5().add(button05);
@@ -595,8 +604,10 @@ public class SMSReq {
 		        	if (button06s.length > 0) {
 		        		ArrayType button06 = objectFactory.createArrayType();
 			        	for (String button : button06s) {
-			        		button06.setPosition(a);
-			        		button06.setValue(button);
+			        		if (!button.replace(" ", "").equals("")) {
+			        			button06.setPosition(a);
+				        		button06.setValue(button);	
+			        		}
 			        		a++;
 			        	}
 			        	st_submit.getButtonData6().add(button06);
@@ -609,8 +620,10 @@ public class SMSReq {
 		        	if (button07s.length > 0) {
 		        		ArrayType button07 = objectFactory.createArrayType();
 			        	for (String button : button07s) {
-			        		button07.setPosition(a);
-			        		button07.setValue(button);
+			        		if (!button.replace(" ", "").equals("")) {
+			        			button07.setPosition(a);
+				        		button07.setValue(button);	
+			        		}
 			        		a++;
 			        	}
 			        	st_submit.getButtonData7().add(button07);
@@ -625,18 +638,15 @@ public class SMSReq {
 		        st_submit.setName(info.getName());
 		        st_submit.setSecurityCode(info.getSecurityCode());
 		        st_submit.setDisplayLanguage(info.getPbxDisplayLangage());
-	            
 		        mf_add.getStation().add(st_submit);
 		        modelList.set(0, st_submit);
 		       
 				
 				submitRequest = new SubmitRequestType();
-				
-					
 				submitRequest.setModelFields(modelChoices);
 				submitRequest.setObjectname(sObjectName); 
 				submitRequest.setOperation(sOperation);
-				submitRequest.setQualifier(info.getLoginId());
+				submitRequest.setQualifier(info.getExtension());
 				
 				result = port.submitRequest(submitRequest.getModelFields(), submitRequest.getOperation(),
 						                    submitRequest.getObjectname(), submitRequest.getQualifier());

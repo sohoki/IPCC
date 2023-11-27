@@ -22,7 +22,7 @@
 		<typeAlias alias="AdminLoginVO"		type="egovframework.com.cmm.AdminLoginVO" />
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
-		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sys.svr.models.ServerInfo" />
+		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sym.svr.models.ServerInfo" />
 		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
 		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
 		<typeAlias alias="CmmnCode"			type="com.system.backoffice.bas.code.models.CmmnCode" />
@@ -41,6 +41,8 @@
 		<typeAlias alias="AdminInfo"  type="com.system.backoffice.uat.uia.models.AdminInfo" />
 		<typeAlias alias="AdminInfoVO"  type="com.system.backoffice.uat.uia.models.AdminInfoVO" />
 		<typeAlias alias="ConsultantInfo"  type="com.system.backoffice.uat.uia.models.ConsultantInfo" />
+		<typeAlias alias="StationInfo"  type="com.system.backoffice.sys.pbx.avaya.models.StationInfo" />
+		<typeAlias alias="StationInfoReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto" />
 		<typeAlias alias="ConsultantAgentInfo"  type="com.system.backoffice.uat.uia.models.ConsultantAgentInfo" />
 		<typeAlias alias="PartInfo"  type="com.system.backoffice.uat.uia.models.PartInfo" />
 		<typeAlias alias="PartInfoVO"  type="com.system.backoffice.uat.uia.models.PartInfoVO" />

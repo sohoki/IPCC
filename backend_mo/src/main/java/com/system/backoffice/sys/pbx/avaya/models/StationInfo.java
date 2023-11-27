@@ -1,4 +1,4 @@
-package com.system.ipcc.pbx.avaya.models;
+package com.system.backoffice.sys.pbx.avaya.models;
 
 
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.system.ipcc.pbx.avaya.web;
+package com.system.backoffice.sys.pbx.avaya.web;
 
 import java.util.List;
 import java.util.Map;
@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import com.system.ipcc.pbx.avaya.models.StationInfo;
-import com.system.ipcc.pbx.avaya.models.dto.StationInfoReqDto;
-import com.system.ipcc.pbx.avaya.service.StationInfoManageService;
+import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
+import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
+import com.system.backoffice.sys.pbx.avaya.service.StationInfoManageService;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.exception.NotFoundException;
@@ -95,6 +95,38 @@ public class StationInfoManageController {
 	@ApiOperation(value="업데이트", notes = "성공시 내선번호 업데이트 합니다.")
     @PostMapping("update.do")
 	public ModelAndView updateStationInfo(@RequestBody StationInfoReqDto vo, 
+			  							 		 HttpServletRequest request) throws Exception {
+    	
+    	
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+        	if (!jwtVerification.isVerificationAdmin(request)) {
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		String status = stationService.updateStationInfo(vo) > 0 ?
+			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+			String message = status.equals( Globals.STATUS_SUCCESS) ?
+					 	 egovMessageSource.getMessage("success.request.msg") :
+						 egovMessageSource.getMessage("fail.request.msg") ;
+			 model.addObject(Globals.STATUS, status);
+	   		 model.addObject(Globals.STATUS_MESSAGE, message);
+    	}catch(Exception e) {
+	   		 model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		 model.addObject(Globals.STATUS_MESSAGE, e.toString());
+	   	 }
+	   	 return model;
+    	
+    	
+    }
+	/**
+	 * 내선번호 업데이트 한다.
+	 */
+	@ApiOperation(value="조회된 내선번호 업데이트", notes = "성공시 조회된 내선번호를 업데이트 합니다.")
+    @PostMapping("updateExtesionList.do")
+	public ModelAndView insertStationListInfo(@RequestBody StationInfoReqDto vo, 
 			  							 		 HttpServletRequest request) throws Exception {
     	
     	

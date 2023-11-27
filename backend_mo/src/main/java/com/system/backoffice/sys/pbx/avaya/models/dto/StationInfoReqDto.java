@@ -1,4 +1,4 @@
-package com.system.ipcc.pbx.avaya.models.dto;
+package com.system.backoffice.sys.pbx.avaya.models.dto;
 
 import lombok.Getter;
 import lombok.Setter;
