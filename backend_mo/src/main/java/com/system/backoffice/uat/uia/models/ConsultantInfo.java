@@ -21,6 +21,7 @@ public class ConsultantInfo {
 	private String pbxCos;
 	private String pbxName;
 	private String pbxSecurityCode;
+	
 	private String pbxLoginId;
 	private String pbxStatus;
 	private String pbxRegDate;

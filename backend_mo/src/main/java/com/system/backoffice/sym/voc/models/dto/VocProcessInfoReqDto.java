@@ -19,6 +19,10 @@ public class VocProcessInfoReqDto {
 	private String vocProcessUserid;
 	private String vocProcessVisitedDay;
 	private String vocProcessVisitedTime;
+
+	private String vocProcessReservationDay;
+	private String vocProcessReservationTime;
+	
 	private String vocProcessEndDate;
 	private String vocProcess;
 	private String productCode;

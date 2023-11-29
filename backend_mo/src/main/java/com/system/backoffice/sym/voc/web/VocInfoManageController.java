@@ -67,7 +67,7 @@ public class VocInfoManageController {
 	private JwtVerification jwtVerification;
     
     @GetMapping("{vocSeq}")
-    public ModelAndView selectServerDetailInfo(@PathVariable String vocSeq,
+    public ModelAndView selectVocDetailInfo(@PathVariable String vocSeq,
     											HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
@@ -91,11 +91,39 @@ public class VocInfoManageController {
     	}
     	return model;
     }
+    @GetMapping("vocHistory/{vocSeq}.do")
+    public ModelAndView selectVocDetailHistoryInfo(@PathVariable String vocSeq,
+    												HttpServletRequest request)throws Exception {
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		Optional<VocInfo> info = vocMangeServiec.selectVocInfoDetail(vocSeq);
+    		info.orElseThrow(() -> new IllegalArgumentException("해당하는 VOC 정보가가 없습니다. 잘못된 입력하셨습니다."));
+    		
+    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+    		model.addObject(Globals.STATUS_REGINFO, info);
+    		model.addObject(Globals.JSON_RETURN_RESULT_LIST, vocProcessMangeServiec.selectVocProcessTotalList(vocSeq));
+    	}catch(Exception e) {
+    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    }
     @DeleteMapping("{vocSeq}.do")
-    public ModelAndView deleteServerDetailInfo(@PathVariable String vocSeq, 
+    public ModelAndView deleteVocInfo(@PathVariable String vocSeq, 
     											HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
     		int ret = vocMangeServiec.deleteVocInfo(vocSeq);
     		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
     		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.delete") : egovMessageSource.getMessage("fail.request.msg");
@@ -278,7 +306,7 @@ public class VocInfoManageController {
     		int ret = vocProcessMangeServiec.updateVocProcess(info);
     		
     		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
-    		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.delete") : egovMessageSource.getMessage("fail.request.msg");
+    		String message = (ret > 0) ? egovMessageSource.getMessage("success.request.msg") : egovMessageSource.getMessage("fail.request.msg");
     		model.addObject(Globals.STATUS, status);
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
     	}catch(Exception e) {
@@ -305,6 +333,31 @@ public class VocInfoManageController {
     		
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
     		model.addObject(Globals.STATUS_REGINFO, info);
+    		
+    	}catch(Exception e) {
+    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    }
+    @DeleteMapping("vocProcess/{vocProcessSeq}.do")
+    public ModelAndView deleteVocProcessDetailInfo(@PathVariable String vocProcessSeq,
+    											HttpServletRequest request)throws Exception {
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		
+    		int ret = vocProcessMangeServiec.deleteVocProcess(vocProcessSeq);
+    		
+    		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+    		String message = (ret > 0) ? egovMessageSource.getMessage("success.request.msg") : egovMessageSource.getMessage("fail.request.msg");
+    		model.addObject(Globals.STATUS, status);
+	   		model.addObject(Globals.STATUS_MESSAGE, message);
     		
     	}catch(Exception e) {
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);

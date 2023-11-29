@@ -12,7 +12,8 @@
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
 					   A.VOC_SEQ, A.VOC_SUBJECT, A.VOC_GUBUN, A.VOC_LOCATION, A.VOC_STATUS, A.VOC_PROCESS,
 					   A.VOC_REQ_REGDATE, A.VOC_REQ_USERID, A.VOC_RES_REGDATE, A.VOC_RES_USERID, A.VOC_RESPONSE, A.VOC_REQ,
-					   fn_DetailCodeNm( A.VOC_GUBUN) VOC_GUBUN_TXT, fn_DetailCodeNm( A.VOC_PROCESS) VOC_PROCESS_TXT
+					   fn_DetailCodeNm( A.VOC_GUBUN) VOC_GUBUN_TXT, fn_DetailCodeNm( A.VOC_PROCESS) VOC_PROCESS_TXT,
+					   fn_manageName(A.VOC_REQ_USERID) VOC_REQ_NM, fn_manageName(A.VOC_RES_USERID) VOC_RES_NM
 				FROM TB_VOCINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -23,6 +24,13 @@
 						A.VOC_LOCATION LIKE '%' ||  #{params.searchKeyword} || '%'
 					) 
 				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchVocGubun)">
+					AND A.VOC_GUBUN = #{params.searchVocGubun}
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchVocProcess)">
+					AND A.VOC_PROCESS = #{params.searchVocProcess}
+				</if>
+				
 			) TB 
 		) TA
 		ORDER BY TA.RNUM DESC 
@@ -30,7 +38,7 @@
 		
    	</select>
    	<select id="selectVocInfoDetail" resultType="VocInfo">
-		SELECT   VOC_SEQ, VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_STATUS,
+		SELECT  VOC_SEQ, VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_STATUS,
 				VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_RES_REGDATE, VOC_RES_USERID, VOC_RESPONSE, VOC_REQ
 		FROM TB_VOCINFO A
 		WHERE VOC_REQ = #{vocSeq}

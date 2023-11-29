@@ -16,6 +16,8 @@ public interface StationInfoManageMapper {
 	
 	public Optional<StationInfo> selectStationInfoDetail(String extension);
 	
+	public int insertStationInfoList(List<StationInfo> list);
+	
     public int insertStationInfo(StationInfoReqDto vo);
 	
     public int updateStationInfo(StationInfoReqDto vo);

@@ -36,6 +36,9 @@ public class VocProcessInfoManageService {
 		vocprocess.get().setVocFIles(files);
 		return vocprocess;
 	}
+	public List<Map<String, Object>> selectVocProcessTotalList(String vocSeq){
+		return vocMapper.selectVocProcessTotalList(vocSeq);
+	}
 	
 	@Transactional(readOnly = false)
     public int updateVocProcess(VocProcessInfoReqDto vo) {

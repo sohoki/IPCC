@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -34,6 +35,8 @@ import com.avaya.smsxml.SystemManagementService;
 import com.avaya.smsxml.TrunkGroupType;
 import com.avaya.smsxml.TrunkStatusType;
 import com.sun.xml.ws.developer.WSBindingProvider;
+import com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo;
+import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
 import com.system.ipcc.pbx.avaya.models.PbxMemberInfo;
 import com.system.ipcc.pbx.avaya.models.TrankGroupInfo;
 import com.system.ipcc.pbx.avaya.models.pbxType;
@@ -168,7 +171,7 @@ public class SMSReq {
 			this.releaseSession();
 			
 			if (submitResult != null) {
-				models.addObject("Result", submitResult);
+				models.addObject(Globals.JSON_RETURN_RESULT, submitResult);
 				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			}else {
 				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -225,11 +228,51 @@ public class SMSReq {
 			if (submitResult != null) {
 				models.addObject("TrankResult", trGruops);
 				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			}else {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			}
-			
 			return models;
+		}
+		//내선번호 조회
+		public List<StationInfo> execRequestStationInfo (List<String> extensions){
+			//값 먼저 조회
+			
+			SMSReq client = new SMSReq();
+    		String qualifier = "count 1";
+    		List<StationInfo> stations = null;
+    		Result submitResult;
+    		boolean loaded = client.loadProps("Station", "extension", "display", qualifier);
+    		if ( (client.isValid()) && loaded) // any args invalid
+    		{
+    			//접속이 되면 
+    			for (String extension : extensions) {
+    				submitResult = this.submitRequest("Station", "extension", "", "display", extension);
+    				
+    				if (submitResult.getResultCode() == 0) {
+    					StationInfo station = new StationInfo();
+    					
+    					station.builder().extension(extension)
+    									.security_code(submitResult.getResultData().getStation().get(0).getSecurityCode())
+    									.type(submitResult.getResultData().getStation().get(0).getType())
+    									.cor(submitResult.getResultData().getStation().get(0).getCOR())
+    									.cos(submitResult.getResultData().getStation().get(0).getCOS())
+    									.name(submitResult.getResultData().getStation().get(0).getName())
+    									.tn(submitResult.getResultData().getStation().get(0).getTN())
+    									.displayLangage(submitResult.getResultData().getStation().get(0).getDisplayLanguage())
+    									.button01(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData1()))
+    									.button02(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData2()))
+    									.button03(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData3()))
+    									.button04(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData4()))
+    									.button05(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData5()))
+    									.button06(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData6()))
+    									.button07(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData7()))
+    									.build();
+    					
+    					stations.add(station);
+    				}
+    			}
+    		} 
+			this.manageSession();
+			this.releaseSession();
+			return stations;
 		}
 		//pbx check
 		public int execRequestMemberCheck(PbxMemberInfo info, String _ckGubun) {
@@ -243,9 +286,7 @@ public class SMSReq {
 			// status 값 체크 하기 
 			if (_ckGubun.equals("Extension")) {
 				submitResult = this.submitRequest("Station", "extension", "", "display", info.getExtension());
-				System.out.println("submitResult ========== " +submitResult);
 				result = submitResult.getResultCode();
-				
 			}else {
 				submitResult = this.submitRequest("Agent", "Login_ID|Name|Extension", "", "display", info.getLoginId());
 				result = submitResult.getResultCode();
@@ -436,8 +477,6 @@ public class SMSReq {
 				// Service QName for Static Service instance
 				QName serviceName = new QName(WS_DEFAULT_NAMESPACE,"SystemManagementService");
 				sms = new SystemManagementService(localWSDL, serviceName);
-				System.out.println("================= sms ==================");
-
 				port = sms.getSystemManagementPort();
 				bp = (WSBindingProvider) port;
 				
@@ -800,10 +839,7 @@ public class SMSReq {
 				List<Object> modelList = (List<Object>) getModelMethod.invoke(modelChoices, new Object[] {});
 				
 				modelList.add(modelClass.newInstance());
-				
 				modelList.set(0, populateFields(modelList.get(0), sFIELDS));
-				System.out.println("submitRequest");
-				
 				submitRequest = new SubmitRequestType();
 				submitRequest.setModelFields(modelChoices);
 				submitRequest.setObjectname(sObjectName); 
@@ -811,9 +847,6 @@ public class SMSReq {
 				submitRequest.setQualifier(sQUALIFIER);
 
 				// Display what we're about to execute
-				System.out.println("\n" + login + " is submitting request: \n"
-						+ "[ " + submitRequest.getOperation() + " " +  model + " ]\n" + "via " + root + "\n");
-				
 				result = port.submitRequest(submitRequest.getModelFields(), submitRequest.getOperation(),
 						                    submitRequest.getObjectname(), submitRequest.getQualifier());
 

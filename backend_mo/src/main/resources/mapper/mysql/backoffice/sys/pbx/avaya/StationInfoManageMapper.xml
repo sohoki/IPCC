@@ -34,6 +34,22 @@
 		FROM TB_STATIONINFO A
 		WHERE EXTENSION = #{extension}
    	</select>
+   	<insert id="insertStationInfoList">
+   		INSERT INTO TB_STATIONINFO	
+		(
+		    EXTENSION, TYPE, COR, COS, NAME, TN, SECURITY_CODE, DISPLAY_LANGAGE, CONSULT_USEYN
+			BUTTON01, BUTTON02, BUTTON03, BUTTON04, BUTTON05, BUTTON06, BUTTON07, UPDATE_DATE
+		)
+		VALUES 
+		<foreach collection="list" item="item" separator=",">
+		(
+		 #{item.extension}, #{item.type}, #{item.cor,jdbcType=VARCHAR}, #{item.cos,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR}, #{item.tn,jdbcType=VARCHAR},
+		 #{item.securityCode}, #{item.item.displayLangage,jdbcType=VARCHAR}, 'N',
+		 #{item.button01,jdbcType=VARCHAR}, #{item.button02,jdbcType=VARCHAR}, #{item.button03,jdbcType=VARCHAR}, #{item.button04,jdbcType=VARCHAR},
+		 #{item.button05,jdbcType=VARCHAR}, #{item.button06,jdbcType=VARCHAR}, #{item.button07,jdbcType=VARCHAR},  NOW()
+		 )
+		</foreach>
+   	</insert>
    	<insert id="insertStationInfo">
 		INSERT INTO TB_STATIONINFO	
 		(

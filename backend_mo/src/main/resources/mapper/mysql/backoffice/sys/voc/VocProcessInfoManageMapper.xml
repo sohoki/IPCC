@@ -10,11 +10,15 @@
 			FROM 	
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
-					    A.VOC_SEQ, A.VOC_PROCESS_SEQ, A.VOC_PROCESS_USERID, A.VOC_PROCESS_VISITED_DAY, A.VOC_PROCESS_VISITED_TIME, A.VOC_PROCESS_END_DATE, A.VOC_PROCESS,
-						A.PRODUCT_CODE, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID,
-						A.VOC_PROCESS_DC
-				FROM TB_VOC_PROCESSINFO A,  (select @ROWNUM := 0) RN_TB
-				WHERE A.VOC_SEQ = #{params.vocSeq}
+					    A.VOC_SEQ, A.VOC_PROCESS_SEQ, A.VOC_PROCESS_USERID, 
+					    A.VOC_PROCESS_VISITED_DAY, A.VOC_PROCESS_VISITED_TIME, A.VOC_PROCESS_END_DATE, A.VOC_PROCESS,
+						A.VOC_PROCESS_RESERVATION_DAY, A.VOC_PROCESS_RESERVATION_TIME,
+					    A.PRODUCT_CODE, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID,
+						A.VOC_PROCESS_DC, B.ADMIN_NAME,
+						fn_DetailCodeNm( A.VOC_PROCESS) VOC_PROCESS_TXT
+				FROM TB_VOC_PROCESSINFO A, TB_MANAGERINFO B, (select @ROWNUM := 0) RN_TB
+				WHERE A.VOC_PROCESS_USERID= B.ADMIN_ID
+					  AND A.VOC_SEQ = #{params.vocSeq}
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 					AND 
 					( 
@@ -31,10 +35,21 @@
 		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
 		
    	</select>
-   	<select id="selectVocProcessDetail" resultType="VocInfo">
-		SELECT  VOC_SEQ, VOC_PROCESS_SEQ, VOC_PROCESS_USERID, VOC_PROCESS_VISITED_DAY, VOC_PROCESS_VISITED_TIME, VOC_PROCESS_END_DATE, VOC_PROCESS,
-				PRODUCT_CODE, FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID,
-				VOC_PROCESS_DC
+   	<select id="selectVocProcessTotalList" resultType="camelmap">    
+		SELECT  A.VOC_PROCESS_VISITED_DAY, A.VOC_PROCESS_VISITED_TIME, A.VOC_PROCESS_USERID, 
+				A.VOC_PROCESS, A.VOC_PROCESS_DC
+				B.ADMIN_NAME, fn_DetailCodeNm( A.VOC_PROCESS) VOC_PROCESS_TXT
+		FROM TB_VOC_PROCESSINFO A, TB_MANAGERINFO B, (select @ROWNUM := 0) RN_TB
+		WHERE A.VOC_PROCESS_USERID= B.ADMIN_ID
+			  AND A.VOC_SEQ = #{params.vocSeq}
+		ORDER BY VOC_PROCESS_SEQ ASC 
+   	</select>
+   	<select id="selectVocProcessDetail" resultType="VocProcessInfoResDto">
+		SELECT  A.VOC_SEQ, A.VOC_PROCESS_SEQ, A.VOC_PROCESS_USERID, 
+			    A.VOC_PROCESS_VISITED_DAY, A.VOC_PROCESS_VISITED_TIME, A.VOC_PROCESS_END_DATE, A.VOC_PROCESS,
+				A.VOC_PROCESS_RESERVATION_DAY, A.VOC_PROCESS_RESERVATION_TIME,
+			    A.PRODUCT_CODE, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID,
+				A.VOC_PROCESS_DC
 		FROM TB_VOC_PROCESSINFO A
 		WHERE VOC_PROCESS_SEQ = #{VocProcessSeq}
    	</select>
@@ -43,28 +58,43 @@
 		(
 		    VOC_SEQ, VOC_PROCESS_USERID, VOC_PROCESS_VISITED_DAY, VOC_PROCESS_VISITED_TIME, VOC_PROCESS_END_DATE, 
 		    VOC_PROCESS, PRODUCT_CODE, 
+		    VOC_PROCESS_RESERVATION_TIME, VOC_PROCESS_RESERVATION_DAY,
 			FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID,
 			VOC_PROCESS_DC
 		)
 		VALUES 
 		(
-			#{vocSeq}, #{vocProcessUserid}, #{vocProcessVisitedDay,jdbcType=VARCHAR},  #{vocProcessVisitedTime,jdbcType=VARCHAR}, #{vocProcessEndDate,jdbcType=VARCHAR}, 
+			#{vocSeq}, #{vocProcessUserid}, #{vocProcessVisitedDay,jdbcType=VARCHAR},  #{vocProcessVisitedTime,jdbcType=VARCHAR}, NOW(), 
 			#{vocProcess,jdbcType=VARCHAR}, #{productCode,jdbcType=VARCHAR}, 	
+			#{vocProcessReservationDay,jdbcType=VARCHAR},  #{vocProcessReservationTime,jdbcType=VARCHAR},
 			NOW(), #{userId}, NOW(), #{userId},
 			#{vocProcessDc,jdbcType=VARCHAR}
-		)
+		);
+		UPDATE TB_VOCINFO SET VOC_RES_USERID = #{vocProcessUserid},
+							  VOC_RES_REGDATE = NOW(),
+							  VOC_PROCESS = #{vocProcess,jdbcType=VARCHAR},
+							  VOC_RESPONSE = #{vocProcessDc,jdbcType=VARCHAR}
+		WHERE VOC_SEQ = #{vocSeq};
    	</insert>
 	<update id="updateVocProcess">
 		UPDATE TB_VOC_PROCESSINFO SET  VOC_PROCESS_USERID = #{vocProcessUserid}, 
 									   VOC_PROCESS_VISITED_DAY = #{vocProcessVisitedDay,jdbcType=VARCHAR}, 
 									   VOC_PROCESS_VISITED_TIME = #{vocProcessVisitedTime,jdbcType=VARCHAR}, 
-									   VOC_PROCESS_END_DATE = #{vocProcessEndDate,jdbcType=VARCHAR}, 
+									   VOC_PROCESS_RESERVATION_TIME = #{vocProcessReservationTime,jdbcType=VARCHAR}, 
+									   VOC_PROCESS_RESERVATION_DAY = #{vocProcessReservationDay,jdbcType=VARCHAR}, 
+									   VOC_PROCESS_END_DATE = NOW(), 
 									   VOC_PROCESS = #{vocProcess}, 
 									   PRODUCT_CODE = #{productCode,jdbcType=VARCHAR},
 									   VOC_PROCESS_DC = #{vocProcessDc,jdbcType=VARCHAR},
 									   LAST_UPDT_PNTTM = NOW(),
 									   LAST_UPDUSR_ID =  #{userId}
-       	WHERE VOC_PROCESS_SEQ = #{vocProcessSeq}
+       	WHERE VOC_PROCESS_SEQ = #{vocProcessSeq};
+       	
+       	UPDATE TB_VOCINFO SET VOC_RES_USERID = #{vocProcessUserid},
+							  VOC_RES_REGDATE = NOW(),
+							  VOC_PROCESS = #{vocProcess,jdbcType=VARCHAR},
+							  VOC_RESPONSE = #{vocProcessDc,jdbcType=VARCHAR}
+		WHERE VOC_SEQ = #{vocSeq};
    	</update>
    	
    	<delete id="deleteVocProcess">

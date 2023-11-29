@@ -12,6 +12,8 @@ public interface VocProcessInfoManageMapper {
 
 	public List<Map<String, Object>> selectVocProcessPageList(@Param("params") Map<String, Object> params);
 	
+	public List<Map<String, Object>> selectVocProcessTotalList(String vocSeq);
+	
 	public Optional<VocProcessInfoResDto> selectVocProcessDetail(String VocProcessSeq);
 	
     public int insertVocProcess(VocProcessInfoReqDto vo);

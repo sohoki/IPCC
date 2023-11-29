@@ -1,5 +1,6 @@
 package com.system.backoffice.sys.pbx.avaya.web;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
 import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
 import com.system.backoffice.sys.pbx.avaya.service.StationInfoManageService;
+import com.system.ipcc.pbx.avaya.service.smsxml.SMSReq;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.exception.NotFoundException;
@@ -125,8 +127,8 @@ public class StationInfoManageController {
 	 * 내선번호 업데이트 한다.
 	 */
 	@ApiOperation(value="조회된 내선번호 업데이트", notes = "성공시 조회된 내선번호를 업데이트 합니다.")
-    @PostMapping("updateExtesionList.do")
-	public ModelAndView insertStationListInfo(@RequestBody StationInfoReqDto vo, 
+    @GetMapping("updateExtesionList.do")
+	public ModelAndView insertStationListInfo(@PathVariable String extensionlist, 
 			  							 		 HttpServletRequest request) throws Exception {
     	
     	
@@ -138,7 +140,11 @@ public class StationInfoManageController {
         		ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
         	}
-    		String status = stationService.updateStationInfo(vo) > 0 ?
+        	
+        	//값 가지고 오기 
+        	List<String> list = Arrays.asList(extensionlist.split(","));
+        	SMSReq client = new SMSReq();
+    		String status = stationService.insertStationInfoList(client.execRequestStationInfo(list)) > 0 ?
 			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = status.equals( Globals.STATUS_SUCCESS) ?
 					 	 egovMessageSource.getMessage("success.request.msg") :

@@ -27,7 +27,10 @@ public class StationInfoManageService {
 	public Optional<StationInfo> selectStationInfoDetail(String extension){
 		return stationMapper.selectStationInfoDetail(extension);
 	}
-	
+	@Transactional(readOnly = false)
+    public int insertStationInfoList(List<StationInfo> extensionList) {
+		return stationMapper.insertStationInfoList(extensionList);
+    }
 	@Transactional(readOnly = false)
     public int updateStationInfo(StationInfoReqDto vo) {
     	return vo.getMode().equals("Ins") ? stationMapper.insertStationInfo(vo) : stationMapper.updateStationInfo(vo);
