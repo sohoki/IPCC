@@ -34,7 +34,8 @@
 		
 		<typeAlias alias="VocInfoRequestDto" type="com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto" />
 		<typeAlias alias="VocProcessInfoResDto" type="com.system.backoffice.sym.voc.models.dto.VocProcessInfoResDto" />
-		<typeAlias alias="VocInfo"	         type="com.system.backoffice.sym.voc.models.VocInfo" />
+		<typeAlias alias="VocInfo"	        type="com.system.backoffice.sym.voc.models.VocInfo" />
+		<typeAlias alias="VocInfoResDto"	type="com.system.backoffice.sym.voc.models.dto.VocInfoResDto" />
 		
 		<typeAlias alias="RoleInfo"	         type="com.system.backoffice.uat.role.models.RoleInfo" />
 		<typeAlias alias="RoleInfoRequestDto"  type="com.system.backoffice.uat.role.models.dto.RoleInfoRequestDto" />

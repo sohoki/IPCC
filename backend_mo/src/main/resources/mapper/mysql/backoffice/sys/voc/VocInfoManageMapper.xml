@@ -37,11 +37,13 @@
 		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
 		
    	</select>
-   	<select id="selectVocInfoDetail" resultType="VocInfo">
+   	<select id="selectVocInfoDetail" resultType="VocInfoResDto">
 		SELECT  VOC_SEQ, VOC_SUBJECT, VOC_GUBUN, VOC_LOCATION, VOC_STATUS,
+				fn_DetailCodeNm(VOC_GUBUN) VOC_GUBUN_TXT, fn_DetailCodeNm(VOC_PROCESS) VOC_PROCESS_TXT,
+				fn_manageName(A.VOC_REQ_USERID) VOC_REQ_NM, fn_manageName(A.VOC_RES_USERID) VOC_RES_NM,
 				VOC_REQ_REGDATE, VOC_REQ_USERID, VOC_RES_REGDATE, VOC_RES_USERID, VOC_RESPONSE, VOC_REQ
 		FROM TB_VOCINFO A
-		WHERE VOC_REQ = #{vocSeq}
+		WHERE VOC_SEQ = #{vocSeq}
    	</select>
    	<insert id="insertVocInfo">
 		INSERT INTO TB_VOCINFO	

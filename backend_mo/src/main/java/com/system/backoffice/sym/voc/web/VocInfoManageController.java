@@ -66,7 +66,7 @@ public class VocInfoManageController {
 	@Autowired
 	private JwtVerification jwtVerification;
     
-    @GetMapping("{vocSeq}")
+    @GetMapping("{vocSeq}.do")
     public ModelAndView selectVocDetailInfo(@PathVariable String vocSeq,
     											HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);

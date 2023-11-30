@@ -1,18 +1,12 @@
-package com.system.backoffice.sym.voc.models;
+package com.system.backoffice.sym.voc.models.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-public class VocInfo {
-	
+public class VocInfoResDto {
+
 	private String vocSeq;
 	private String vocSubject;
 	private String vocGubun;
@@ -25,5 +19,8 @@ public class VocInfo {
 	private String vocResUserid;
 	private String vocResponse;
 	private String vocReq;
-
+	private String vocGubunTxt;
+	private String vocProcessTxt;
+	private String vocReqNm;
+	private String vocResNm;
 }
