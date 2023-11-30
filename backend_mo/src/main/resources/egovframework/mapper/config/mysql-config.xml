@@ -23,6 +23,8 @@
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
 		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
 		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sym.svr.models.ServerInfo" />
+		<typeAlias alias="ServerInfoRequestDto"		type="com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto" />
+		
 		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
 		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
 		<typeAlias alias="CmmnCode"			type="com.system.backoffice.bas.code.models.CmmnCode" />

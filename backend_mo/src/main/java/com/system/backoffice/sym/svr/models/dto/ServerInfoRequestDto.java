@@ -30,6 +30,12 @@ public class ServerInfoRequestDto {
 	private String lastUpdusrId;
 	private String serverDc;
 	private String serverUseyn;
+	private String systemCode;
+	private String serverId;
+	private String serverPassword;
+	private String serverOidCheckUseyn;
+	private String comCodeNumber;
+	
 	
 	private String userId;
 }

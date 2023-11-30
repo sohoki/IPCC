@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +30,14 @@ import egovframework.com.jwt.config.JwtVerification;
 
 
 @RestController
-@RequestMapping("/api/backoffice/sys/svr/")
+@RequestMapping("/api/backoffice/sym/svr/")
 public class ServerInfoManageController {
+	
+	@Value("${page.pageUnit}")
+    private int pageUnitSetting ;
+    
+    @Value("${page.pageSize}")
+    private int pageSizeSetting ;
 
 	
 	/** EgovPropertyService */
@@ -73,7 +80,7 @@ public class ServerInfoManageController {
     	}
     	return model;
     }
-    @DeleteMapping("{serverSeq}")
+    @DeleteMapping("{serverSeq}.do")
     public ModelAndView deleteServerDetailInfo(@PathVariable String serverSeq
     											, HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
@@ -97,7 +104,7 @@ public class ServerInfoManageController {
     	}
     	return model;
     }
-    @PostMapping("updateServer")
+    @PostMapping("updateServer.do")
     public ModelAndView updateServerInfo(@Valid @RequestBody ServerInfoRequestDto info
     									, HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
@@ -115,7 +122,7 @@ public class ServerInfoManageController {
     		int ret = serverMangeServiec.updateServerInfo(info);
     		
     		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
-    		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.delete") : egovMessageSource.getMessage("fail.request.msg");
+    		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.update") : egovMessageSource.getMessage("fail.request.msg");
     		model.addObject(Globals.STATUS, status);
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
     	}catch(Exception e) {
@@ -124,7 +131,7 @@ public class ServerInfoManageController {
     	}
     	return model;
     }
-    @PostMapping("list")
+    @PostMapping("list.do")
     public ModelAndView  selectServerInfoPageList(@RequestBody Map<String, Object> searchMap 
 												 , HttpServletRequest request
 												 , BindingResult bindingResult) throws Exception {
@@ -135,14 +142,14 @@ public class ServerInfoManageController {
         		ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
         	}
-    		
-            int pageUnit = searchMap.get("pageUnit") == null ?   propertyService.getInt("pageUnit") : Integer.valueOf((String) searchMap.get("pageUnit"));
-    		int pageSize = searchMap.get("pageSize") == null ?   propertyService.getInt("pageSize") : Integer.valueOf((String) searchMap.get("pageSize"));  
+    		   
+    		int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
+    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
     	   
     	    
         	/** pageing */
         	PaginationInfo paginationInfo = new PaginationInfo();
-    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get("pageIndex").toString() ));
+    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX).toString() ));
     		paginationInfo.setRecordCountPerPage(pageUnit);
     		paginationInfo.setPageSize(pageSize);
 

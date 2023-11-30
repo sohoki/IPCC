@@ -14,7 +14,7 @@ import com.system.backoffice.sym.svr.models.ServerInfo;
 
 import lombok.RequiredArgsConstructor;
 
-@Transactional(readOnly = true)
+@Transactional(readOnly = false)
 @RequiredArgsConstructor
 @Service
 public class ServerInfoManageService {
