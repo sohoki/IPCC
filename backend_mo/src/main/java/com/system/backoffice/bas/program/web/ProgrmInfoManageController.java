@@ -31,8 +31,12 @@ import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
+@Api(tags = {"프로그램 API"})
 @Slf4j
 @RestController
 @RequestMapping("/api/backoffice/sys/prog")
@@ -62,6 +66,7 @@ public class ProgrmInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="프로그램 목록 조회", notes="프로그램 목록 조회 상세")
 	@PostMapping("programList.do")
 	public ModelAndView selectProgrmInfoListAjax(@RequestBody Map<String, Object> searchVO,
 			HttpServletRequest request) throws Exception {
@@ -73,22 +78,18 @@ public class ProgrmInfoManageController {
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
     	}
 		
-		System.out.println("pageIndex:" + searchVO.get("pageIndex") + ":" + searchVO.get("pageSize"));
-		
-		int pageUnit = searchVO.get("pageUnit") == null ? propertiesService.getInt("pageUnit")
-				: Integer.valueOf((String) searchVO.get("pageUnit"));
+		int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ? propertiesService.getInt(Globals.PAGE_UNIT)
+				: Integer.valueOf((String) searchVO.get(Globals.PAGE_UNIT));
 		  
    	    PaginationInfo paginationInfo = new PaginationInfo();
-	    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get("pageIndex"),"1")));
-	    paginationInfo.setRecordCountPerPage(pageUnit);
-	    paginationInfo.setPageSize(propertiesService.getInt("pageSize"));
+	    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get(Globals.PAGE_INDEX),"1")));
+	    paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_SIZE));
+	    paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_SIZE));
 	    
 
-	    searchVO.put("firstIndex", paginationInfo.getFirstRecordIndex());
-	    searchVO.put("lastRecordIndex", paginationInfo.getLastRecordIndex());
-	    searchVO.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
-	    
-	    System.out.println("firstIndex:" + paginationInfo.getFirstRecordIndex() + ":" +paginationInfo.getRecordCountPerPage() + ":" + searchVO.get("pageIndex"));
+	    searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+	    searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+	    searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
 	    
 	    
 		List<ProgrmInfoDto> list = progrmService .selectProgrmInfoList(searchVO);
@@ -110,6 +111,7 @@ public class ProgrmInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="프로그램 정보 저장", notes="프로그램 정보 저장")
 	@PostMapping ("programInfo.do")
 	public ModelAndView updateProgrmInfo(@Valid @RequestBody ProgrmInfoDto progrmInfoDto,
 										 HttpServletRequest request) throws Exception{
@@ -156,10 +158,19 @@ public class ProgrmInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="프로그램 정보 삭제", notes="프로그램 정보 삭제")
+	@ApiImplicitParam(name = "progrmFileNm", value = "프로그램 생성시 발급되는 progrmFileNm")
 	@DeleteMapping ("{progrmFileNm}.do")
 	public ModelAndView deleteProgrmInfoManage(@PathVariable String progrmFileNm, 
 												HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
+		
+
+		if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
+		
 		
 		int ret = progrmService.deleteProgrmInfo(progrmFileNm);
 		if (ret > 0) {
@@ -180,12 +191,19 @@ public class ProgrmInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="프로그램 코드 중복 체크", notes="프로그램 코드 중복 체크")
 	@NoLogging
     @GetMapping ("programIDCheck/{progrmFileNm}.do")
     public ModelAndView programIDCheck(@PathVariable String progrmFileNm, 
     								  HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
-    	
+
+		if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
+		
+		
     	int ret = uniMangeServiec.selectIdDoubleCheckString("PROGRM_FILE_NM", "COMTNPROGRMLIST", "PROGRM_FILE_NM = ["+ progrmFileNm + "[");
     	if (ret == 0) {
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);

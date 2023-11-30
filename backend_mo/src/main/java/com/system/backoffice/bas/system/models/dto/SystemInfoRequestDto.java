@@ -22,8 +22,11 @@ public class SystemInfoRequestDto {
 	private String systemCode;
 	@NotBlank(message="시스템명를 입력해 주세요.")
 	private String systemName;
+	@NotBlank(message="시스템 구분를 선택해 주세요.")
+	private String systemGubun;
 	private String domainInfo;
 	private String systemDc;
+	private String systemUseyn;
 	private String systemCreatedc;
 	private String userId;
 }

@@ -19,9 +19,9 @@
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 					AND 
 					( 
-						A.VOC_SUBJECT LIKE '%'|| #{params.searchKeyword} || '%' 
+						A.VOC_SUBJECT LIKE  CONCAT ('%', #{params.searchKeyword},'%') 
 						OR
-						A.VOC_LOCATION LIKE '%' ||  #{params.searchKeyword} || '%'
+						A.VOC_LOCATION LIKE  CONCAT ('%', #{params.searchKeyword},'%') 
 					) 
 				</if>
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchVocGubun)">

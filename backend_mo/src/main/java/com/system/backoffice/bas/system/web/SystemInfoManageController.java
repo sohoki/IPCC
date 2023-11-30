@@ -30,6 +30,7 @@ import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -59,6 +60,7 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+    @ApiOperation(value="시스템 리스트 ", notes="통합 시스템 리스트")
 	@PostMapping("systemList.do")
 	public ModelAndView selectSystemInfoListAjax(@RequestBody Map<String, Object> searchVO,
 			HttpServletRequest request) throws Exception {
@@ -98,6 +100,7 @@ public class SystemInfoManageController {
 		
 		return model;
 	}
+    @ApiOperation(value="시스템 combo ", notes="통합 시스템 combo box")
 	@GetMapping("systemCombo.do")
 	public ModelAndView systemCombo(@PathVariable String searchUseyn,
 			HttpServletRequest request) throws Exception {
@@ -123,6 +126,7 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+    @ApiOperation(value="시스템 정보 저장 ", notes="시스템 정보 저장")
 	@PostMapping ("systemInfo.do")
 	public ModelAndView updateSystemInfo(@Valid @RequestBody SystemInfoRequestDto SystemInfoDto,
 										 HttpServletRequest request) throws Exception{
@@ -161,6 +165,7 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+    @ApiOperation(value="시스템 정보 삭제", notes="시스템 정보 삭제")
 	@DeleteMapping ("{systemCode}.do")
 	public ModelAndView deleteSystemInfoManage(@PathVariable String systemCode, 
 												HttpServletRequest request) throws Exception {
@@ -185,6 +190,7 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+    @ApiOperation(value="시스템 정보 중복 체크", notes="시스템 정보 중복 체크")
 	@NoLogging
     @GetMapping ("systemIDCheck/{systemCode}.do")
     public ModelAndView programIDCheck(@PathVariable String systemCode, 
