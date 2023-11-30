@@ -62,8 +62,8 @@ public class PartInfoManageController {
 	@Autowired
 	private JwtVerification jwtVerification;
 	 
-	 @PostMapping("partList.do")
-	 public ModelAndView selectPartManagerList( @RequestBody Map<String, Object> searchVO 
+	@PostMapping("partList.do")
+	public ModelAndView selectPartManagerList( @RequestBody Map<String, Object> searchVO 
 												 , HttpServletRequest request
 												 , BindingResult bindingResult) throws Exception {  
 		 

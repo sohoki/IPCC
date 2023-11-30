@@ -16,9 +16,11 @@ import lombok.Setter;
 public class SystemInfo {
 
 	private String systemCode;
+	private String systemGubun;
 	private String systemName;
 	private String systemDc;
 	private String domainInfo;
+	private String systemUseyn;
 	private String systemCreatedc;
 	
 }

@@ -15,7 +15,11 @@ public class SystemInfoResDto {
 
 	private String systemCode;
 	private String systemName;
+	private String systemGubun;
+	private String systemGubunTxt;
 	private String systemDc;
+	private String systemUseyn;
+	
 	private String domainInfo;
 	private String systemCreatedc;
 	private String userId;

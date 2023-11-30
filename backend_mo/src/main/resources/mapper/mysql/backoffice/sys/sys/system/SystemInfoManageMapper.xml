@@ -11,16 +11,20 @@
 			FROM 	
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
-					 A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN
+					 A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN,
+					 A.SYSTEM_GUBUN, fn_DetailCodeNm( A.SYSTEM_GUBUN) SYSTEM_GUBUN_TXT
 				FROM TB_SYSTEMINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 					AND 
 					( 
-						A.SYSTEM_CODE LIKE '%' #{params.searchKeyword} '%' 
+						A.SYSTEM_CODE LIKE  CONCAT ('%', #{params.searchKeyword},'%') 
 						OR
-						A.SYSTEM_NAME LIKE '%' #{params.searchKeyword} '%'
+						A.SYSTEM_NAME LIKE  CONCAT ('%', #{params.searchKeyword},'%') 
 					) 
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchSystemGubun)">
+					AND A.SYSTEM_GUBUN = #{params.searchSystemGubun}
 				</if>
 			) TB 
 		) TA
@@ -37,27 +41,29 @@
 		</if>
 	</select>
    	<select id="selectSystemInfoDetail" resultType="SystemInfoResDto">
-		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN
+		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN,
+			   A.SYSTEM_GUBUN
 		FROM TB_SYSTEMINFO A
 		WHERE A.PROGRM_FILE_NM = #{progrmFileNm}
    	</select>
 	<insert id="insertSystemInfo">
 		INSERT INTO TB_SYSTEMINFO	
 		(
-		    SYSTEM_CODE, SYSTEM_NAME, SYSTEM_DC, SYSTEM_CREATEDC, DOMAIN_INFO ,SYSTEM_USEYN
+		    SYSTEM_CODE, SYSTEM_NAME, SYSTEM_DC, SYSTEM_CREATEDC, DOMAIN_INFO ,SYSTEM_USEYN, SYSTEM_GUBUN
 		)
 		VALUES 
 		(
 			#{systemCode}, #{systemName}, #{systemDc,jdbcType=VARCHAR}, NOW(), #{domainInfo,jdbcType=VARCHAR}
-			, #{systemUseyn,jdbcType=VARCHAR}
+			, #{systemUseyn,jdbcType=VARCHAR}, #{systemGubun} 
 		)
    	</insert>
 
 	<update id="updateSystemInfo">
-		UPDATE TB_SYSTEMINFO SET SYSTEM_NAME = #{systemName,jdbcType=VARCHAR}, 
+		UPDATE TB_SYSTEMINFO SET SYSTEM_NAME = #{systemName}, 
 								 DOMAIN_INFO = #{domainInfo,jdbcType=VARCHAR}, 
 		                         SYSTEM_DC = #{systemDc, jdbcType=VARCHAR}  ,
-		                         SYSTEM_USEYN =#{systemUseyn,jdbcType=VARCHAR} 
+		                         SYSTEM_USEYN =#{systemUseyn,jdbcType=VARCHAR} ,
+		                         SYSTEM_GUBUN = #{systemGubun}
        	WHERE SYSTEM_CODE = #{systemCode}
    	</update>
    	
