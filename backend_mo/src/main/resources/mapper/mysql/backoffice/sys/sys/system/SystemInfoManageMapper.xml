@@ -36,8 +36,8 @@
 		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME
 		FROM TB_SYSTEMINFO A
 		WHERE 1=1 
-		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(searchUseyn)">
-		      AND A.SYSTEM_USEYN = #{searchUseyn}
+		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemUseyn)">
+		      AND A.SYSTEM_USEYN = #{systemUseyn}
 		</if>
 	</select>
    	<select id="selectSystemInfoDetail" resultType="SystemInfoResDto">

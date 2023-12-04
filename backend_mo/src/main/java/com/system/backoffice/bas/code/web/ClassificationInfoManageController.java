@@ -28,8 +28,12 @@ import egovframework.com.cmm.exception.NotFoundException;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+
+
+@Api(tags = {"상담분류 코드 정보 API"})
 @RestController
 @RequestMapping("/api/backoffice/sys/cmm/cls")
 public class ClassificationInfoManageController {

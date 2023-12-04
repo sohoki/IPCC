@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sym.svr.mapper.ServiceInfoManageMapper">
+	<select id="selectServiceInfoPageList" resultType="camelmap">     	      
+		SELECT * FROM 
+		( 
+			SELECT 	
+				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				TB.* 
+			FROM 	
+			(	
+				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+						A.SERVICE_SEQ, A.SERVER_CODE, A.SERVICE_NAME, A.SERVICE_PORT, 
+						A.LICENSE_TYPE, A.LICENSE_KEY, A.LICENSE_STARTDAY, A.LICENSE_ENDDAY,  A.LICENSE_COUNT,
+						A.LICENSE_DC, A.COM_CODE_NUMBER, A.SERVICE_OID_USEYN, A.SERVICE_SNMP_VERSION,
+						A.SERVICE_SNMP_COMMUNITY_NAME, A.SERVICE_SNMP_ID, A.SERVICE_SNMP_PASSWORD,
+						A.SERVICE_SNMP_AUTHENTICATION, A.SERVICE_SNMP_PRIVACY,
+						A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID
+				FROM TB_SERVER_SERVICEINFO A, (select @ROWNUM := 0) RN_TB
+				WHERE 1=1
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+					AND 
+					( 
+						A.SERVICE_NAME LIKE CONCAT ('%', #{params.searchKeyword},'%')  
+					) 
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchServerCode)">
+					AND  A.SERVER_CODE = #{params.searchServerCode}
+				</if>
+			) TB 
+		) TA
+		ORDER BY TA.RNUM DESC 
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+		
+   	</select>
+   	<select id="selectServiceInfoDetail" resultType="ServiceInfo">
+		SELECT  A.SERVICE_SEQ, A.SERVER_CODE, A.SERVICE_NAME, A.SERVICE_PORT, 
+				A.LICENSE_TYPE, A.LICENSE_KEY, A.LICENSE_STARTDAY, A.LICENSE_ENDDAY,  A.LICENSE_COUNT,
+				A.LICENSE_DC, A.COM_CODE_NUMBER, A.SERVICE_OID_USEYN, A.SERVICE_SNMP_VERSION,
+				A.SERVICE_SNMP_COMMUNITY_NAME, A.SERVICE_SNMP_ID, A.SERVICE_SNMP_PASSWORD,
+				A.SERVICE_SNMP_AUTHENTICATION, A.SERVICE_SNMP_PRIVACY,
+				A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID
+		FROM TB_SERVER_SERVICEINFO A
+		WHERE A.SERVICE_SEQ = #{serviceSeq}
+   	</select>
+   	<insert id="insertServiceInfo">
+		INSERT INTO TB_SERVER_SERVICEINFO	
+		(
+		    SERVER_CODE, SERVICE_NAME, SERVICE_PORT, 
+			LICENSE_TYPE, LICENSE_KEY, LICENSE_STARTDAY, LICENSE_ENDDAY,  
+			LICENSE_COUNT, LICENSE_DC, COM_CODE_NUMBER, SERVICE_OID_USEYN, SERVICE_SNMP_VERSION,
+			SERVICE_SNMP_COMMUNITY_NAME, SERVICE_SNMP_ID, SERVICE_SNMP_PASSWORD,
+			SERVICE_SNMP_AUTHENTICATION, SERVICE_SNMP_PRIVACY,
+			FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID
+		)
+		VALUES 
+		(
+			#{serverCode}, #{serviceName}, #{servicePort}, 
+			#{licenseType}, #{licenseKey,jdbcType=VARCHAR}, #{licenseStartday,jdbcType=VARCHAR}, #{licenseEndday,jdbcType=VARCHAR},	
+			#{licenseCount,jdbcType=VARCHAR}, #{licenseDc,jdbcType=VARCHAR}, #{comCodeNumber,jdbcType=VARCHAR},
+			#{serviceOidUseyn, jdbcType=VARCHAR}, #{serviceSnmpVersion,jdbcType=VARCHAR},
+			#{serviceSnmpCommunityName,jdbcType=VARCHAR}, #{serviceSnmpId,jdbcType=VARCHAR}, #{serviceSnmpPassword,jdbcType=VARCHAR}, 
+			#{serviceSnmpAuthentication,jdbcType=VARCHAR}, #{serviceSnmpPrivacy,jdbcType=VARCHAR},
+			NOW(), #{userId}, NOW(), #{userId}
+		)
+   	</insert>
+	<update id="updateServerStatus">
+		UPDATE TB_SERVER_SERVICEINFO SET SERVER_END_TIME = NOW()
+		WHERE A.SERVICE_SEQ = #{serviceSeq}
+	</update>
+	<update id="updateServiceInfo">
+		UPDATE TB_SERVER_SERVICEINFO SET    SERVICE_NAME = #{serviceName}, 
+											SERVICE_PORT = #{servicePort}, 
+											LICENSE_TYPE = #{licenseType}, 
+											LICENSE_KEY = #{licenseKey,jdbcType=VARCHAR}, 
+											LICENSE_STARTDAY = #{licenseStartday,jdbcType=VARCHAR},
+											LICENSE_ENDDAY = #{licenseEndday,jdbcType=VARCHAR},
+											LICENSE_COUNT = #{licenseCount,jdbcType=VARCHAR},
+											LICENSE_DC = #{licenseDc, jdbcType=VARCHAR},
+											COM_CODE_NUMBER = #{comCodeNumber, jdbcType=VARCHAR},
+											SERVICE_OID_USEYN = #{serviceOidUseyn, jdbcType=VARCHAR},
+											SERVICE_SNMP_VERSION = #{servicePort, jdbcType=VARCHAR},
+											SERVICE_SNMP_COMMUNITY_NAME = #{serviceSnmpCommunityName,jdbcType=VARCHAR}, 
+											SERVER_PASSWORD = #{serverPassword,jdbcType=VARCHAR}, 
+											SERVICE_SNMP_AUTHENTICATION = #{serviceSnmpAuthentication,jdbcType=VARCHAR}, 
+											SERVICE_SNMP_PRIVACY = #{serviceSnmpPrivacy,jdbcType=VARCHAR}, 
+											LAST_UPDT_PNTTM = NOW(), 
+											LAST_UPDUSR_ID = #{userId, jdbcType=VARCHAR}
+		WHERE SERVICE_SEQ = #{serviceSeq}
+   	</update>
+   	
+   	<delete id="deleteServiceInfo">
+   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+   		DELETE FROM TB_SERVER_SERVICEINFO
+   		WHERE SERVICE_SEQ = #{serviceSeq}
+   	</delete>
+</mapper>

@@ -17,7 +17,7 @@ public interface ServerInfoManageMapper {
 	
 	public List<Map<String, Object>> selectServerInfoPageList(@Param("params") Map<String, Object> params);
 	
-	public Optional<ServerInfo> selectServerInfoDetail(String serverSeq);
+	public Optional<ServerInfo> selectServerInfoDetail(String serverCode);
 	
     public int insertServerInfo(ServerInfoRequestDto vo);
 	
@@ -25,5 +25,5 @@ public interface ServerInfoManageMapper {
     
     public int updateServerStatus(ServerStatusDto vo);
    
-    public int deleteServerInfo(String serverSeq);
+    public int deleteServerInfo(String serverCode);
 }

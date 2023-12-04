@@ -80,12 +80,14 @@ public class ProgrmInfoManageController {
 		
 		int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ? propertiesService.getInt(Globals.PAGE_UNIT)
 				: Integer.valueOf((String) searchVO.get(Globals.PAGE_UNIT));
-		  
+		int pageSize =   searchVO.get(Globals.PAGE_SIZE) == null ? propertiesService.getInt(Globals.PAGE_SIZE)
+				: Integer.valueOf((String) searchVO.get(Globals.PAGE_SIZE));
    	    PaginationInfo paginationInfo = new PaginationInfo();
 	    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get(Globals.PAGE_INDEX),"1")));
-	    paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_SIZE));
-	    paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_SIZE));
+	    paginationInfo.setRecordCountPerPage(pageUnit);
+	    paginationInfo.setPageSize(pageSize);
 	    
+	    System.out.println("pageUnit:" + pageUnit + ": pageSize" + pageSize);
 
 	    searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
 	    searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());

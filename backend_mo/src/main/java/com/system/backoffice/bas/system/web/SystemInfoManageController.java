@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -23,6 +24,7 @@ import com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto;
 import com.system.backoffice.bas.system.models.dto.SystemInfoResDto;
 import com.system.backoffice.bas.system.service.SystemInfoManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
+import com.system.backoffice.sym.svr.web.ServerInfoManageController;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import com.system.backoffice.util.service.UtilInfoService;
 
@@ -30,9 +32,12 @@ import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
+@Api(tags = {"통합 시스템 정보 API"})
 @Slf4j
 @RestController
 @RequestMapping("/api/backoffice/sys/system")
@@ -101,9 +106,10 @@ public class SystemInfoManageController {
 		return model;
 	}
     @ApiOperation(value="시스템 combo ", notes="통합 시스템 combo box")
+    @ApiImplicitParam(name = "systemUseyn", value = "사용 유무")
 	@GetMapping("systemCombo.do")
-	public ModelAndView systemCombo(@PathVariable String searchUseyn,
-			HttpServletRequest request) throws Exception {
+	public ModelAndView systemCombo(@RequestParam("systemUseyn") String systemUseyn,
+									HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		try {
 			if (!jwtVerification.isVerificationAdmin(request)) {
@@ -112,7 +118,7 @@ public class SystemInfoManageController {
 	    	}
 			
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(searchUseyn));
+    		model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(systemUseyn));
 			
 		}catch(Exception e){
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);

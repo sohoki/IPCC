@@ -14,8 +14,9 @@ import javax.validation.constraints.NotBlank;
 @NoArgsConstructor
 public class ServerInfoRequestDto {
 
+	@NotBlank(message="업데이트 구분을 입력해 주세요.")
 	private String mode;
-	private String serverSeq;
+	private String serverCode;
 	@NotBlank(message="서버 이름을 입력해 주세요.")
 	private String serverName;
 	@NotBlank(message="서버 IP을 입력해 주세요.")
@@ -23,7 +24,7 @@ public class ServerInfoRequestDto {
 	private String serverPort;
 	private String serverMethod;
 	private String serverEndTime;
-	private String serverSystemInfo;
+	private String serverLocationInfo;
 	private String frstRegistPnttm;
 	private String frstRegisterId;
 	private String lastUpdtPnttm;
@@ -33,7 +34,6 @@ public class ServerInfoRequestDto {
 	private String systemCode;
 	private String serverId;
 	private String serverPassword;
-	private String serverOidCheckUseyn;
 	private String comCodeNumber;
 	
 	

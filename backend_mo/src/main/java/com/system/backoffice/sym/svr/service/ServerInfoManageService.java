@@ -14,7 +14,7 @@ import com.system.backoffice.sym.svr.models.ServerInfo;
 
 import lombok.RequiredArgsConstructor;
 
-@Transactional(readOnly = false)
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
 public class ServerInfoManageService {
@@ -28,14 +28,15 @@ public class ServerInfoManageService {
 	public Optional<ServerInfo> selectServerInfoDetail(String serverSeq) {
 		return serviceMapper.selectServerInfoDetail(serverSeq);
 	}
-	
+	@Transactional(readOnly = false)
     public int updateServerInfo(ServerInfoRequestDto vo) {
     	return vo.getMode().equals("Ins") ? serviceMapper.insertServerInfo(vo) : serviceMapper.updateServerInfo(vo);
     }
+	@Transactional(readOnly = false)
     public int updateServerStatus(ServerStatusDto status) {
     	return serviceMapper.updateServerStatus(status);
     }
-    
+	@Transactional(readOnly = false)
     public int deleteServerInfo(String serverSeq) {
     	return serviceMapper.deleteServerInfo(serverSeq);
     }
