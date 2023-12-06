@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.system.backoffice.sym.svr.mapper.ServerInfoManageMapper">
+<mapper namespace="com.system.backoffice.sym.svr.mapper.ServiceOidInfoManageMapper">
 	<select id="selectServerInfoPageList" resultType="camelmap">     	      
 		SELECT * FROM 
 		( 
@@ -47,7 +47,7 @@
    	</select>
    	
    	
-   	<select id="selectServerInfoDetail" resultType="ServerInfo">
+   	<select id="selectServiceOidInfoDetail" resultType="ServiceOidInfo">
 		SELECT   A.SERVER_CODE, A.SERVER_NAME, A.SERVER_IP, A.SERVER_PORT, A.SERVER_METHOD,
 				 A.SERVER_END_TIME, A.SERVER_LOCATION_INFO, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID,
 				 A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.SERVER_DC, A.SERVER_USEYN, A.SERVER_ID, 
@@ -55,7 +55,7 @@
 		FROM TB_SERVERINFO A
 		WHERE A.SERVER_CODE = #{serverCode}
    	</select>
-   	<insert id="insertServerInfo">
+   	<insert id="insertServiceOidInfo">
 		INSERT INTO TB_SERVERINFO	
 		(
 		    SERVER_CODE, SERVER_NAME, SYSTEM_CODE, SERVER_IP, SERVER_PORT, SERVER_METHOD,  SERVER_LOCATION_INFO, 
@@ -76,7 +76,7 @@
 		UPDATE TB_SERVERINFO SET SERVER_END_TIME = NOW()
 		WHERE A.SERVER_CODE = #{serverCode}
 	</update>
-	<update id="updateServerInfo">
+	<update id="updateServiceOidInfo">
 		UPDATE TB_SERVERINFO SET   SERVER_NAME = #{serverName}, 
 								SYSTEM_CODE = #{systemCode}, 
 								SERVER_ID = #{serverId,jdbcType=VARCHAR}, 
@@ -94,7 +94,7 @@
 		WHERE SERVER_CODE = #{serverCode}
    	</update>
    	
-   	<delete id="deleteServerInfo">
+   	<delete id="deleteServiceOidInfo">
    	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
    		DELETE FROM TB_SERVERINFO
    		WHERE SERVER_CODE = #{serverCode}

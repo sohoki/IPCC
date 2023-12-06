@@ -24,6 +24,9 @@ public class ServerInfoManageService {
 	public List<Map<String, Object>> selectServerInfoPageList(Map<String, Object> params){
 		return serviceMapper.selectServerInfoPageList(params);
 	}
+	public List<Map<String, Object>> selectServerInfoComboList(Map<String, Object> params){
+		return serviceMapper.selectServerInfoComboList(params);
+	}
 	
 	public Optional<ServerInfo> selectServerInfoDetail(String serverSeq) {
 		return serviceMapper.selectServerInfoDetail(serverSeq);

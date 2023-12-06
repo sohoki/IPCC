@@ -12,11 +12,14 @@
 			FROM COMTCCMMNCODE A				     
 			WHERE A.CL_CODE = #{params.clCode}
 			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
-				AND (A.CODE_ID LIKE CONCAT('%', #{params.searchKeyword},'%') OR A.CODE_ID_NM LIKE CONCAT('%', #{params.searchKeyword},'%'))
+				AND (A.CODE_ID LIKE CONCAT('%', #{params.searchKeyword},'%') 
+					OR 
+					A.CODE_ID_NM LIKE CONCAT('%', #{params.searchKeyword},'%')
+					)
 			</if>					
 		) R
-		WHERE RNUM BETWEEN #{params.firstIndex} + 1 AND #{params.firstIndex} + #{params.recordCountPerPage}    
 		ORDER BY RNUM ASC
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
 	</select>
 	
 	<select id="selectCmmnCodeList" resultType="CmmnCodeDto">

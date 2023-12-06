@@ -29,6 +29,9 @@
 		<typeAlias alias="ServiceInfo"		type="com.system.backoffice.sym.svr.models.ServiceInfo" />
 		<typeAlias alias="ServiceInfoReqDto"		type="com.system.backoffice.sym.svr.models.dto.ServiceInfoReqDto" />
 		
+		<typeAlias alias="ServiceOidInfo"		type="com.system.backoffice.sym.svr.models.ServiceOidInfo" />
+		<typeAlias alias="ServiceOidInfoReqDto"		type="com.system.backoffice.sym.svr.models.dto.ServiceOidInfoReqDto" />
+		
 		
 		
 		

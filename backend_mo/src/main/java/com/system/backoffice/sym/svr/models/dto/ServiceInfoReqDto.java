@@ -32,9 +32,11 @@ public class ServiceInfoReqDto {
 	private String serviceSnmpId;
 	private String serviceSnmpPassword;
 	private String serviceSnmpAuthentication;
+	private String serviceSnmpVersion;
 	private String serviceSnmpPrivacy;
+	private String serviceHealthGubun;
+	private String serviceUseyn;
 	private String frstRegistPnttm;
-	
 	private String lastUpdtPnttm;
 	private String userId;
 }

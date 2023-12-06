@@ -25,19 +25,26 @@ import com.system.backoffice.bas.code.models.CmmnCode;
 import com.system.backoffice.bas.code.models.dto.CmmnCodeDto;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnClCodeManageService;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnCodeManageService;
+import com.system.backoffice.sym.log.annotation.NoLogging;
+import com.system.backoffice.sym.svr.web.ServerInfoManageController;
 import com.system.backoffice.uat.uia.models.UniUtilInfo;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Api(tags = {"공통코드 API"})
+@Slf4j
 @RestController
 @RequestMapping("/api/backoffice/sys/cmm/cca")
 public class EgovCcmCmmnCodeManageController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EgovCcmCmmnCodeManageController.class);
 	
 	@Autowired
     private EgovCcmCmmnCodeManageService cmmnCodeManageService;
@@ -76,6 +83,8 @@ public class EgovCcmCmmnCodeManageController {
 	 * @return "forward:/sym/ccm/cca/EgovCcmCmmnCodeList.do"
 	 * @throws Exception
 	 */
+	@ApiOperation(value="공통코드를 삭제", notes = "성공시 공통코드를 삭제 합니다.")
+	@ApiImplicitParam(name = "codeId", value = "공통코드 CODE ID")
     @DeleteMapping("{codeId}.do")
 	public ModelAndView deleteCmmnCode (@PathVariable String codeId 
 								  , HttpServletRequest request
@@ -110,7 +119,7 @@ public class EgovCcmCmmnCodeManageController {
 	}
 
 	
-	
+    @ApiOperation(value="공통코드 리스트", notes = "성공시 공통코드 조회 합니다.")
     @PostMapping("code/codeList.do")
 	public ModelAndView selectCmmnCodeList (@RequestBody Map<String, Object> searchMap
 										, HttpServletRequest request
@@ -134,7 +143,8 @@ public class EgovCcmCmmnCodeManageController {
     	    
         	/** pageing */
     		PaginationInfo paginationInfo = new PaginationInfo();
-    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX).toString() ));
+    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX) == null  ?
+    														  "1" : searchMap.get(Globals.PAGE_INDEX).toString() ));
     		paginationInfo.setRecordCountPerPage(pageUnit);
     		paginationInfo.setPageSize(pageSize);
 
@@ -157,7 +167,8 @@ public class EgovCcmCmmnCodeManageController {
     		
     		
     	}catch (Exception e){
-			LOGGER.debug("selectCmmnCodeList error:" + e.toString());
+			log.debug("selectCmmnCodeList error:" + e.toString());
+			log.debug("selectCmmnCodeList number:" + e.getStackTrace()[0].getLineNumber());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	    }
@@ -166,8 +177,9 @@ public class EgovCcmCmmnCodeManageController {
         
         
 	}
-   
+    @ApiOperation(value="공통코드 중복체크", notes = "성공시 공통코드 중복체크 합니다.")
     //ID 체크 
+    @NoLogging
     @GetMapping("codeIDCheck/{codeId}.do")
     public ModelAndView selectIdCheck(@PathVariable String codeId ,
     								 HttpServletRequest request)throws Exception{
@@ -201,6 +213,7 @@ public class EgovCcmCmmnCodeManageController {
     
   	
   	@SuppressWarnings("finally")	
+  	@ApiOperation(value="공통코드 업데이트", notes = "성공시 공통코드 업데이트 합니다.")
   	@PostMapping("code/codeUpdate.do")
   	public ModelAndView  updateCmmCode (@RequestBody CmmnCode vo
                                        , HttpServletRequest request

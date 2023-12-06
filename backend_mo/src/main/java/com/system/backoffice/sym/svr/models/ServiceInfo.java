@@ -31,6 +31,8 @@ public class ServiceInfo {
 	private String serviceSnmpPassword;
 	private String serviceSnmpAuthentication;
 	private String serviceSnmpPrivacy;
+	private String serviceHealthGubun;
+	private String serviceUseyn;
 	private String frstRegistPnttm;
 	private String frstRegisterId;
 	private String lastUpdtPnttm;

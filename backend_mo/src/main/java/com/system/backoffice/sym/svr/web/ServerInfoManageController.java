@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto;
@@ -33,6 +34,7 @@ import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
@@ -188,6 +190,27 @@ public class ServerInfoManageController {
     	}
     	return model;
     }
+	
+	@ApiOperation(value="서버 정보 combo ", notes="서버 정보 combo box")
+	@GetMapping("serverCombo.do")
+	public ModelAndView systemCombo(@RequestParam Map<String, Object> searchMap,
+									HttpServletRequest request) throws Exception {
+		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
+		try {
+			if (!jwtVerification.isVerificationAdmin(request)) {
+	    		ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+	    	}
+			
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+    		model.addObject(Globals.JSON_RETURN_RESULT, serverMangeServiec.selectServerInfoComboList(searchMap));
+			
+		}catch(Exception e){
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
+		}
+		return model;
+	}
 	@ApiOperation(value="서비스 정보 리스트", notes="서비스 정보 리스트")
     @PostMapping("service/list.do")
     public ModelAndView  selectSericeInfoPageList(@RequestBody Map<String, Object> searchMap 

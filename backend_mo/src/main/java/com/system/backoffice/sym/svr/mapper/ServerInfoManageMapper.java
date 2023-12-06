@@ -17,6 +17,8 @@ public interface ServerInfoManageMapper {
 	
 	public List<Map<String, Object>> selectServerInfoPageList(@Param("params") Map<String, Object> params);
 	
+	public List<Map<String, Object>> selectServerInfoComboList(@Param("params") Map<String, Object> params);
+	
 	public Optional<ServerInfo> selectServerInfoDetail(String serverCode);
 	
     public int insertServerInfo(ServerInfoRequestDto vo);
