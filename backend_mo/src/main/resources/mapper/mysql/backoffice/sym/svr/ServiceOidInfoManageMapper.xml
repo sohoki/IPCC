@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.system.backoffice.sym.svr.mapper.ServiceOidInfoManageMapper">
-	<select id="selectServerInfoPageList" resultType="camelmap">     	      
+	<select id="selectServiceOidInfoPageList" resultType="camelmap">     	      
 		SELECT * FROM 
 		( 
 			SELECT 	
@@ -10,22 +10,20 @@
 			FROM 	
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
-					 A.SERVER_CODE, A.SERVER_NAME, A.SERVER_IP, A.SERVER_PORT, A.SERVER_METHOD,
-					 A.SERVER_END_TIME, A.SERVER_LOCATION_INFO, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID,
-					 A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.SERVER_DC, A.SERVER_USEYN, 
-					 A.SERVER_ID, A.SERVER_PASSWORD, A.SYSTEM_CODE, A.COM_CODE_NUMBER, B.SYSTEM_NAME
-				FROM TB_SERVERINFO A,  TB_SYSTEMINFO B, (select @ROWNUM := 0) RN_TB
-				WHERE A.SYSTEM_CODE = B.SYSTEM_CODE
+						A.OID_SEQ, A.SERVICE_SEQ, A.OID_NUMBER, A.OID_NAME, A.OID_RESULT_TYPE, 
+						A.LAST_OID_CONN_TIME, DATE_FORMAT( A.LAST_UPDT_PNTTM, '%Y-%m_%d %H:%i:%s') LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID
+				FROM TB_SERVER_OIDINFO A,  TB_SERVER_SERVICEINFO B, (select @ROWNUM := 0) RN_TB
+				WHERE A.SERVICE_SEQ = B.SERVICE_SEQ
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 					AND 
 					( 
-						A.SERVER_NAME LIKE CONCAT ('%', #{params.searchKeyword},'%')  
+						A.OID_NUMBER LIKE CONCAT ('%', #{params.searchKeyword},'%')  
 						OR
-						A.SERVER_DC LIKE CONCAT ('%', #{params.searchKeyword},'%')  
+						A.OID_NAME LIKE CONCAT ('%', #{params.searchKeyword},'%')  
 					) 
 				</if>
-				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchSystemCode)">
-					AND  A.SYSTEM_CODE = #{params.searchSystemCode}
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchServiceSeq)">
+					AND  A.SERVICE_SEQ = #{params.searchServiceSeq}
 				</if>
 			) TB 
 		) TA
@@ -33,70 +31,41 @@
 		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
 		
    	</select>
-   	<select id="selectServerInfoComboList" resultType="camelmap">     	      
-		SELECT A.SERVER_CODE, A.SERVER_NAME
-		FROM TB_SERVERINFO A
-		WHERE 1=1
-		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchSystemCode)">
-			AND  A.SYSTEM_CODE = #{params.searchSystemCode}
-		</if>
-		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchServiceUseyn)">
-			AND  A.SERVER_USEYN = #{params.searchServiceUseyn}
-		</if>
-		ORDER BY A.SERVER_NAME ASC
-   	</select>
-   	
    	
    	<select id="selectServiceOidInfoDetail" resultType="ServiceOidInfo">
-		SELECT   A.SERVER_CODE, A.SERVER_NAME, A.SERVER_IP, A.SERVER_PORT, A.SERVER_METHOD,
-				 A.SERVER_END_TIME, A.SERVER_LOCATION_INFO, A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID,
-				 A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.SERVER_DC, A.SERVER_USEYN, A.SERVER_ID, 
-				 A.SERVER_PASSWORD, A.SYSTEM_CODE, A.COM_CODE_NUMBER
-		FROM TB_SERVERINFO A
-		WHERE A.SERVER_CODE = #{serverCode}
+		SELECT   A.OID_SEQ, A.SERVICE_SEQ, A.OID_NUMBER, A.OID_NAME, A.OID_RESULT_TYPE, 
+				 A.LAST_OID_CONN_TIME, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID
+		FROM TB_SERVER_OIDINFO A
+		WHERE A.OID_SEQ = #{serverCode}
    	</select>
    	<insert id="insertServiceOidInfo">
-		INSERT INTO TB_SERVERINFO	
+		INSERT INTO TB_SERVER_OIDINFO	
 		(
-		    SERVER_CODE, SERVER_NAME, SYSTEM_CODE, SERVER_IP, SERVER_PORT, SERVER_METHOD,  SERVER_LOCATION_INFO, 
-		    FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID, 
-		    SERVER_DC, SERVER_USEYN, SERVER_ID, 
-		    SERVER_PASSWORD, COM_CODE_NUMBER
+		    SERVICE_SEQ, OID_NUMBER, OID_NAME, OID_RESULT_TYPE, 
+			LAST_UPDT_PNTTM, LAST_UPDUSR_ID
 		)
 		VALUES 
 		(
-			FN_SERVER_CODEID( #{systemCode}), #{serverName}, #{systemCode}, #{serverIp}, #{serverPort,jdbcType=VARCHAR}, #{serverMethod,jdbcType=VARCHAR},	
-			#{serverLocationInfo,jdbcType=VARCHAR},
-			NOW(), #{userId}, NOW(), #{userId},
-			#{serverDc,jdbcType=VARCHAR}, #{serverUseyn,jdbcType=VARCHAR}, #{serverId,jdbcType=VARCHAR}, 
-			#{serverPassword,jdbcType=VARCHAR}, #{comCodeNumber,jdbcType=VARCHAR}
+			#{serviceSeq}, #{oidNumber}, #{oidName}, #{oidResultType, jdbcType=VARCHAR},
+			NOW(), #{userId}
 		)
    	</insert>
 	<update id="updateServerStatus">
-		UPDATE TB_SERVERINFO SET SERVER_END_TIME = NOW()
-		WHERE A.SERVER_CODE = #{serverCode}
+		UPDATE TB_SERVER_OIDINFO SET LAST_OID_CONN_TIME = NOW()
+		WHERE A.OID_SEQ = #{serverCode}
 	</update>
 	<update id="updateServiceOidInfo">
-		UPDATE TB_SERVERINFO SET   SERVER_NAME = #{serverName}, 
-								SYSTEM_CODE = #{systemCode}, 
-								SERVER_ID = #{serverId,jdbcType=VARCHAR}, 
-								SERVER_PASSWORD = #{serverPassword,jdbcType=VARCHAR}, 
-								SERVER_IP = #{serverIp}, 
-								SERVER_PORT = #{serverPort}, 
-								SERVER_METHOD = #{serverMethod,jdbcType=VARCHAR},
-								SERVER_LOCATION_INFO = #{serverLocationInfo,jdbcType=VARCHAR},
-								SERVER_END_TIME = #{serverEndTime,jdbcType=VARCHAR},
-								LAST_UPDT_PNTTM = NOW(), 
-								LAST_UPDUSR_ID = #{userId, jdbcType=VARCHAR},   
-								SERVER_USEYN = #{serverUseyn, jdbcType=VARCHAR},  
-								SERVER_DC = #{serverDc, jdbcType=VARCHAR},
-								COM_CODE_NUMBER = #{comCodeNumber,jdbcType=VARCHAR}    
-		WHERE SERVER_CODE = #{serverCode}
+		UPDATE TB_SERVER_OIDINFO SET  OID_NUMBER = #{oidNumber}, 
+									  OID_NAME = #{oidName, jdbcType=VARCHAR}, 
+									  OID_RESULT_TYPE = #{oidResultType, jdbcType=VARCHAR}, 
+									  LAST_UPDT_PNTTM = NOW(), 
+									  LAST_UPDUSR_ID = #{userId, jdbcType=VARCHAR}
+		WHERE OID_SEQ = #{oidSeq}
    	</update>
    	
    	<delete id="deleteServiceOidInfo">
    	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
-   		DELETE FROM TB_SERVERINFO
-   		WHERE SERVER_CODE = #{serverCode}
+   		DELETE FROM TB_SERVER_OIDINFO
+   		WHERE OID_SEQ = #{serverCode}
    	</delete>
 </mapper>

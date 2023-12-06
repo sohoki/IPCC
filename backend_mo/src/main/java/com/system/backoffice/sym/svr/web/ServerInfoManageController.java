@@ -23,10 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto;
 import com.system.backoffice.sym.svr.models.dto.ServiceInfoReqDto;
-import com.system.backoffice.bas.system.web.SystemInfoManageController;
+import com.system.backoffice.sym.svr.models.dto.ServiceOidInfoReqDto;
 import com.system.backoffice.sym.svr.models.ServerInfo;
+import com.system.backoffice.sym.svr.models.ServiceOidInfo;
 import com.system.backoffice.sym.svr.service.ServerInfoManageService;
 import com.system.backoffice.sym.svr.service.ServiceInfoManageService;
+import com.system.backoffice.sym.svr.service.ServiceOidInfoManageService;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
@@ -34,7 +36,6 @@ import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +62,9 @@ public class ServerInfoManageController {
     @Autowired
     private ServiceInfoManageService serviceMangeServiec;
     
+    @Autowired
+    private ServiceOidInfoManageService oidService;;
+    
     /** EgovMessageSource */
 	@Resource(name = "egovMessageSource")
 	EgovMessageSource egovMessageSource;
@@ -85,12 +89,13 @@ public class ServerInfoManageController {
     		
     		Optional<ServerInfo> info = serverMangeServiec.selectServerInfoDetail(serverCode);
     		
-    		info.orElseThrow(() -> new IllegalArgumentException("해당하는 서버 정보가가 없습니다. 잘못된 입력"));
+    		info.orElseThrow(() -> new IllegalArgumentException(egovMessageSource.getMessage("fial.common.info")));
     		
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
     		model.addObject(Globals.STATUS_REGINFO, info);
     		
     	}catch(Exception e) {
+    		log.error("selectServerDetailInfo error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
@@ -117,6 +122,7 @@ public class ServerInfoManageController {
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
 	   		 
     	}catch(Exception e) {
+    		log.error("deleteServerDetailInfo error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
@@ -145,6 +151,7 @@ public class ServerInfoManageController {
     		model.addObject(Globals.STATUS, status);
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
     	}catch(Exception e) {
+    		log.error("updateServerInfo error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
@@ -185,8 +192,9 @@ public class ServerInfoManageController {
     		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
     		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
     	}catch(Exception e) {
-	   		 model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	   		 model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    		log.error("selectServerInfoPageList error:" + e.toString());
+	   		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
     	return model;
     }
@@ -206,6 +214,7 @@ public class ServerInfoManageController {
     		model.addObject(Globals.JSON_RETURN_RESULT, serverMangeServiec.selectServerInfoComboList(searchMap));
 			
 		}catch(Exception e){
+			log.error("systemCombo error:" + e.toString());
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
 		}
@@ -213,7 +222,7 @@ public class ServerInfoManageController {
 	}
 	@ApiOperation(value="서비스 정보 리스트", notes="서비스 정보 리스트")
     @PostMapping("service/list.do")
-    public ModelAndView  selectSericeInfoPageList(@RequestBody Map<String, Object> searchMap 
+    public ModelAndView  selectServiceInfoPageList(@RequestBody Map<String, Object> searchMap 
 												 , HttpServletRequest request
 												 , BindingResult bindingResult) throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
@@ -245,8 +254,9 @@ public class ServerInfoManageController {
     		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
     		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
     	}catch(Exception e) {
-	   		 model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	   		 model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    		log.error("selectServiceInfoPageList error:" + e.toString());
+	   		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
     	return model;
     }
@@ -273,6 +283,7 @@ public class ServerInfoManageController {
     		model.addObject(Globals.STATUS, status);
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
     	}catch(Exception e) {
+    		log.error("updateServiceInfo error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
@@ -300,6 +311,133 @@ public class ServerInfoManageController {
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
 	   		 
     	}catch(Exception e) {
+    		log.error("deleteServiceDetailInfo error:" + e.toString());
+    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    }
+	@ApiOperation(value="서비스 OID 정보 리스트", notes="서비스 OID 정보 리스트")
+    @PostMapping("oid/list.do")
+    public ModelAndView  selectServiceOidInfoPageList(@RequestBody Map<String, Object> searchMap 
+												 , HttpServletRequest request
+												 , BindingResult bindingResult) throws Exception {
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		   
+    		int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
+    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
+    	   
+    	    
+        	/** pageing */
+        	PaginationInfo paginationInfo = new PaginationInfo();
+    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX).toString() ));
+    		paginationInfo.setRecordCountPerPage(pageUnit);
+    		paginationInfo.setPageSize(pageSize);
+
+    		searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+    		searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+    		searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+    	    
+    	    List<Map<String, Object>> codeList = (List<Map<String, Object>>) oidService.selectServiceOidInfoPageList(searchMap);
+    	    int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).get("totalRecordCount").toString().replace("-", "") ) :0;
+            
+
+    		paginationInfo.setTotalRecordCount(totCnt);
+    		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
+    		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
+    	}catch(Exception e) {
+    		log.error("selectServiceOidInfoPageList error:" + e.toString());
+	   		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    }
+	@ApiOperation(value="서비스 OID 정보 업데이트", notes="서비스 OID 정보 업데이트")
+    @PostMapping("updateServiceOid.do")
+    public ModelAndView updateServiceOidInfo(@Valid @RequestBody ServiceOidInfoReqDto info
+    									, HttpServletRequest request)throws Exception {
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+        	if (!jwtVerification.isVerificationAdmin(request)) {
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}else {
+        		info.setUserId(jwtVerification.getTokenUserName(request));
+        	}
+        	
+    		int ret = oidService.updateServiceOidInfo(info);
+    		
+    		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+    		String message = (ret > 0) ? egovMessageSource.getMessage("success.request.msg") : 
+    									 egovMessageSource.getMessage("fail.request.msg");
+    		model.addObject(Globals.STATUS, status);
+	   		model.addObject(Globals.STATUS_MESSAGE, message);
+    	}catch(Exception e) {
+    		log.error("updateServiceOidInfo error:" + e.toString());
+    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    }
+	@ApiOperation(value="서비스 OID 정보 삭제", notes="서비스 OID 정보 삭제")
+	@ApiImplicitParam(name = "oidSeq", value = "Oid 정보 생성시 발급되는 oidSeq")
+    @DeleteMapping("oid/{oidSeq}.do")
+    public ModelAndView deleteOidInfo(@PathVariable String oidSeq
+    											, HttpServletRequest request)throws Exception {
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		
+    		int ret = oidService.deleteServiceOidInfo(oidSeq);
+    		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+    		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.delete") : 
+    									 egovMessageSource.getMessage("fail.request.msg");
+    		model.addObject(Globals.STATUS, status);
+	   		model.addObject(Globals.STATUS_MESSAGE, message);
+	   		 
+    	}catch(Exception e) {
+    		log.error("deleteOidInfo error:" + e.toString());
+    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    }
+	@ApiOperation(value="서비스 OID 정보 상세", notes="서비스 OID 정보 상세")
+	@ApiImplicitParam(name = "oidSeq", value = "Oid 정보 생성시 발급되는 oidSeq")
+    @GetMapping("oid/{oidSeq}.do")
+    public ModelAndView selectOidOidInfo(@PathVariable String oidSeq
+    											, HttpServletRequest request)throws Exception {
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		if (!jwtVerification.isVerificationAdmin(request)) {
+
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+    		
+    		Optional<ServiceOidInfo> info = oidService.selectServiceOidInfoDetail(oidSeq);
+    		
+    		info.orElseThrow(() -> new IllegalArgumentException(egovMessageSource.getMessage("fial.common.info")));
+    		
+    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+    		model.addObject(Globals.STATUS_REGINFO, info);
+    		
+	   		 
+    	}catch(Exception e) {
+    		log.error("selectOidOidInfo error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
