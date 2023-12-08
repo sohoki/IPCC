@@ -8,8 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
@@ -23,10 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.system.backoffice.bas.code.models.CmmnCode;
 import com.system.backoffice.bas.code.models.dto.CmmnCodeDto;
-import com.system.backoffice.bas.code.service.EgovCcmCmmnClCodeManageService;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnCodeManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
-import com.system.backoffice.sym.svr.web.ServerInfoManageController;
 import com.system.backoffice.uat.uia.models.UniUtilInfo;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import egovframework.com.cmm.EgovMessageSource;
@@ -49,8 +45,6 @@ public class EgovCcmCmmnCodeManageController {
 	@Autowired
     private EgovCcmCmmnCodeManageService cmmnCodeManageService;
 
-	@Autowired
-    private EgovCcmCmmnClCodeManageService cmmnClCodeManageService;
 
     @Value("${page.pageUnit}")
     private int pageUnitSetting ;

@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -35,7 +34,7 @@ import com.avaya.smsxml.SystemManagementService;
 import com.avaya.smsxml.TrunkGroupType;
 import com.avaya.smsxml.TrunkStatusType;
 import com.sun.xml.ws.developer.WSBindingProvider;
-import com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo;
+import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
 import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
 import com.system.ipcc.pbx.avaya.models.PbxMemberInfo;
 import com.system.ipcc.pbx.avaya.models.TrankGroupInfo;
@@ -51,403 +50,435 @@ import egovframework.com.cmm.service.Globals;
 public class SMSReq {
 
 	// Package Namespace
-		private static String WEB_REFERENCE_PACKAGE = "com.avaya.smsxml";
+	private static String WEB_REFERENCE_PACKAGE = "com.avaya.smsxml";
 		
 		
-	    /** EgovMessageSource */
-		@Resource(name = "egovMessageSource")
-		EgovMessageSource egovMessageSource;
+    /** EgovMessageSource */
+	@Resource(name = "egovMessageSource")
+	EgovMessageSource egovMessageSource;
 		
 
-		private ObjectFactory objectFactory;
+	private ObjectFactory objectFactory;
 		
-		// Class Loader
-		ClassLoader cl = null;
+	// Class Loader
+	ClassLoader cl = null;
 		
-		// SOAP Objects
-		private SystemManagementService sms;
-		private SystemManagementPort port;
-		private WSBindingProvider bp;
-		private static String WS_DEFAULT_NAMESPACE="http://xml.avaya.com/ws/SystemManagementService/2008/07/01";
-		// Keep reference to the sessionHeader element, as it is also used
-		// across requests
-		private String requestSID = "";
-		private String responseSID = "";
-		private SessionIDLogicalHandler SIDHandler = null;
+	// SOAP Objects
+	private SystemManagementService sms;
+	private SystemManagementPort port;
+	private WSBindingProvider bp;
+	private static String WS_DEFAULT_NAMESPACE="http://xml.avaya.com/ws/SystemManagementService/2008/07/01";
+	// Keep reference to the sessionHeader element, as it is also used
+	// across requests
+	private String requestSID = "";
+	private String responseSID = "";
+	private SessionIDLogicalHandler SIDHandler = null;
 
-		// Reflection and Context Objects
-		JAXBContext modelContext; 
-		Class<?> modelClass;
-		Class<?> modelChoicesClass;
-		
-		// Connection parameters
-		private String root = "";
-		private String login = "";
-		private String pw = "";
+	// Reflection and Context Objects
+	JAXBContext modelContext; 
+	Class<?> modelClass;
+	Class<?> modelChoicesClass;
+	
+	// Connection parameters
+	private String root = "";
+	private String login = "";
+	private String pw = "";
 
-		private Integer responseTimeout = new Integer(50000);
+	private Integer responseTimeout = new Integer(50000);
 
-		// Request parameters
-		private String model;
-		private String operation;
-		private String qualifier;
-		private String fields;
-		//private String objectname; // currently not used
-		
-		private SubmitRequestType submitRequest;
-		
-		// Output control
-		private boolean faultRaised = false;
+	// Request parameters
+	private String model;
+	private String operation;
+	private String qualifier;
+	private String fields;
+	//private String objectname; // currently not used
+	
+	private SubmitRequestType submitRequest;
+	
+	// Output control
+	private boolean faultRaised = false;
 
-		// XML format output
-		private static String FORMAT_XML = "xml";		
-		private String format = FORMAT_XML; // XML is default unless overridden
-		
-		private static String SMS_NS = "http://xml.avaya.com/sms";
+	// XML format output
+	private static String FORMAT_XML = "xml";		
+	private String format = FORMAT_XML; // XML is default unless overridden
+	
+	private static String SMS_NS = "http://xml.avaya.com/sms";
 
-		// Input Delimiter
-		private String delimiter = "\\|";
-		
-		// Property File Values
-	    private static final String ROOT = "sms.root";
-	    private static final String LOGIN = "cm.login";
-	    private static final String PASSWORD = "cm.password";
-	    private static final String FIELDS ="fields";
+	// Input Delimiter
+	private String delimiter = "\\|";
+	
+	// Property File Values
+    private static final String ROOT = "sms.root";
+    private static final String LOGIN = "cm.login";
+    private static final String PASSWORD = "cm.password";
+    private static final String FIELDS ="fields";
 
-	    private static final String QUALIFIER ="qualifier";
-	    private static final String OBJECTNAME ="objectname";
-	    private static final String OUTPUT_FORMAT ="output.format";
+    private static final String QUALIFIER ="qualifier";
+    private static final String OBJECTNAME ="objectname";
+    private static final String OUTPUT_FORMAT ="output.format";
 	    
-		// **************************************************************************
-		// isValid()
-		// **************************************************************************
-		/**
-		 * Validates the SMSTest object's parameters.
-		 */
-		public boolean isValid() {
+	// **************************************************************************
+	// isValid()
+	// **************************************************************************
+	/**
+	 * Validates the SMSTest object's parameters.
+	 */
+	public boolean isValid() {
 
-			boolean ok = true;
-			if (!(root.startsWith("http://") || root.startsWith("https://"))) {
-				System.out.println("Parameter invalid sms.root " + root
-						+ " [must begin with http:// or https://]");
-				ok = false;
-			}
-			if ((login.length() <= 0) || (login.indexOf("@") <= 0)) {
-				System.out.println("Parameter invalid cm.login " + login
-						+ "[must be of the form 'loginid@cmaddress[:port]']");
-				ok = false;
-			}
-			if (pw.length() <= 0) {
-				System.out.println("Parameter invalid cm.password <cmpassword>");
-				ok = false;
-			}
-			
-			return ok;
+		boolean ok = true;
+		if (!(root.startsWith("http://") || root.startsWith("https://"))) {
+			System.out.println("Parameter invalid sms.root " + root
+					+ " [must begin with http:// or https://]");
+			ok = false;
 		}
-
-		// **************************************************************************
-		// execRequest
-		// **************************************************************************
-		/**
-		 * Illustrates the usage of SMS, by performing the following steps: 
-		 * 	1. Initial setup of SOAP binding, session management 
-		 *  2. Submitting a request to SMS and obtaining the result 
-		 *  3. Doing session "bookkeeping" after the request 
-		 *  4. Releasing SMS session resources, when finished.
-		 *  
-		 */
-		public ModelAndView execRequest(String model, String sFIELDS, String sObjectName, String sOperation, String sQUALIFIER) {
-			// Step 1: Initial SOAP setup, done once (typically) per session.
-			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
-			if (!setup()) {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-				// we failed and we're done
-			Result submitResult = this.submitRequest(model, sFIELDS, sObjectName, sOperation, sQUALIFIER);
-
-			this.manageSession();
-
-			this.releaseSession();
-			
-			if (submitResult != null) {
-				models.addObject(Globals.JSON_RETURN_RESULT, submitResult);
-				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			}else {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			}
-			
-			return models;
+		if ((login.length() <= 0) || (login.indexOf("@") <= 0)) {
+			System.out.println("Parameter invalid cm.login " + login
+					+ "[must be of the form 'loginid@cmaddress[:port]']");
+			ok = false;
+		}
+		if (pw.length() <= 0) {
+			System.out.println("Parameter invalid cm.password <cmpassword>");
+			ok = false;
 		}
 		
-		public ModelAndView execRequestTrank(String model, String sFIELDS, String sObjectName, String sOperation, String sQUALIFIER) {
-			// Step 1: Initial SOAP setup, done once (typically) per session.
-			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
-			if (!setup()) {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-				// we failed and we're done
-			Result submitResult = this.submitRequest(model, sFIELDS, sObjectName, sOperation, sQUALIFIER);
+		return ok;
+	}
 
-			
-			List<TrunkGroupType> list = submitResult.getResultData().getTrunkGroup();
-			
-			List<TrankGroupInfo> trGruops = list.stream().filter( t -> Integer.parseInt(t.getTotalAdministeredMembers()) > 0)
-										   .map(entry -> new TrankGroupInfo (
-												   entry.getGroupNumber(),
-												   entry.getTotalAdministeredMembers(),
-												   entry.getGroupType(),
-												   entry.getGroupName(),
-												   entry.getTN(),
-												   entry.getCOR(),
-												   entry.getCOR(),
-												   null
-												   )
-											   ).collect(Collectors.toList());
-			for (TrankGroupInfo trank : trGruops) {
-				
-				
-				Result trankStats = this.submitRequest("TrunkStatus", "member|port|connectedPorts|mtceBusy|serviceState", "", "status", trank.getGroupNumber());
-				List<TrunkStatusType> lists =  trankStats.getResultData().getTrunkStatus();
-				List<com.system.ipcc.pbx.avaya.models.TrankStatus> listStatus =  lists.stream().map(entry -> new com.system.ipcc.pbx.avaya.models.TrankStatus(
-																	entry.getMember(),
-																	entry.getPort(),
-																	entry.getServiceState(),
-																	entry.getMtceBusy(),
-																	entry.getConnectedPorts()
-																	)
-												).collect(Collectors.toList());
-				trank.setStatus(listStatus);
-			}
-			
-			this.manageSession();
-
-			this.releaseSession();
-			
-			if (submitResult != null) {
-				models.addObject("TrankResult", trGruops);
-				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			}
-			return models;
-		}
-		//내선번호 조회
-		public List<StationInfo> execRequestStationInfo (List<String> extensions){
-			//값 먼저 조회
-			
-			SMSReq client = new SMSReq();
-    		String qualifier = "count 1";
-    		List<StationInfo> stations = null;
-    		Result submitResult;
-    		boolean loaded = client.loadProps("Station", "extension", "display", qualifier);
-    		if ( (client.isValid()) && loaded) // any args invalid
-    		{
-    			//접속이 되면 
-    			for (String extension : extensions) {
-    				submitResult = this.submitRequest("Station", "extension", "", "display", extension);
-    				
-    				if (submitResult.getResultCode() == 0) {
-    					StationInfo station = new StationInfo();
-    					
-    					station.builder().extension(extension)
-    									.security_code(submitResult.getResultData().getStation().get(0).getSecurityCode())
-    									.type(submitResult.getResultData().getStation().get(0).getType())
-    									.cor(submitResult.getResultData().getStation().get(0).getCOR())
-    									.cos(submitResult.getResultData().getStation().get(0).getCOS())
-    									.name(submitResult.getResultData().getStation().get(0).getName())
-    									.tn(submitResult.getResultData().getStation().get(0).getTN())
-    									.displayLangage(submitResult.getResultData().getStation().get(0).getDisplayLanguage())
-    									.button01(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData1()))
-    									.button02(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData2()))
-    									.button03(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData3()))
-    									.button04(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData4()))
-    									.button05(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData5()))
-    									.button06(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData6()))
-    									.button07(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData7()))
-    									.build();
-    					
-    					stations.add(station);
-    				}
-    			}
-    		} 
-			this.manageSession();
-			this.releaseSession();
-			return stations;
-		}
-		//pbx check
-		public int execRequestMemberCheck(PbxMemberInfo info, String _ckGubun) {
-			
-			int result = 0;
-			if (!setup()) {
-				result = -1;
-			}
-			Result submitResult;
-			// we failed and we're done
-			// status 값 체크 하기 
-			if (_ckGubun.equals("Extension")) {
-				submitResult = this.submitRequest("Station", "extension", "", "display", info.getExtension());
-				result = submitResult.getResultCode();
-			}else {
-				submitResult = this.submitRequest("Agent", "Login_ID|Name|Extension", "", "display", info.getLoginId());
-				result = submitResult.getResultCode();
-				
-			}
-			
-			this.manageSession();
-			this.releaseSession();
-		
-			return result;
-		}
-		
-		
-		
-		public ModelAndView execRequestMemberUpdate(PbxMemberInfo info) {
-			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
-			if (!setup()) {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-			if (info.getMode().equals("PBX")) {
-				String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
-				Result submitResult = submitStationRequest("Station", "Extension","", "change", info);
-				if (submitResult.getResultCode() == 0) {
-					models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-					try {
-						models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.extension.update"));
-					}catch (Exception e1) {
-						models.addObject(Globals.STATUS_MESSAGE, "내선번호가 수정되었습니다.");
-					}
-					models.setStatus(HttpStatus.OK);
-				}else {
-					models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-					try {
-						models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.extension.fail"));
-					}catch (Exception e1) {
-						models.addObject(Globals.STATUS_MESSAGE, "내선번호 처리중 문제가 발생하였습니다.");
-					}
-				}
-			}else {
-				Result submitResult = submitAgentRequest("Agent", "Extension", "", "change", info);
-				if (submitResult.getResultCode() != 0) {
-					models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
-					models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				}else {
-					models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-					try {
-						models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.agent.update"));
-					}catch (Exception e1) {
-						models.addObject(Globals.STATUS_MESSAGE, "agent가 수정되었습니다.");
-						System.out.println("======pbx error:" + e1.toString());
-					}
-					models.setStatus(HttpStatus.OK);
-				}
-			}
-			
+	// **************************************************************************
+	// execRequest
+	// **************************************************************************
+	/**
+	 * Illustrates the usage of SMS, by performing the following steps: 
+	 * 	1. Initial setup of SOAP binding, session management 
+	 *  2. Submitting a request to SMS and obtaining the result 
+	 *  3. Doing session "bookkeeping" after the request 
+	 *  4. Releasing SMS session resources, when finished.
+	 *  
+	 */
+	public ModelAndView execRequest(String model, String sFIELDS, String sObjectName, String sOperation, String sQUALIFIER) {
+		// Step 1: Initial SOAP setup, done once (typically) per session.
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			return models; 
 		}
-		//사용자 등록
-		public ModelAndView execRequestMemberInsert(PbxMemberInfo info) {
-			// Step 1: Initial SOAP setup, done once (typically) per session.
-			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
-			if (!setup()) {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
 			// we failed and we're done
-			// status 값 체크 하기 
-			System.out.println("===== 내선번호 체크 ");
-			Result submitResult = this.submitRequest("Station", "extension", "", "display", info.getExtension());
-			if (submitResult.getResultCode() == 0) {
-				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록되 있습니다.");
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-			System.out.println("===== agent 체크 ");
-			// Agent 값 체크 하기 
-			submitResult = this.submitRequest("Agent", "Login_ID|Name|Extension", "", "display", info.getLoginId());
-			if (submitResult.getResultCode() == 0) {
-				models.addObject(Globals.STATUS_MESSAGE, "Agent가 등록되 있습니다.");
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-			System.out.println("===== 내선번호 등록 ");
-			String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
-			System.out.println("addType:" + addType);
-			submitResult = this.submitRequest("Station", addType, "", "add", info.getExtension());
-			
-			
-			if (submitResult.getResultCode() == 0) {
-				
-				System.out.println("===== Agent 등록 ");
-				
-				submitResult = submitAgentRequest("Agent", "Extension", "", "add", info);
-				if (submitResult.getResultCode() != 0) {
-					models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
-					models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-					return models;
-				}
-			}else {
-				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-				
-			}
-			
-			
-			this.manageSession();
-			this.releaseSession();
-			
-			if (submitResult != null) {
-				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-				models.setStatus(HttpStatus.OK);
-			}else {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				models.setStatus(HttpStatus.BAD_REQUEST);
-			}
-			
-			
-			return models;
-		}
-		//에이전트 삭제 
-		public ModelAndView execRequestMemberDelete(PbxMemberInfo info) {
-			// Step 1: Initial SOAP setup, done once (typically) per session.
-			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
-			if (!setup()) {
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-			String resutMessage = "";
-			Result submitResult = this.submitRequest("Station", "extension", "", "remove", info.getExtension());
-			
-			if (submitResult.getResultCode() != 0) {
-				resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
-				
-				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 삭제시 문제가 발생 하였습니다." + resutMessage);
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-			
-			// Agent 값 체크 하기 
-			submitResult = this.submitRequest("Agent", "Login_ID", "", "remove", info.getLoginId());
-			if (submitResult.getResultCode() != 0) {
-				resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
-				models.addObject(Globals.STATUS_MESSAGE, "Agent가 삭제시 문제가 있습니다." + resutMessage);
-				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				return models; 
-			}
-			
-			
-			this.manageSession();
+		Result submitResult = this.submitRequest(model, sFIELDS, sObjectName, sOperation, sQUALIFIER);
 
-			this.releaseSession();
+		this.manageSession();
+
+		this.releaseSession();
+		
+		if (submitResult != null) {
+			models.addObject(Globals.JSON_RETURN_RESULT, submitResult);
+			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}else {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+		}
+		
+		return models;
+	}
+		
+	public ModelAndView execRequestTrank(String model, String sFIELDS, String sObjectName, String sOperation, String sQUALIFIER) {
+		// Step 1: Initial SOAP setup, done once (typically) per session.
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+			// we failed and we're done
+		Result submitResult = this.submitRequest(model, sFIELDS, sObjectName, sOperation, sQUALIFIER);
+
+		
+		List<TrunkGroupType> list = submitResult.getResultData().getTrunkGroup();
+		
+		List<TrankGroupInfo> trGruops = list.stream().filter( t -> Integer.parseInt(t.getTotalAdministeredMembers()) > 0)
+									   .map(entry -> new TrankGroupInfo (
+											   entry.getGroupNumber(),
+											   entry.getTotalAdministeredMembers(),
+											   entry.getGroupType(),
+											   entry.getGroupName(),
+											   entry.getTN(),
+											   entry.getCOR(),
+											   entry.getCOR(),
+											   null
+											   )
+										   ).collect(Collectors.toList());
+		for (TrankGroupInfo trank : trGruops) {
 			
-			if (submitResult != null) {
+			
+			Result trankStats = this.submitRequest("TrunkStatus", "member|port|connectedPorts|mtceBusy|serviceState", "", "status", trank.getGroupNumber());
+			List<TrunkStatusType> lists =  trankStats.getResultData().getTrunkStatus();
+			List<com.system.ipcc.pbx.avaya.models.TrankStatus> listStatus =  lists.stream().map(entry -> new com.system.ipcc.pbx.avaya.models.TrankStatus(
+																entry.getMember(),
+																entry.getPort(),
+																entry.getServiceState(),
+																entry.getMtceBusy(),
+																entry.getConnectedPorts()
+																)
+											).collect(Collectors.toList());
+			trank.setStatus(listStatus);
+		}
+		
+		this.manageSession();
+
+		this.releaseSession();
+		
+		if (submitResult != null) {
+			models.addObject("TrankResult", trGruops);
+			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}
+		return models;
+	}
+	//내선번호 조회
+	public List<StationInfo> execRequestStationInfo (List<String> extensions){
+		//값 먼저 조회
+		
+		SMSReq client = new SMSReq();
+		String qualifier = "count 1";
+		List<StationInfo> stations = null;
+		Result submitResult;
+		boolean loaded = client.loadProps("Station", "extension", "display", qualifier);
+		if ( (client.isValid()) && loaded) // any args invalid
+		{
+			//접속이 되면 
+			for (String extension : extensions) {
+				submitResult = this.submitRequest("Station", "extension", "", "display", extension);
+				
+				if (submitResult.getResultCode() == 0) {
+					StationInfo station = new StationInfo();
+					
+					station.builder().extension(extension)
+									.security_code(submitResult.getResultData().getStation().get(0).getSecurityCode())
+									.type(submitResult.getResultData().getStation().get(0).getType())
+									.cor(submitResult.getResultData().getStation().get(0).getCOR())
+									.cos(submitResult.getResultData().getStation().get(0).getCOS())
+									.name(submitResult.getResultData().getStation().get(0).getName())
+									.tn(submitResult.getResultData().getStation().get(0).getTN())
+									.displayLangage(submitResult.getResultData().getStation().get(0).getDisplayLanguage())
+									.button01(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData1()))
+									.button02(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData2()))
+									.button03(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData3()))
+									.button04(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData4()))
+									.button05(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData5()))
+									.button06(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData6()))
+									.button07(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData7()))
+									.build();
+					
+					stations.add(station);
+				}
+			}
+		} 
+		this.manageSession();
+		this.releaseSession();
+		return stations;
+	}
+	public List<AgentInfo> execRequestAgentInfo (List<String> loginIds){
+		//값 먼저 조회
+		
+		SMSReq client = new SMSReq();
+		String qualifier = "count 1";
+		List<AgentInfo> stations = null;
+		Result submitResult;
+		boolean loaded = client.loadProps("Agent", "extension", "display", qualifier);
+		if ( (client.isValid()) && loaded) // any args invalid
+		{
+			//접속이 되면 
+			for (String loginId : loginIds) {
+				submitResult = this.submitRequest("Agent", "Login_ID", "", "display", loginId);
+				
+				if (submitResult.getResultCode() == 0) {
+					AgentInfo agent = new AgentInfo();
+					
+					agent.builder().loginId(loginId)
+									.name(submitResult.getResultData().getAgent().get(0).getName())
+									.extension(submitResult.getResultData().getAgent().get(0).getExtension())
+									.sn(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSN()))
+									.sr(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSL()))
+									.build();
+					stations.add(agent);
+				}
+			}
+		} 
+		this.manageSession();
+		this.releaseSession();
+		return stations;
+	}
+	
+	//pbx check
+	public int execRequestMemberCheck(PbxMemberInfo info, String _ckGubun) {
+		
+		int result = 0;
+		if (!setup()) {
+			result = -1;
+		}
+		Result submitResult;
+		// we failed and we're done
+		// status 값 체크 하기 
+		if (_ckGubun.equals("Extension")) {
+			submitResult = this.submitRequest("Station", "extension", "", "display", info.getExtension());
+			result = submitResult.getResultCode();
+		}else {
+			submitResult = this.submitRequest("Agent", "Login_ID|Name|Extension", "", "display", info.getLoginId());
+			result = submitResult.getResultCode();
+			
+		}
+		
+		this.manageSession();
+		this.releaseSession();
+	
+		return result;
+	}
+		
+		
+		
+	public ModelAndView execRequestMemberUpdate(PbxMemberInfo info) {
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		if (info.getMode().equals("PBX")) {
+			String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
+			Result submitResult = submitStationRequest("Station", "Extension","", "change", info);
+			if (submitResult.getResultCode() == 0) {
 				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+				try {
+					models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.extension.update"));
+				}catch (Exception e1) {
+					models.addObject(Globals.STATUS_MESSAGE, "내선번호가 수정되었습니다.");
+				}
+				models.setStatus(HttpStatus.OK);
+			}else {
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				try {
+					models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.extension.fail"));
+				}catch (Exception e1) {
+					models.addObject(Globals.STATUS_MESSAGE, "내선번호 처리중 문제가 발생하였습니다.");
+				}
+			}
+		}else {
+			Result submitResult = submitAgentRequest("Agent", "Extension", "", "change", info);
+			if (submitResult.getResultCode() != 0) {
+				models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			}else {
+				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+				try {
+					models.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("pbx.agent.update"));
+				}catch (Exception e1) {
+					models.addObject(Globals.STATUS_MESSAGE, "agent가 수정되었습니다.");
+					System.out.println("======pbx error:" + e1.toString());
+				}
 				models.setStatus(HttpStatus.OK);
 			}
-			
-			return models;
 		}
+		
+		return models; 
+	}
+	//사용자 등록
+	public ModelAndView execRequestMemberInsert(PbxMemberInfo info) {
+		// Step 1: Initial SOAP setup, done once (typically) per session.
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		// we failed and we're done
+		// status 값 체크 하기 
+		System.out.println("===== 내선번호 체크 ");
+		Result submitResult = this.submitRequest("Station", "extension", "", "display", info.getExtension());
+		if (submitResult.getResultCode() == 0) {
+			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록되 있습니다.");
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		System.out.println("===== agent 체크 ");
+		// Agent 값 체크 하기 
+		submitResult = this.submitRequest("Agent", "Login_ID|Name|Extension", "", "display", info.getLoginId());
+		if (submitResult.getResultCode() == 0) {
+			models.addObject(Globals.STATUS_MESSAGE, "Agent가 등록되 있습니다.");
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		System.out.println("===== 내선번호 등록 ");
+		String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
+		System.out.println("addType:" + addType);
+		submitResult = this.submitRequest("Station", addType, "", "add", info.getExtension());
+		
+		
+		if (submitResult.getResultCode() == 0) {
+			
+			System.out.println("===== Agent 등록 ");
+			
+			submitResult = submitAgentRequest("Agent", "Extension", "", "add", info);
+			if (submitResult.getResultCode() != 0) {
+				models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				return models;
+			}
+		}else {
+			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+			
+		}
+		
+		
+		this.manageSession();
+		this.releaseSession();
+		
+		if (submitResult != null) {
+			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			models.setStatus(HttpStatus.OK);
+		}else {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			models.setStatus(HttpStatus.BAD_REQUEST);
+		}
+		
+		
+		return models;
+	}
+	//에이전트 삭제 
+	public ModelAndView execRequestMemberDelete(PbxMemberInfo info) {
+		// Step 1: Initial SOAP setup, done once (typically) per session.
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		String resutMessage = "";
+		Result submitResult = this.submitRequest("Station", "extension", "", "remove", info.getExtension());
+		
+		if (submitResult.getResultCode() != 0) {
+			resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
+			
+			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 삭제시 문제가 발생 하였습니다." + resutMessage);
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		
+		// Agent 값 체크 하기 
+		submitResult = this.submitRequest("Agent", "Login_ID", "", "remove", info.getLoginId());
+		if (submitResult.getResultCode() != 0) {
+			resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
+			models.addObject(Globals.STATUS_MESSAGE, "Agent가 삭제시 문제가 있습니다." + resutMessage);
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		
+		
+		this.manageSession();
+
+		this.releaseSession();
+		
+		if (submitResult != null) {
+			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			models.setStatus(HttpStatus.OK);
+		}
+		
+		return models;
+	}
 
 		// **************************************************************************
 		// Step 1: setup()

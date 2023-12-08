@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sys.pbx.avaya.mapper.AgentInfoManageMapper">
+	<select id="selectAgentInfoPageList" resultType="camelmap">     	      
+		SELECT * FROM 
+		( 
+			SELECT 	
+				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				TB.* 
+			FROM 	
+			(	
+				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+					 A.LOGIN_ID, A.NAME, A.EXTENSION, A.SN, A.SN_INDEX, A.SR, A.SR_INDEX, A.AGENT_UPDATE
+				FROM TB_AGENTINTO A,  (select @ROWNUM := 0) RN_TB
+				WHERE 1=1
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+					AND 
+					( 
+						A.EXTENSION LIKE '%'|| #{params.searchKeyword} || '%' 
+						OR
+						A.NAME LIKE '%' ||  #{params.searchKeyword} || '%'
+					) 
+				</if>
+			) TB 
+		) TA
+		ORDER BY TA.RNUM DESC 
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+		
+   	</select>
+   	<select id="selectAgentInfoDetail" resultType="AgentInfo">
+		SELECT  A.LOGIN_ID, A.NAME, A.EXTENSION, A.SN, A.SN_INDEX, A.SR, A.SR_INDEX, A.AGENT_UPDATE
+		FROM TB_AGENTINTO A
+		WHERE LOGIN_ID = #{loginId}
+   	</select>
+   	<insert id="insertAgentInfoList">
+   		INSERT INTO TB_AGENTINTO	
+		(
+		    LOGIN_ID, NAME, EXTENSION, SN, SN_INDEX, SR, SR_INDEX, AGENT_UPDATE
+		)
+		VALUES 
+		<foreach collection="list" item="item" separator=",">
+		(
+		 #{item.loginId}, #{item.name}, #{item.extension,jdbcType=VARCHAR}, #{item.sn,jdbcType=VARCHAR}, #{item.snIndex,jdbcType=VARCHAR}, 
+		 #{item.sr,jdbcType=VARCHAR}, #{item.srIndex,jdbcType=VARCHAR}, NOW()
+		 )
+		</foreach>
+   	</insert>
+   	<insert id="insertAgentInfo">
+		INSERT INTO TB_AGENTINTO	
+		(
+		    LOGIN_ID, NAME, EXTENSION, SN, SN_INDEX, SR, SR_INDEX, AGENT_UPDATE
+		)
+		VALUES 
+		(
+			#{loginId}, #{name}, #{extension,jdbcType=VARCHAR}, #{sn,jdbcType=VARCHAR}, #{snIndex,jdbcType=VARCHAR}, 
+			#{sr,jdbcType=VARCHAR}, #{srIndex,jdbcType=VARCHAR}, NOW()
+		)
+   	</insert>
+	<update id="updateAgentInfo">
+		UPDATE TB_AGENTINTO SET  NAME = #{name}, 
+							     EXTENSION = #{extension}, 
+							     SN = #{sn,jdbcType=VARCHAR}, 
+							     SN_INDEX = #{snIndex,jdbcType=VARCHAR},
+							     SR = #{sr,jdbcType=VARCHAR}, 
+							     SR_INDEX = #{srIndex,jdbcType=VARCHAR},
+							     AGENT_UPDATE = NOW()       
+       	WHERE LOGIN_ID = #{loginId}
+   	</update>
+   	<update id="updateStationConsultInfo">
+		UPDATE TB_AGENTINTO SET CONSULT_USEYN = #{consultUseyn}
+								AGENT_UPDATE = NOW()       
+       	WHERE LOGIN_ID = #{loginId}
+   	</update>
+   	
+   	<delete id="deleteAgentInfo">
+   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+   		DELETE FROM TB_AGENTINTO
+   		WHERE LOGIN_ID = #{loginId}
+   	</delete>
+</mapper>

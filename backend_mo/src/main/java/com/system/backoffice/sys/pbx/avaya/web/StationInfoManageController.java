@@ -29,6 +29,7 @@ import egovframework.com.cmm.exception.NotFoundException;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
@@ -61,6 +62,7 @@ public class StationInfoManageController {
 	private StationInfoManageService stationService;
 	
 	@ApiOperation(value="삭제", notes = "성공시 공통 분류 코드를 삭제 합니다.")
+	@ApiImplicitParam(name = "extension", value = "내선번호")
     @DeleteMapping("{extension}.do")
 	public ModelAndView deleteStationInfo (@PathVariable String extension, 
 								  		  HttpServletRequest request) throws Exception {

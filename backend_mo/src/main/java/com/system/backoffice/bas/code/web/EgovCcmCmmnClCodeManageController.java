@@ -15,22 +15,24 @@ import egovframework.com.cmm.exception.NotFoundException;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-
+@Api(tags = {"공통분류코드 정보 API"})
+@Slf4j
 @RestController
 @RequestMapping("/api/backoffice/sys/cmm/clc")
 public class EgovCcmCmmnClCodeManageController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(EgovCcmCmmnClCodeManageController.class);
 	
 	@Autowired
     private EgovCcmCmmnClCodeManageService cmmnClCodeManageService;
@@ -48,15 +50,9 @@ public class EgovCcmCmmnClCodeManageController {
 	@Autowired
 	private JwtVerification jwtVerification;
     
-    /**
-	 * 공통분류코드를 삭제한다.
-	 * @param loginVO
-	 * @param cmmnClCode
-	 * @param model
-	 * @return "forward:/sym/ccm/ccc/EgovCcmCmmnClCodeList.do"
-	 * @throws Exception
-	 */
+    
 	@ApiOperation(value="삭제", notes = "성공시 대 분류 코드를 삭제 합니다.")
+	@ApiImplicitParam(name = "clCode", value = "공통코드 CL_CODE")
     @DeleteMapping("{clCode}.do")
 	public ModelAndView deleteCmmnClCode (@PathVariable String clCode, 
 										  HttpServletRequest request) throws Exception {
@@ -86,6 +82,7 @@ public class EgovCcmCmmnClCodeManageController {
 	    	}
 	    	
     	}catch(Exception e) {
+    		log.debug("deleteCmmnClCode error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
     		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
@@ -100,7 +97,7 @@ public class EgovCcmCmmnClCodeManageController {
 	 * @return "/cmm/sym/ccm/EgovCcmCmmnClCodeRegist"
 	 * @throws Exception
 	 */
-	@ApiOperation(value="업데이트", notes = "성공시 대 분류 코드를 업데이트 합니다.")
+	@ApiOperation(value="업데이트", notes = "성공시 공통분류코드 코드를 업데이트 합니다.")
     @PostMapping("code/update.do")
 	public ModelAndView updateCmmnClCode(@RequestBody CmmnClCode clCode, 
 			  							 HttpServletRequest request) throws Exception {
@@ -124,8 +121,9 @@ public class EgovCcmCmmnClCodeManageController {
 			 model.addObject(Globals.STATUS, status);
 	   		 model.addObject(Globals.STATUS_MESSAGE, message);
     	}catch(Exception e) {
-	   		 model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	   		 model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    		log.debug("updateCmmnClCode error:" + e.toString());
+	   		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
 	   	 }
 	   	 return model;
     	
@@ -153,12 +151,12 @@ public class EgovCcmCmmnClCodeManageController {
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
         	}
         	CmmnClCode detail = cmmnClCodeManageService.selectCmmnClCodeDetail(clCode).orElseThrow(() 
-        			-> new NotFoundException("클래스 정보가 존재하지 않습니다."));
+        			-> new NotFoundException(egovMessageSource.getMessage("fial.common.info")));
     			
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
     		model.addObject(Globals.JSON_RETURN_RESULT, detail);
     	}catch (Exception e){
-			LOGGER.debug("selectCmmnClCodeDetail error:" + e.toString());
+			log.debug("selectCmmnClCodeDetail error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	    }
@@ -212,7 +210,7 @@ public class EgovCcmCmmnClCodeManageController {
     		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
     		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
     	}catch (Exception e){
-			LOGGER.debug("selectCmmnClCodeList error:" + e.toString());
+    		log.debug("selectCmmnClCodeList error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	    }

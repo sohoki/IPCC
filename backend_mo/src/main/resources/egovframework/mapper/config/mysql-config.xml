@@ -55,8 +55,14 @@
 		<typeAlias alias="AdminInfo"  type="com.system.backoffice.uat.uia.models.AdminInfo" />
 		<typeAlias alias="AdminInfoVO"  type="com.system.backoffice.uat.uia.models.AdminInfoVO" />
 		<typeAlias alias="ConsultantInfo"  type="com.system.backoffice.uat.uia.models.ConsultantInfo" />
+		
 		<typeAlias alias="StationInfo"  type="com.system.backoffice.sys.pbx.avaya.models.StationInfo" />
 		<typeAlias alias="StationInfoReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto" />
+		
+		<typeAlias alias="AgentInfo"  type="com.system.backoffice.sys.pbx.avaya.models.AgentInfo" />
+		<typeAlias alias="AgentInfoReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.AgentInfoReqDto" />
+		
+		
 		<typeAlias alias="ConsultantAgentInfo"  type="com.system.backoffice.uat.uia.models.ConsultantAgentInfo" />
 		<typeAlias alias="PartInfo"  type="com.system.backoffice.uat.uia.models.PartInfo" />
 		<typeAlias alias="PartInfoVO"  type="com.system.backoffice.uat.uia.models.PartInfoVO" />

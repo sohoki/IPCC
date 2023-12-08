@@ -1,10 +1,13 @@
-package com.system.backoffice.bas.code.web;
+package com.system.backoffice.sys.pbx.avaya.web;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,9 +20,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.system.backoffice.bas.code.models.ClassificationInfo;
-import com.system.backoffice.bas.code.models.dto.ClassificationInfoReqDto;
-import com.system.backoffice.bas.code.service.ClassificationInfoManageService;
+import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
+import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
+import com.system.backoffice.sys.pbx.avaya.models.dto.AgentInfoReqDto;
+import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
+import com.system.backoffice.sys.pbx.avaya.service.AgentInfoManageService;
+import com.system.ipcc.pbx.avaya.service.smsxml.SMSReq;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.exception.NotFoundException;
@@ -27,43 +33,44 @@ import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
-
-
-@Api(tags = {"상담분류 코드 정보 API"})
+@Api(tags = {"avaya agent 연동 API"})
 @Slf4j
 @RestController
-@RequestMapping("/api/backoffice/sys/cmm/cls")
-public class ClassificationInfoManageController {
+@RequestMapping("/api/backoffice/ipcc/avaya/pbx/agent")
+public class AgentInfoManageController {
 
-	
-	
-    @Value("${page.pageUnit}")
+	@Value("${page.pageUnit}")
     private int pageUnitSetting ;
     
     @Value("${page.pageSize}")
     private int pageSizeSetting ;
     
-
-    @Autowired
-    private EgovMessageSource egovMessageSource;
     
-    
+	/** EgovPropertyService */
+	@Resource(name = "propertiesService")
+	protected EgovPropertyService propertyService;
+	
+	/** EgovMessageSource */
+	@Resource(name = "egovMessageSource")
+	EgovMessageSource egovMessageSource;
+	
 	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
 	
-	
 	@Autowired
-	private ClassificationInfoManageService classService;
-    
-    
-	@ApiOperation(value="삭제", notes = "성공시 상담 분류 코드를 삭제 합니다.")
-    @DeleteMapping("{cdId}.do")
-	public ModelAndView deleteClassificationInfo (@PathVariable String cdId, 
-										  		  HttpServletRequest request) throws Exception {
+	private AgentInfoManageService agentService;
+	
+	
+	@ApiOperation(value="삭제", notes = "성공시 avaya agent 삭제 합니다.")
+	@ApiImplicitParam(name = "loginId", value = "agent loginId")
+    @DeleteMapping("{loginId}.do")
+	public ModelAndView deleteAgentInfo (@PathVariable String loginId, 
+								  		  HttpServletRequest request) throws Exception {
     	 
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
@@ -75,7 +82,7 @@ public class ClassificationInfoManageController {
         	}
         	
 	    	
-    		String status = classService.deleteClassificationInfo(cdId) > 0 ?
+    		String status = agentService.deleteAgentInfo(loginId) > 0 ?
 		 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 		   	String message = status.equals( Globals.STATUS_SUCCESS) ?
 		   			 	 egovMessageSource.getMessage("success.common.delete") :
@@ -85,15 +92,17 @@ public class ClassificationInfoManageController {
 	    	
 	    	
     	}catch(Exception e) {
+    		log.error("deleteAgentInfo error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
     		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
     	return model;
 	}
 
-	@ApiOperation(value="업데이트", notes = "성공시 상담 분류를 업데이트 합니다.")
-    @PostMapping("class/update.do")
-	public ModelAndView updateClassificationInfo(@RequestBody ClassificationInfoReqDto clCode, 
+	
+	@ApiOperation(value="agent 업데이트", notes = "성공시 avaya agent 업데이트 합니다.")
+    @PostMapping("update.do")
+	public ModelAndView updateAgentInfo(@RequestBody AgentInfoReqDto vo, 
 			  							 		 HttpServletRequest request) throws Exception {
     	
     	
@@ -104,10 +113,43 @@ public class ClassificationInfoManageController {
         	if (!jwtVerification.isVerificationAdmin(request)) {
         		ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-        	}else {
-        		clCode.setUserId(jwtVerification.getTokenUserName(request));
         	}
-    		String status = classService.updateClassificationInfo(clCode) > 0 ?
+    		String status = agentService.updateAgentInfo(vo) > 0 ?
+			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+			String message = status.equals( Globals.STATUS_SUCCESS) ?
+					 	 egovMessageSource.getMessage("success.request.msg") :
+						 egovMessageSource.getMessage("fail.request.msg") ;
+			 model.addObject(Globals.STATUS, status);
+	   		 model.addObject(Globals.STATUS_MESSAGE, message);
+    	}catch(Exception e) {
+    		log.error("updateAgentInfo error:" + e.toString());
+	   		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+	   	 }
+	   	 return model;
+    	
+    	
+    }
+	
+	@ApiOperation(value="조회된 agent list 업데이트", notes = "성공시 조회된  agent list를 업데이트 합니다.")
+    @GetMapping("updateAgentList.do")
+	public ModelAndView insertAgentListInfo(@PathVariable String agentlist, 
+			  							 	HttpServletRequest request) throws Exception {
+    	
+    	
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+    	try {
+    		
+    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+        	if (!jwtVerification.isVerificationAdmin(request)) {
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+        	}
+        	
+        	//값 가지고 오기 
+        	List<String> list = Arrays.asList(agentlist.split(","));
+        	SMSReq client = new SMSReq();
+    		String status = agentService.insertAgentInfoList(client.execRequestAgentInfo(list)) > 0 ?
 			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = status.equals( Globals.STATUS_SUCCESS) ?
 					 	 egovMessageSource.getMessage("success.request.msg") :
@@ -124,9 +166,10 @@ public class ClassificationInfoManageController {
     }
 
 	
-	@ApiOperation(value="상담분류 상세 조회", notes = "상담 분류류코드 상세항목을 조회한다.")
-    @GetMapping("{cdId}.do")
-	public ModelAndView selectClassificationInfoDetail(@PathVariable String cdId, 
+	@ApiOperation(value="상세 조회", notes = "내선번호 상세조회 한다.")
+	@ApiImplicitParam(name = "loginId", value = "agent loginId")
+    @GetMapping("{loginId}.do")
+	public ModelAndView selectAgentInfoDetail(@PathVariable String loginId, 
 			  									HttpServletRequest request) throws Exception {
     	
 		//공용 확인 하기 
@@ -136,17 +179,13 @@ public class ClassificationInfoManageController {
     			ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
         	}
-    		
-    		
-    		
-    		
-    		ClassificationInfo detail = classService.selectClassificationInfoDetail(cdId).orElseThrow(() 
+    		AgentInfo detail = agentService.selectAgentInfoDetail(loginId).orElseThrow(() 
         			-> new NotFoundException(egovMessageSource.getMessage("fial.common.info")));
     			
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
     		model.addObject(Globals.JSON_RETURN_RESULT, detail);
     	}catch (Exception e){
-			log.debug("selectClassificationInfoDetail error:" + e.toString());
+			log.debug("selectAgentInfoDetail error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	    }
@@ -155,10 +194,12 @@ public class ClassificationInfoManageController {
     	// 기존 세션 체크 인증에서 토큰 방식으로 변경
 	}
 
-    
-	@ApiOperation(value="목록 조회", notes = "상담분류코드 목록을 조회한다.")
-    @PostMapping("class/list.do")
-	public ModelAndView selectCmmnClCodeList(@RequestBody Map<String, Object> searchMap, 
+    /**
+	 * 공통분류코드 목록을 조회한다.
+    */
+	@ApiOperation(value="목록 조회", notes = "내선번호 목록을 조회한다.")
+    @PostMapping("list.do")
+	public ModelAndView selectAgentList(@RequestBody Map<String, Object> searchMap, 
 											HttpServletRequest request) throws Exception {
     	
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
@@ -185,7 +226,7 @@ public class ClassificationInfoManageController {
     		searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
     		searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
     	    
-    	    List<Map<String, Object>> codeList = (List<Map<String, Object>>) classService.selectClassificationInfoListByPagination(searchMap);
+    	    List<Map<String, Object>> codeList = (List<Map<String, Object>>) agentService.selectAgentInfoPageList(searchMap);
     	    int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).get(Globals.PAGE_TOTAL_COUNT).toString().replace("-", "") ) :0;
             
 
@@ -193,11 +234,13 @@ public class ClassificationInfoManageController {
     		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
     		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
     	}catch (Exception e){
-			log.debug("selectCmmnClCodeList error:" + e.toString());
+			log.debug("selectAgentList error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	    }
 	    
         return model;
 	}
+	
+	
 }
