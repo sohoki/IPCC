@@ -29,12 +29,12 @@ public class MenuCreateManageService {
 	}
 
 	
-	public List<Map<String, Object>> selectMenuCreatList_Author(String roleId) throws Exception {
-		return createMapper.selectMenuCreatList_Author(roleId);
+	public List<Map<String, Object>> selectMenuCreatList_Author(String roleId, String systemCode) throws Exception {
+		return createMapper.selectMenuCreatList_Author(roleId, systemCode);
 	}
 	
 	
-	public int selectMenuCreatManagTotCnt(String searchKeyword) throws Exception {
+	public int selectMenuCreatManagTotCnt(MenuCreatInfo searchKeyword) throws Exception {
 		return createMapper.selectMenuCreatCnt_S(searchKeyword);
 	}
 
@@ -54,14 +54,15 @@ public class MenuCreateManageService {
 	}
 
 	@Transactional(readOnly = false)
-	public void insertMenuCreatList(String authorCode, String checkedMenuNoForInsert) throws Exception {
+	public void insertMenuCreatList(String authorCode, String systemCode, String checkedMenuNoForInsert) throws Exception {
 		int AuthorCnt = 0;
 		checkedMenuNoForInsert = checkedMenuNoForInsert.contains(",0") == false ? checkedMenuNoForInsert = checkedMenuNoForInsert.concat(",0") : checkedMenuNoForInsert;
         List<String> insertMenuNo =  UtilInfoService.dotToList(checkedMenuNoForInsert).stream().distinct().collect(Collectors.toList());
 
 		MenuCreatInfo menuCreatVO = new MenuCreatInfo();
 		menuCreatVO.setRoleId(authorCode);
-		AuthorCnt = createMapper.selectMenuCreatCnt_S(authorCode);
+		menuCreatVO.setSystemCode(systemCode);
+		AuthorCnt = createMapper.selectMenuCreatCnt_S(menuCreatVO);
 
 		// 이전에 존재하는 권한코드에 대한 메뉴설정내역 삭제
 		if (AuthorCnt > 0) {
@@ -70,6 +71,7 @@ public class MenuCreateManageService {
 		for (String menu : insertMenuNo) {
 			menuCreatVO.setRoleId(authorCode);
 			menuCreatVO.setMenuNo(menu);
+			menuCreatVO.setSystemCode(systemCode);
 			createMapper.insertMenuCreat_S(menuCreatVO);
 		}
 	}

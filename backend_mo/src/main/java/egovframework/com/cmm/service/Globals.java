@@ -87,5 +87,7 @@ public class Globals {
 	public static final String PAGE_SIZE = "pageSize";
 	public static final String PAGE_UNIT = "pageUnit";
 	public static final String PAGE_TOTAL_COUNT = "totalCnt";
+	public static final String PAGE_DOMAIN = "domainInfo";
+	public static final String PAGE_SYSTEM_CODE = "systemCode";
 	
 }

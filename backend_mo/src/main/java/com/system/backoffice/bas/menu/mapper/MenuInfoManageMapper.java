@@ -65,7 +65,7 @@ public interface MenuInfoManageMapper {
 	 * @return int
 	 * @exception Exception
 	 */
-	public int selectMenuNoByPk(String menuNo);
+	public int selectMenuNoByPk(@Param("params") Map<String, Object> params);
 
 
 
@@ -75,7 +75,7 @@ public interface MenuInfoManageMapper {
 	 * @return int
 	 * @exception Exception
 	 */
-	public int selectUpperMenuNoByPk(String menuNo);
+	public int selectUpperMenuNoByPk(@Param("params") Map<String, Object> params);
 
 
 
@@ -112,7 +112,7 @@ public interface MenuInfoManageMapper {
 	 * @return List
 	 * @exception Exception
 	 */
-	public List<Map<String, Object>> selectMainMenuLeft(String adminId) ;
+	public List<Map<String, Object>> selectMainMenuLeft(String adminId, String url) ;
 
 	/**
 	 * MainMenu Head MenuURL 조회

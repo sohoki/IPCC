@@ -24,7 +24,6 @@ import egovframework.com.jwt.config.JwtVerification;
 
 @RestController
 @RequestMapping("/api/display/cti")
-@SuppressWarnings("unchecked")
 public class DisplayMnageController {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DisplayMnageController.class);

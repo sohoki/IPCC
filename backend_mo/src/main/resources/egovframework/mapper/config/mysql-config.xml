@@ -33,7 +33,11 @@
 		<typeAlias alias="ServiceOidInfoReqDto"		type="com.system.backoffice.sym.svr.models.dto.ServiceOidInfoReqDto" />
 		
 		
+		<typeAlias alias="InsttCodeInfo"		type="com.system.backoffice.bas.icr.models.InsttCodeInfo" />
+		<typeAlias alias="InsttCodeRecptn"		type="com.system.backoffice.bas.icr.models.InsttCodeRecptn" />
 		
+		<typeAlias alias="InsttCodeInfoReqDto"	type="com.system.backoffice.bas.icr.models.dto.InsttCodeInfoReqDto" />	
+		<typeAlias alias="InsttCodeRecptnReqDto"	type="com.system.backoffice.bas.icr.models.dto.InsttCodeRecptnReqDto" />	
 		
 		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
 		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
@@ -74,6 +78,10 @@
 		
 		<typeAlias alias="SystemInfoRequestDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto" />
 		<typeAlias alias="SystemInfoResDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoResDto" />
+		
+		
+		
+		
 		
 		<package name="com.system.backoffice.sys.svr.models"/>
 		<package name="com.system.backoffice.sys.svr.models.dto"/>

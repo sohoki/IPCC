@@ -34,8 +34,15 @@ public class AdminInfo implements Serializable {
 	private String pbxExtension;
 	private String consultantUseyn;
 	private String lastUpdtPnttm;
+	private String insttCode;
 	
-    public String getLastUpdtPnttm() {
+    public String getInsttCode() {
+		return insttCode;
+	}
+	public void setInsttCode(String insttCode) {
+		this.insttCode = insttCode;
+	}
+	public String getLastUpdtPnttm() {
 		return lastUpdtPnttm;
 	}
 	public void setLastUpdtPnttm(String lastUpdtPnttm) {

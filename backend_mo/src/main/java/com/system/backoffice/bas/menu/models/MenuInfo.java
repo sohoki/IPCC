@@ -1,7 +1,6 @@
 package com.system.backoffice.bas.menu.models;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +13,7 @@ public class MenuInfo {
 	
 	private String menuNo = "";
 	private String menuNm = ""; 
+	private String systemCode = "";
 	private String progrmFileNm  = "";
 	private String progrmKoreannm = ""; 
 	private String upperMenuNo  = "";
@@ -22,5 +22,7 @@ public class MenuInfo {
 	private String menuDc  = "";
 	private String relateImagePath = ""; 
 	private String relateImageNm = "";
- 	private int cnt = 0;
+	private String menuPageTarget;
+	private String menuPopupnfo;
+	private int cnt = 0;
 }

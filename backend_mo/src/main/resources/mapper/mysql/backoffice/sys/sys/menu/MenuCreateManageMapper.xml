@@ -8,9 +8,11 @@
 			            (SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
 			            		ROLE_ID, ROLE_NAME, ROLE_DC, DATE_FORMAT(A.FRST_REGIST_PNTTM, '%Y-%m-%d') AS ROLE_CREAT_DE,
 			            		ROLE_USEYN,
-							   (SELECT COUNT(B.ROLE_ID)
+							   (SELECT IFNULL(COUNT(B.ROLE_ID), 0) 
 								FROM   COMTNMENUCREATDTLS B
-								WHERE  B.ROLE_ID = A.ROLE_ID ) AS "chk_menu"
+								WHERE  B.ROLE_ID = A.ROLE_ID 
+									   AND B.SYSTEM_CODE = #{params.systemCode}
+								) AS "chk_menu"
 						FROM    TB_ROLEINFO A,  (select @ROWNUM := 0) RN_TB
 						WHERE   1=1 
 						        <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">  
@@ -39,7 +41,7 @@
 	
 	</select>
 
-	<select id="selectMenuCreatList_D"  resultType="lmap">
+	<select id="selectMenuCreatList_D"  resultType="camelmap">
 		<![CDATA[
 			SELECT  A.MENU_NO 
 				   , A.MENU_ORDR 
@@ -54,7 +56,7 @@
 			ORDER BY A.MENU_ORDR
 		 ]]>
 	</select> 
-	<select id="selectMenuCreatList_Author"  resultType="lmap">
+	<select id="selectMenuCreatList_Author"  resultType="camelmap">
 		<![CDATA[
 			SELECT  A.MENU_NO 
 				   , A.MENU_ORDR 
@@ -65,21 +67,23 @@
 			      AND A.MENU_NO > 0
 			      AND UPPER_MENU_NO <> 0
 			      AND b.ROLE_ID = #{roleId}
+			      AND b.SYSTEM_CODE = #{systemCode}
 			ORDER BY A.MENU_NO
 		 ]]>
 	</select> 
 	<select id="selectMenuCreatCnt_S" resultType="int">
 		<![CDATA[
 			SELECT COUNT(ROLE_ID) AS "totcnt"
-			FROM TB_ROLEINFO
+			FROM COMTNMENUCREATDTLS
 			WHERE ROLE_ID = #{roleId}
+				  AND SYSTEM_CODE =  #{systemCode}
 		]]>
 	</select>
 
 	<insert id="insertMenuCreat_S">
 		<![CDATA[
-			INSERT INTO COMTNMENUCREATDTLS ( ROLE_ID ,MENU_NO )
-			VALUES (  #{roleId}, #{menuNo} )
+			INSERT INTO COMTNMENUCREATDTLS ( ROLE_ID ,MENU_NO , SYSTEM_CODE)
+			VALUES (  #{roleId}, #{menuNo} , #{systemCode})
 		]]>
 	</insert>
 
@@ -96,7 +100,8 @@
 	<delete id="deleteMenuCreat_S">
 		<![CDATA[                          
 			DELETE FROM COMTNMENUCREATDTLS              
-			WHERE ROLE_ID= #{roleId}             
+			WHERE ROLE_ID= #{roleId}    
+				  AND SYSTEM_CODE =  #{systemCode} 
 		]]>                                
 	</delete> 
 </mapper>

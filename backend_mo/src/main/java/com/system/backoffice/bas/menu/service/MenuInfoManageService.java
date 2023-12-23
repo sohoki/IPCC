@@ -64,13 +64,13 @@ public class MenuInfoManageService {
 	}
 
 	
-	public int selectMenuNoByPk(String menuNo) throws Exception {
-		return menuMapper.selectMenuNoByPk(menuNo);
+	public int selectMenuNoByPk(Map<String, Object> params) throws Exception {
+		return menuMapper.selectMenuNoByPk(params);
 	}
 
 	
-	public int selectUpperMenuNoByPk(String menuNo) throws Exception {
-		return menuMapper.selectUpperMenuNoByPk(menuNo);
+	public int selectUpperMenuNoByPk(Map<String, Object> params) throws Exception {
+		return menuMapper.selectUpperMenuNoByPk(params);
 	}
 	
 	
@@ -139,8 +139,8 @@ public class MenuInfoManageService {
 	}
 
 	@NoLogging
-	public List<Map<String, Object>> selectMainMenuLeft(String empNo) throws Exception {
-		return menuMapper.selectMainMenuLeft(empNo);
+	public List<Map<String, Object>> selectMainMenuLeft(String empNo, String url) throws Exception {
+		return menuMapper.selectMainMenuLeft(empNo, url);
 	}
 
 	/**

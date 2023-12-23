@@ -24,8 +24,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.ModelAndView;
-
+import org.apache.commons.lang3.StringUtils;
 import com.system.backoffice.bas.menu.models.MenuInfo;
 import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
 import com.system.backoffice.bas.menu.service.MenuCreateManageService;
@@ -33,16 +34,22 @@ import com.system.backoffice.bas.menu.service.MenuInfoManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import com.system.backoffice.util.service.UtilInfoService;
+import com.system.backoffice.util.service.fileService;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 
+@Api(tags = {"메뉴 관리 정보 API"})
 @Slf4j
 @RestController
 @RequestMapping("/api/backoffice/sys/menu")
@@ -54,6 +61,10 @@ public class MenuInfoManageController {
 	
 	@Autowired
 	private MenuInfoManageService menuService;
+	
+	//파일 업로드
+    @Autowired
+	private fileService uploadFile;
 	
 	@Autowired
 	private MenuCreateManageService menuCreateService;
@@ -74,6 +85,7 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="메뉴 관리 정보 리스트", notes = "성공시 메뉴 관리 정보 리스트를 조회 합니다.")
 	@PostMapping("menuListAjax.do")
 	public ModelAndView selectMenuInfoListAjax(@RequestBody Map<String, Object> searchVO,
 			 									HttpServletRequest request) throws Exception {
@@ -89,19 +101,19 @@ public class MenuInfoManageController {
         	}
         	
         	
-			int pageUnit = searchVO.get("pageUnit") == null ?  propertiesService.getInt("pageUnit")
-					: Integer.valueOf((String) searchVO.get("pageUnit"));
+			int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ?  propertiesService.getInt(Globals.PAGE_UNIT)
+					: Integer.valueOf((String) searchVO.get(Globals.PAGE_UNIT));
 		  
 	   	    PaginationInfo paginationInfo = new PaginationInfo();
-		    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get("pageIndex"),"1")));
+		    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get(Globals.PAGE_INDEX),"1")));
 		    paginationInfo.setRecordCountPerPage(pageUnit);
-		    paginationInfo.setPageSize(propertiesService.getInt("pageSize"));
+		    paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_SIZE));
 
-		    searchVO.put("firstIndex", paginationInfo.getFirstRecordIndex());
-		    searchVO.put("lastRecordIndex", paginationInfo.getLastRecordIndex());
-		    searchVO.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
+		    searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+		    searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+		    searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
 		    List<Map<String, Object>> menuList = menuService.selectMenuManageList(searchVO);
-		    int totCnt =  menuList.size() > 0 ? Integer.valueOf(menuList.get(0).get("total_record_count").toString()) : 0;
+		    int totCnt =  menuList.size() > 0 ? Integer.valueOf(menuList.get(0).get(Globals.PAGE_TOTAL_RECORD_COUNT).toString()) : 0;
 			paginationInfo.setTotalRecordCount(totCnt);
 
 			model.addObject(Globals.STATUS_REGINFO, searchVO);
@@ -124,6 +136,8 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="메뉴 정보 상세", notes = "성공시 메뉴 정보 상세를 조회 합니다.")
+	@ApiImplicitParam(name = "menuNo", value = "menuNo CODE")
 	@GetMapping("{menuNo}.do")
 	public ModelAndView selectMenuDetailInfo(@PathVariable String  menuNo,
 											 HttpServletRequest request) throws Exception {
@@ -149,17 +163,17 @@ public class MenuInfoManageController {
 		
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
     	if (!jwtVerification.isVerificationAdmin(request)) {
-    		System.out.println("jwtVerification  isVerificationAdmin");
+    		log.debug("jwtVerification  isVerificationAdmin");
     		ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
     	}else {
     		
-    		
+    		System.out.println("url:" + request.getScheme()+"://" + request.getServerName()+":"+ request.getServerPort());
     		
     		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
     		model.addObject(Globals.ADMIN_INFO, jwtVerification.getTokenUserName(request));
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.JSON_RETURN_RESULT, menuService.selectMainMenuLeft(jwtVerification.getTokenUserName(request)));
+    		model.addObject(Globals.JSON_RETURN_RESULT, menuService.selectMainMenuLeft(jwtVerification.getTokenUserName(request), request.getScheme()+"://" + request.getServerName()+":"+ request.getServerPort()));
     		
     		return model;
     	}
@@ -172,8 +186,10 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="메뉴 저장", notes = "성공시 메뉴 저장 합니다.")
 	@PostMapping("menuUpdate.do")
 	public ModelAndView updateMenuInfoManage(@Valid @RequestBody MenuInfoRequestDto info,
+											MultipartRequest mRequest,
 											HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
@@ -184,6 +200,7 @@ public class MenuInfoManageController {
     	}else {
     		info.setUserId(jwtVerification.getTokenUserName(request));
     	}
+		
 		int ret = menuService.updateMenuManage(info);
 
 		String messageKey = "";
@@ -208,7 +225,8 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
-	
+	@ApiOperation(value="메뉴 삭제", notes = "성공시 메뉴 삭제 합니다.")
+	@ApiImplicitParam(name = "menuNo", value = "menuNo CODE")
 	@DeleteMapping("{menuNo}.do")
 	public ModelAndView deleteMenInfoManage(@PathVariable String  menuNo,
 											HttpServletRequest request) throws Exception {
@@ -244,12 +262,28 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="메뉴 아이디 중복 체크", notes = "성공시 메뉴 아이디 중복 체크 합니다.")
+	@ApiImplicitParam(name = "menuNo", value = "menuNo CODE")
 	@NoLogging
 	@GetMapping("menuCheck/{menuNo}.do")
-	public ModelAndView menuNoCheck(@PathVariable String menuNo) throws Exception {
-		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+	public ModelAndView menuNoCheck(@PathVariable String menuNo,
+									@RequestParam Map<String, Object> commandMap,
+									HttpServletRequest request) throws Exception {
 		
-		int ret = uniMangeServiec.selectIdDoubleCheckString("MENU_NO", "COMTNMENUINFO", "MENU_NO = [" + menuNo + "[");
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		if (!jwtVerification.isVerificationAdmin(request)) {
+
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
+		String systemCode = UtilInfoService.NVL(commandMap.get("systemCode"), "");
+		if (systemCode.equals("")) {
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.fail.systemCode"));
+			return model;
+		}
+		
+		int ret = uniMangeServiec.selectIdDoubleCheckString("MENU_NO", "COMTNMENUINFO", "MENU_NO = [" + menuNo + "[ AND SYSTEM_CODE =["+systemCode+"[");
 		if (ret == 0) {
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeOk.msg"));
@@ -268,6 +302,7 @@ public class MenuInfoManageController {
 	 * @return 출력페이지정보 "forward:/sym/mnu/mpm/EgovMenuManageSelect.do"
 	 * @exception Exception
 	 */
+	@ApiOperation(value="메뉴목록 멀티 삭제한다.", notes = "성공시 메뉴목록 멀티 삭제합니다.")
 	@GetMapping("menuManageListDelete.do")
 	public ModelAndView deleteMenuManageList(@RequestParam("checkedMenuNoForDel") String checkedMenuNoForDel, 
 			                                 HttpServletRequest request)throws Exception {
@@ -287,8 +322,10 @@ public class MenuInfoManageController {
 	    	
 			int ret = menuService.deleteMenuManageList(checkedMenuNoForDel);
 			
+			
+			
 			if (ret == -1) {
-			model.addObject(Globals.STATUS_MESSAGE, "참조되는 메뉴가 있어 삭제가 실패하였습니다.");
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("menu.exist.fail"));
 			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
 			} else if (ret == 0 ) {
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
@@ -315,10 +352,11 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="메뉴 업데이트.", notes = "성공시 메뉴 업데이트합니다.")
 	@PostMapping("menuRegistUpdate.do")
-	public ModelAndView insertMenuManage(@RequestParam Map<String, Object> commandMap, 
-			                             @RequestBody MenuInfoRequestDto menuIno, 
-			                             HttpServletRequest request) throws Exception {
+	public ModelAndView insertMenuManage(MultipartRequest mRequest,
+										MenuInfoRequestDto menuIno, 
+										HttpServletRequest request) throws Exception {
 		
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
@@ -329,15 +367,28 @@ public class MenuInfoManageController {
     	}else {
     		menuIno.setUserId(jwtVerification.getTokenUserName(request));
     	}
+			Map<String, Object> params = new HashMap<String, Object>();
+			params.put("systemCode", menuIno.getSystemCode());
+			params.put("menuNo", menuIno.getMenuNo());
 			
-		if (menuService.selectMenuNoByPk(menuIno.getMenuNo()) != 0 && menuIno.getMode().equals(Globals.SAVE_MODE_INSERT)) {
+			
+		if (menuService.selectMenuNoByPk(params) != 0 && menuIno.getMode().equals(Globals.SAVE_MODE_INSERT)) {
 			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.isExist.msg"));
 			return model;
 		}
-	    int ret = menuService.updateMenuManage(menuIno);
-	    String message = "";
+		
+		String fileNm = uploadFile.uploadFileNm(mRequest.getFiles("relateImage"), propertiesService.getString("Globals.filePath"));
+		
+		
+		
+		String message = "";
 	    String states = "";
+	    menuIno.setRelateImageNm(fileNm);
+	    menuIno.setRelateImagePath(propertiesService.getString("Globals.filePath"));
+		
+	    int ret = menuService.updateMenuManage(menuIno);
+	  
 	    
 	    if (ret > 0) {
 	    	message = menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("success.common.insert") : egovMessageSource.getMessage("success.common.update");
@@ -346,6 +397,7 @@ public class MenuInfoManageController {
 	    	message = menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("fail.common.insert") : egovMessageSource.getMessage("fail.common.update");
 	    	states =  Globals.STATUS_FAIL;
 	    }
+	    
 	    model.addObject(Globals.STATUS, states);
 		model.addObject(Globals.STATUS_MESSAGE, message);
 	    
@@ -361,6 +413,7 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="메뉴생성 일괄삭제프로세스", notes = "성공시 메뉴생성 일괄삭제프로세스합니다.")
 	@DeleteMapping("menuBndeAllDelete.do")
 	public ModelAndView menuBndeAllDelete(HttpServletRequest request) throws Exception {
 		
@@ -392,23 +445,24 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value = "menuBndeRegist.do")
+	@ApiOperation(value="메뉴일괄등록처리 프로세스", notes = "성공시 메뉴일괄등록처리 프로세스 합니다.")
+	@PostMapping(value = "menuBndeRegist.do")
 	public ModelAndView menuBndeRegist(@RequestParam Map<String, Object> commandMap, 
 			                     final HttpServletRequest request, 
 			                     @ModelAttribute("MenuInfo") MenuInfo menuInfo,
 			                     ModelMap mmp) throws Exception {
 		
-		
+		if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
 		
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
-		
-//		String sLocationUrl = null;
-//		String resultMsg = "";
+	
 		String sMessage = "";
 		String status = "";
 		
 		// 0. Spring Security 사용자권한 처리
-		
 		
 		final MultipartHttpServletRequest multiRequest = (MultipartHttpServletRequest) request;
 		final Map<String, MultipartFile> files = multiRequest.getFileMap();
@@ -460,7 +514,7 @@ public class MenuInfoManageController {
 		return model;
 	}
 	
-	
+	@ApiOperation(value="메뉴일괄등록처리 프로세스", notes = "성공시 메뉴일괄등록처리 프로세스 합니다.")
 	@PostMapping("menuCreateListAjax.do")
 	public ModelAndView selectAuthInfoListAjax(	@RequestBody Map<String, Object> searchVO, 
 												HttpServletRequest request) throws Exception {
@@ -475,24 +529,27 @@ public class MenuInfoManageController {
 	    	}
 			
 			
-			
-			int pageUnit = searchVO.get("pageUnit") == null ?  propertiesService.getInt("pageUnit") : Integer.valueOf((String) searchVO.get("pageUnit"));
+			String systemCode = UtilInfoService.NVL(searchVO.get(Globals.PAGE_SYSTEM_CODE),"IPCC");
+			int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ?  propertiesService.getInt(Globals.PAGE_UNIT) : 
+																Integer.valueOf((String) searchVO.get(Globals.PAGE_UNIT));
 			  
-		    searchVO.put("pageSize", propertiesService.getInt("pageSize"));
+		    searchVO.put(Globals.PAGE_SIZE, propertiesService.getInt(Globals.PAGE_SIZE));
 		  
-		    log.info("pageUnit:" + pageUnit);
+		    log.info(Globals.PAGE_UNIT+":" + pageUnit);
+		   
 		  
 	   	    PaginationInfo paginationInfo = new PaginationInfo();
-		    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get("pageIndex"),"1")));
+		    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get(Globals.PAGE_INDEX),"1")));
 		    paginationInfo.setRecordCountPerPage(pageUnit);
-		    paginationInfo.setPageSize(propertiesService.getInt("pageSize"));
+		    paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_SIZE));
 
-		    searchVO.put("firstIndex", paginationInfo.getFirstRecordIndex());
-		    searchVO.put("lastRecordIndex", paginationInfo.getLastRecordIndex());
-		    searchVO.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
+		    searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+		    searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+		    searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+		    searchVO.put(Globals.PAGE_SYSTEM_CODE, systemCode);
 		    			  
 			List<Map<String, Object>> list = menuCreateService.selectMenuCreatManagList(searchVO);
-	        int totCnt =  list.size() > 0 ? Integer.valueOf(list.get(0).get("totalRecordCount").toString()) : 0;
+	        int totCnt =  list.size() > 0 ? Integer.valueOf(list.get(0).get(Globals.PAGE_TOTAL_RECORD_COUNT).toString()) : 0;
 	   
 			model.addObject(Globals.JSON_RETURN_RESULT_LIST, list);
 		    model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
@@ -514,15 +571,23 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
-
+	
+	@ApiOperation(value="권한 코드에 따른 매핑 메뉴 정보 저장", notes = "성공시 권한 코드에 따른 매핑 메뉴 정보 저장 합니다.")
 	@PostMapping("menuCreateUpdateAjax.do")
-	public ModelAndView updateMenuCreateAjax(@RequestBody Map<String, Object> params) throws Exception {
+	public ModelAndView updateMenuCreateAjax(@RequestBody Map<String, Object> params,
+											HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
+		
+		if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
+		
 		
 		String roleId = String.valueOf(params.get("roleId"));
 		String checkedMenuNo = String.valueOf(params.get("checkedMenuNo"));
-		
-		menuCreateService.insertMenuCreatList(roleId, checkedMenuNo);
+		String systemCode = String.valueOf(params.get("systemCode"));
+		menuCreateService.insertMenuCreatList(roleId, systemCode, checkedMenuNo);
 		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.update"));
 		
@@ -535,11 +600,21 @@ public class MenuInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
+	@ApiOperation(value="권한 코드에 매핑된 메뉴 목록 조회 ", notes = "성공시 권한 코드에 매핑된 메뉴 목록 조회 합니다.")
 	@GetMapping("roleMenu/{roleId}.do")
-	public ModelAndView selectMenuCreateMenuListAjax(@PathVariable String roleId)throws Exception {
+	public ModelAndView selectMenuCreateMenuListAjax(@RequestParam Map<String, Object> commandMap,
+													HttpServletRequest request,
+													@PathVariable String roleId)throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
-		List<Map<String, Object>> list = menuCreateService.selectMenuCreatList_Author(roleId);
+		if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
+		
+		String systemCode = UtilInfoService.NVL(commandMap.get("systemCode"),"IPCC");
+		
+		List<Map<String, Object>> list = menuCreateService.selectMenuCreatList_Author(roleId, systemCode);
 		model.addObject(Globals.JSON_RETURN_RESULT_LIST, list);
 		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		

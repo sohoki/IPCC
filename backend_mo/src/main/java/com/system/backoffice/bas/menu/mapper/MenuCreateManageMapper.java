@@ -20,11 +20,11 @@ public interface MenuCreateManageMapper {
 	
 	public int selectUsrByPk(String empNo);
 	
-	public int selectMenuCreatCnt_S(String authorCode);
+	public int selectMenuCreatCnt_S(MenuCreatInfo params);
 	
 	public List<Map<String, Object>> selectMenuCreatList_D(String authorCode);
 	//tree 메뉴 설정
-	public List<Map<String, Object>> selectMenuCreatList_Author(String authorCode);
+	public List<Map<String, Object>> selectMenuCreatList_Author(String roleId, String systemCode);
 	
 	public int insertMenuCreat_S(MenuCreatInfo info);
 	

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.system.backoffice.bas.menu.mapper.MenuInfoManageMapper">
-	<select id="selectMenuManageList_D" resultType="lmap">
+	<select id="selectMenuManageList_D" resultType="camelmap">
 		    WITH recursive cte AS 
 			(
-				SELECT TB.MENU_NO, TB.MENU_ORDR, TB.MENU_NM, TB.UPPER_MENU_NO, TB.MENU_DC, TB.PROGRM_FILE_NM, TB.PROGRM_KOREAN_NM,  TB.URL, 
-					   1 as LEVEL, convert(TB.MENU_NO, char(100)) as ctg_path	
-				from 
-				(select  a.MENU_NO           
+				SELECT TB.MENU_NO, TB.MENU_ORDR, TB.MENU_NM, TB.UPPER_MENU_NO, TB.MENU_DC, TB.PROGRM_FILE_NM, TB.PROGRM_KOREAN_NM,  
+					   TB.URL, TB.RELATE_IMAGE_PATH, TB.RELATE_IMAGE_NM, TB.MENU_PAGE_TARGET, TB.MENU_POPUPNFO, TB.SYSTEM_CODE,
+					   1 as LEVEL, CONVERT(TB.MENU_NO, char(100)) as ctg_path	
+				FROM 
+				(SELECT  a.MENU_NO           
 						, a.MENU_ORDR         
 						, a.MENU_NM           
 						, a.UPPER_MENU_NO    
@@ -15,14 +16,19 @@
 						, a.PROGRM_FILE_NM  
 						, b.PROGRM_KOREAN_NM  
 						, b.URL
-						
-				from COMTNMENUINFO a, COMTNPROGRMLIST b
-				where UPPER_MENU_NO is null
+						, a.RELATE_IMAGE_PATH
+						, a.RELATE_IMAGE_NM
+						, a.MENU_PAGE_TARGET
+						, a.MENU_POPUPNFO
+						, a.SYSTEM_CODE
+				FROM COMTNMENUINFO a, COMTNPROGRMLIST b
+				WHERE UPPER_MENU_NO is null
 					  AND a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
 				      )  TB
 				UNION all
-				select TA.MENU_NO, TA.MENU_ORDR, TA.MENU_NM, TA.UPPER_MENU_NO, TA.MENU_DC, TA.PROGRM_FILE_NM, TA.PROGRM_KOREAN_NM,  TA.URL, 
-					   b.LEVEL + 1, concat(b.ctg_path, '-', TA.MENU_NO)
+				SELECT TA.MENU_NO, TA.MENU_ORDR, TA.MENU_NM, TA.UPPER_MENU_NO, TA.MENU_DC, TA.PROGRM_FILE_NM, TA.PROGRM_KOREAN_NM,  
+					   TA.URL, TA.RELATE_IMAGE_PATH, TA.RELATE_IMAGE_NM, TA.MENU_PAGE_TARGET, TA.MENU_POPUPNFO, TA.SYSTEM_CODE,
+					   b.LEVEL + 1, CONCAT(b.ctg_path, '-', TA.MENU_NO)
 				FROM
 				(SELECT   a.MENU_NO           
 						, a.MENU_ORDR         
@@ -32,21 +38,30 @@
 						, a.PROGRM_FILE_NM  
 						, b.PROGRM_KOREAN_NM  
 						, b.URL
+						, a.RELATE_IMAGE_PATH
+						, a.RELATE_IMAGE_NM
+						, a.MENU_PAGE_TARGET
+						, a.MENU_POPUPNFO
+						, a.SYSTEM_CODE
 				FROM COMTNMENUINFO a, COMTNPROGRMLIST b
 				WHERE a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
+					 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchSystemCode)">  
+				     	AND a.SYSTEM_CODE = #{params.searchSystemCode}
+				     </if>
 				     ) TA
 				INNER JOIN cte AS b ON TA.UPPER_MENU_NO = b.MENU_NO
 			)
 			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				  RELATE_IMAGE_PATH, RELATE_IMAGE_NM, MENU_PAGE_TARGET, MENU_POPUPNFO, SYSTEM_CODE,	
 				   MENU_NO, MENU_ORDR, MENU_NM, UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, PROGRM_KOREAN_NM,  URL,  LEVEL,  ctg_path  
 			FROM cte
 			WHERE 1=1 
 			 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">  
 		     <![CDATA[
-		     AND MENU_NM like '%' #{params.searchKeyword} '%'
+		     	AND MENU_NM like CONCAT ('%', #{params.searchKeyword},'%')
 		      ]]>
-		     </if> 
-			order by MENU_ORDR asc 
+		     </if>
+			ORDER BY MENU_ORDR asc 
 		      
 		   
 	</select> 
@@ -59,31 +74,56 @@
 				, (SELECT MENU_NM FROM COMTNMENUINFO WHERE MENU_NO = A.UPPER_MENU_NO) AS UPPER_MENU_NM
 				, A.MENU_DC             
 				, A.PROGRM_FILE_NM
-				, B.PROGRM_KOREAN_NM
+				, A.RELATE_IMAGE_PATH
+				, A.RELATE_IMAGE_NM
+				, A.MENU_PAGE_TARGET
+				, A.MENU_POPUPNFO
+				, A.SYSTEM_CODE
+				, A.MENU_PAGE_TARGET
+				, A.MENU_POPUPNFO
 		FROM COMTNMENUINFO A
 			INNER JOIN COMTNPROGRMLIST B ON A.PROGRM_FILE_NM = B.PROGRM_FILE_NM
 		WHERE MENU_NO = #{value}
 	</select>
-	
 	<insert id="insertMenuManage_S">
 		<![CDATA[
-			INSERT INTO COMTNMENUINFO ( MENU_NO , MENU_ORDR , MENU_NM , UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM )
+			INSERT INTO COMTNMENUINFO ( 
+				MENU_NO , MENU_ORDR , MENU_NM , UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, 
+				RELATE_IMAGE_PATH, RELATE_IMAGE_NM, MENU_PAGE_TARGET, MENU_POPUPNFO, SYSTEM_CODE
+			)
 			VALUES 
 			(   
-			    #{menuNo}, #{menuOrdr ,jdbcType=VARCHAR}, #{menuNm}, #{upperMenuNo}, #{menuDc ,jdbcType=VARCHAR}, #{progrmFileNm} 
+			    #{menuNo}, #{menuOrdr ,jdbcType=VARCHAR}, #{menuNm}, #{upperMenuNo}, #{menuDc ,jdbcType=VARCHAR}, #{progrmFileNm},
+			    #{relateImagePath ,jdbcType=VARCHAR}, #{relateImageNm ,jdbcType=VARCHAR}, 
+			    #{menuPageTarget ,jdbcType=VARCHAR}, #{menuPopupnfo ,jdbcType=VARCHAR},  #{systemCode} 
             )
 		]]>
 	</insert>
 
 	<update id="updateMenuManage_S">
-		<![CDATA[
-			UPDATE COMTNMENUINFO SET  MENU_ORDR         = #{menuOrdr}      
-						              , MENU_NM           = #{menuNm}    
-						              , UPPER_MENU_NO     = #{upperMenuNo}    
-						              , MENU_DC           = #{menuDc ,jdbcType=VARCHAR}    
-						              , PROGRM_FILE_NM    = #{progrmFileNm}  
-			WHERE MENU_NO=#{menuNo}
-		]]>
+		
+		UPDATE COMTNMENUINFO SET  MENU_ORDR         = #{menuOrdr}     
+								  , SYSTEM_CODE = #{systemCode} 
+								  <![CDATA[
+					              , MENU_NM           = #{menuNm}    
+					              ]]>
+					              , UPPER_MENU_NO     = #{upperMenuNo}    
+					              <![CDATA[
+					              , MENU_DC           = #{menuDc ,jdbcType=VARCHAR}    
+					              ]]>
+					              , PROGRM_FILE_NM    = #{progrmFileNm}  
+					              <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(relateImageNm)">  
+					              , RELATE_IMAGE_PATH = #{relateImagePath ,jdbcType=VARCHAR}
+					              <![CDATA[
+					              , RELATE_IMAGE_NM   = #{relateImageNm ,jdbcType=VARCHAR}
+					              ]]>
+					              </if>
+					              , MENU_PAGE_TARGET = #{menuPageTarget ,jdbcType=VARCHAR}
+					              <![CDATA[
+					              , MENU_POPUPNFO =  #{menuPopupnfo ,jdbcType=VARCHAR}
+					              ]]>
+		WHERE MENU_NO=#{menuNo}
+		
 	</update>
 
 	<delete id="deleteMenuManage_S">
@@ -104,8 +144,9 @@
 	<select id="selectMenuNoByPk" resultType="Integer">
 		<![CDATA[
 		SELECT COUNT(MENU_NO) AS "totcnt"
-		  FROM COMTNMENUINFO
-		 WHERE MENU_NO =#{menuNo}
+		FROM COMTNMENUINFO
+		WHERE MENU_NO =#{params.menuNo}
+			  AND SYSTEM_CODE = #{params.systemCode}
 		]]>
 	</select>
 	
@@ -113,8 +154,9 @@
     <select id="selectUpperMenuNoByPk" resultType="Integer">
         <![CDATA[
         SELECT COUNT(MENU_NO) AS totcnt
-          FROM COMTNMENUINFO
-         WHERE UPPER_MENU_NO = #{menuNo}
+        FROM COMTNMENUINFO
+        WHERE UPPER_MENU_NO = #{params.menuNo}
+			  AND SYSTEM_CODE = #{params.systemCode}
         ]]>
     </select>
     
@@ -199,12 +241,12 @@
 
 	<select id="selectMainMenuLeft" resultType="lmap">
 		<![CDATA[ 
-			 WITH recursive cte AS 
+			 WITH RECURSIVE cte AS 
 			(
-				select TB.MENU_NO, TB.MENU_ORDR, TB.MENU_NM, TB.UPPER_MENU_NO, TB.MENU_DC, TB.PROGRM_FILE_NM, TB.PROGRM_KOREAN_NM,  TB.URL, 
+				SELECT TB.MENU_NO, TB.MENU_ORDR, TB.MENU_NM, TB.UPPER_MENU_NO, TB.MENU_DC, TB.PROGRM_FILE_NM, TB.PROGRM_KOREAN_NM,  TB.URL, 
 					   1 as LEVEL, convert(TB.MENU_NO, char(100)) as ctg_path, TB.RELATE_IMAGE_NM	
-				from 
-				(select  a.MENU_NO           
+				FROM 
+				(SELECT  a.MENU_NO           
 						, a.MENU_ORDR         
 						, a.MENU_NM           
 						, a.UPPER_MENU_NO    
@@ -213,15 +255,17 @@
 						, b.PROGRM_KOREAN_NM  
 						, b.URL
 						, a.RELATE_IMAGE_NM
-				from COMTNMENUINFO a, COMTNPROGRMLIST b, COMTNMENUCREATDTLS c 
-				where UPPER_MENU_NO is null
-					  and a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
+				FROM COMTNMENUINFO a, COMTNPROGRMLIST b, COMTNMENUCREATDTLS c, TB_SYSTEMINFO d 
+				WHERE UPPER_MENU_NO is null
+					  AND a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
 				      AND a.MENU_NO = c.MENU_NO
-				       AND c.ROLE_ID = (SELECT  ROLE_ID 
-				                           FROM TB_MANAGERINFO
-				                           WHERE ADMIN_ID = #{adminId}))  TB
+				      AND c.SYSTEM_CODE = d.SYSTEM_CODE
+				      AND d.DOMAIN_INFO = #{url}
+				      AND c.ROLE_ID = (SELECT  ROLE_ID 
+			                           FROM TB_MANAGERINFO
+			                           WHERE ADMIN_ID = #{adminId}))  TB
 				UNION all
-				select TA.MENU_NO, TA.MENU_ORDR, TA.MENU_NM, TA.UPPER_MENU_NO, TA.MENU_DC, TA.PROGRM_FILE_NM, TA.PROGRM_KOREAN_NM,  TA.URL, 
+				SELECT TA.MENU_NO, TA.MENU_ORDR, TA.MENU_NM, TA.UPPER_MENU_NO, TA.MENU_DC, TA.PROGRM_FILE_NM, TA.PROGRM_KOREAN_NM,  TA.URL, 
 					   b.level + 1, concat(b.ctg_path, '-', TA.MENU_NO), TA.RELATE_IMAGE_NM
 				FROM
 				(SELECT   a.MENU_NO           
@@ -233,12 +277,16 @@
 						, b.PROGRM_KOREAN_NM  
 						, b.URL
 						, a.RELATE_IMAGE_NM
-				FROM COMTNMENUINFO a, COMTNPROGRMLIST b, COMTNMENUCREATDTLS c
+				FROM COMTNMENUINFO a, COMTNPROGRMLIST b, COMTNMENUCREATDTLS c, TB_SYSTEMINFO d
 				WHERE a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
-				       AND a.MENU_NO = c.MENU_NO 
+				      AND a.MENU_NO = c.MENU_NO 
+				      AND a.SYSTEM_CODE = d.SYSTEM_CODE
+				      AND c.SYSTEM_CODE = d.SYSTEM_CODE
+				      AND d.DOMAIN_INFO = #{url}
 				      AND c.ROLE_ID = (SELECT  ROLE_ID 
-				                           FROM TB_MANAGERINFO
-				                           WHERE ADMIN_ID = #{adminId})) TA
+			                           FROM TB_MANAGERINFO
+			                           WHERE ADMIN_ID = #{adminId})) TA
+				     
 				INNER JOIN cte AS b ON TA.UPPER_MENU_NO = b.MENU_NO
 			)
 			SELECT MENU_NO, MENU_ORDR,  UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, PROGRM_KOREAN_NM,  URL,  LEVEL, 
