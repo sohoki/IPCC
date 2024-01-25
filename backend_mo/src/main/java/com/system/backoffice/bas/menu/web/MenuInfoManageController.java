@@ -193,6 +193,7 @@ public class MenuInfoManageController {
 											HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
+		System.out.println("=========================== menuUpdate 시작");
 		
 		if (!jwtVerification.isVerificationAdmin(request)) {
     		ResultVO resultVO = new ResultVO();

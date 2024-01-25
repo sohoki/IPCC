@@ -48,10 +48,10 @@
                  ,  ALL_INSTT_NM
         FROM  COMTNINSTTCODE
         WHERE  1 = 1
-        <if test='searchCondition == "1"'>
+        <if test='!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchCondition)'>
         	AND ALL_INSTT_NM     LIKE CONCAT ('%', #{params.searchKeyword},'%')
         </if>
-        <if test='searchCondition == "CodeList"'>
+        <if test='!@org.apache.commons.lang3.StringUtils@isEmpty(params.insttCode)'>
         	AND INSTT_CODE     = #{params.insttCode}
         </if>
     </select>

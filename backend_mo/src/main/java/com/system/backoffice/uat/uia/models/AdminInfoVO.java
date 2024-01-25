@@ -35,9 +35,17 @@ public class AdminInfoVO extends AdminInfo implements Serializable {
     private String idCheck;
     private String roleName;
     private String partNm;
+    private String allInsttNm;
 
     
     
+    
+	public String getAllInsttNm() {
+		return allInsttNm;
+	}
+	public void setAllInsttNm(String allInsttNm) {
+		this.allInsttNm = allInsttNm;
+	}
 	public String getRoleName() {
 		return roleName;
 	}

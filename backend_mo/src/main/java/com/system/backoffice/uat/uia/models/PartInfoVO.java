@@ -1,13 +1,6 @@
 package com.system.backoffice.uat.uia.models;
 
 import java.io.Serializable;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-
 
 public class PartInfoVO extends PartInfo implements Serializable{
 
@@ -31,9 +24,22 @@ public class PartInfoVO extends PartInfo implements Serializable{
     private int recordCountPerPage = 10;
     private int totalRecordCount = 0;
     private String partNmHi;
+    private String allInsttNm;
+    private String partHeadUserNm;
     
     
-    
+	public String getPartHeadUserNm() {
+		return partHeadUserNm;
+	}
+	public void setPartHeadUserNm(String partHeadUserNm) {
+		this.partHeadUserNm = partHeadUserNm;
+	}
+	public String getAllInsttNm() {
+		return allInsttNm;
+	}
+	public void setAllInsttNm(String allInsttNm) {
+		this.allInsttNm = allInsttNm;
+	}
 	public String getPartNmHi() {
 		return partNmHi;
 	}

@@ -17,7 +17,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.system.backoffice.bas.code.web.EgovCcmCmmnDetailCodeManageController;
+
 import egovframework.com.cmm.service.EgovProperties;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * SimpleCORSFilter.java 클래스
@@ -35,10 +38,10 @@ import egovframework.com.cmm.service.EgovProperties;
  *  2019.10.18   신용호                최초 생성
  * </pre>
  */
+@Slf4j
 @WebFilter(urlPatterns = "*.do")
 public class SimpleCORSFilter implements Filter {
 
-	private final Logger log = LoggerFactory.getLogger(SimpleCORSFilter.class);
 	private final List<String> allowedOrigins = Arrays.asList("http://localhost:8081,http://192.168.90.57, http://localhost".split("\\,"));
 
 	public SimpleCORSFilter() {
@@ -52,20 +55,20 @@ public class SimpleCORSFilter implements Filter {
 		HttpServletRequest request = (HttpServletRequest)req;
 		HttpServletResponse response = (HttpServletResponse)res;
 
-
 		String originHeader = EgovProperties.getProperty("Globals.Allow.Origin");
 
 		log.debug("===>>> origin = " + originHeader);
-
+		
 		if (originHeader != null && !originHeader.equals("")) {
 			originHeader = originHeader.replace("\r", "").replace("\n", "");// Security - Potential HTTP Response Splitting 분할응답 조치
 		}
 		
 		response.setHeader("Access-Control-Allow-Origin", "*");
 	    response.setHeader("Access-Control-Allow-Credentials", "true");
-	    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
+	    response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, OPTIONS");
 	    response.setHeader("Access-Control-Max-Age", "3600");
 	    response.setHeader("Access-Control-Allow-Headers", "access-control-allow-methods,access-control-allow-origin,ajax,authorization,content-type");
+	    //response.setHeader("Access-Control-Allow-Headers", "*");
 	    if ("OPTIONS".equals(request.getMethod())) {
 	    	log.debug("===>>> option = " + request.getMethod());
             response.setStatus(HttpServletResponse.SC_OK);

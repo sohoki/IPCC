@@ -100,7 +100,10 @@ public class EgovLoginApiController {
 	}
 	@CrossOrigin(origins = "*")
 	@PostMapping(value = "/uat/uia/actionLoginJWT.do")
-	public HashMap<String, Object> actionLoginJWT(@RequestBody AdminLoginVO loginVO, HttpServletRequest request, ModelMap model) throws Exception {
+	public HashMap<String, Object> actionLoginJWT(@RequestBody AdminLoginVO loginVO, 
+													HttpServletRequest request, 
+													ModelMap model) throws Exception {
+		
 		HashMap<String, Object> resultMap = new HashMap<String, Object>();
 
 		
@@ -143,6 +146,8 @@ public class EgovLoginApiController {
 		ResultVO resultVO = new ResultVO();
 
 		RequestContextHolder.currentRequestAttributes().removeAttribute("LoginVO", RequestAttributes.SCOPE_SESSION);
+		
+		//refresh token 정리 하기
 
 		resultVO.setResultCode(ResponseCode.SUCCESS.getCode());
 		resultVO.setResultMessage(ResponseCode.SUCCESS.getMessage());

@@ -35,8 +35,18 @@ public class AdminInfo implements Serializable {
 	private String consultantUseyn;
 	private String lastUpdtPnttm;
 	private String insttCode;
+	private String roleGubun;
 	
-    public String getInsttCode() {
+	
+	
+	
+    public String getRoleGubun() {
+		return roleGubun;
+	}
+	public void setRoleGubun(String roleGubun) {
+		this.roleGubun = roleGubun;
+	}
+	public String getInsttCode() {
 		return insttCode;
 	}
 	public void setInsttCode(String insttCode) {

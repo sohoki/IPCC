@@ -1,15 +1,14 @@
 package egovframework.com.config;
 
-import org.apache.tomcat.util.descriptor.LocalResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.PropertySources;
-import lombok.extern.log4j.Log4j2;
+import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 
-@Log4j2
+
 @Configuration
 @Import({
 	EgovConfigAppAspect.class,
@@ -27,5 +26,6 @@ import lombok.extern.log4j.Log4j2;
 }) //CAUTION: min JDK 8
 public class EgovConfigApp {
 
+	
 	
 }

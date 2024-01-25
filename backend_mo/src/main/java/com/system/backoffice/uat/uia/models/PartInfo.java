@@ -15,8 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor	
 public class PartInfo implements Serializable{
 
-	
-	private static final long serialVersionUID = 1L;
 	private String partId;
 	private String parentPartId;
 	private String partNm;
@@ -28,6 +26,9 @@ public class PartInfo implements Serializable{
 	private String partCreateDe;
 	private String userId;
 	private String insttCode;
+	private String partEndDe;
+	private String partHeadUserId;
+	private String partEndyn;
 	
 	
 

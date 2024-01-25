@@ -122,7 +122,6 @@ public class EgovConfigWebDispatcherServlet implements WebMvcConfigurer {
 	// -------------------------------------------------------------
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
-		
 		registry.addMapping("/**").allowedOrigins(CORS_ORIGIN_SERVER_URLS)
 				.allowedMethods("*")
 				.maxAge(3600)

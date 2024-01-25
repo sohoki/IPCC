@@ -41,8 +41,8 @@ public class PartInfoManageServiceImpl extends EgovAbstractServiceImpl implement
 	}
 
 	@Override
-	public List<PartInfoVO> selectPartInfoCombo() throws Exception {
-		return partMapper.selectPartInfoCombo();
+	public List<PartInfoVO> selectPartInfoCombo(Map<String, Object> params) throws Exception {
+		return partMapper.selectPartInfoCombo(params);
 	}
 
 	

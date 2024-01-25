@@ -77,8 +77,7 @@
 		UPDATE TB_VOCINFO SET  VOC_SUBJECT = #{vocSubject}, 
 							   VOC_GUBUN = #{vocGubun}, 
 							   VOC_LOCATION = #{vocLocation}, 
-							   VOC_STATUS = #{vocStatus,jdbcType=VARCHAR},
-							   VOC_RESPONSE = #{vocResponse,jdbcType=VARCHAR}
+							   VOC_REQ = #{vocReq,jdbcType=VARCHAR}
        	WHERE VOC_REQ = #{vocSeq}
    	</update>
    	

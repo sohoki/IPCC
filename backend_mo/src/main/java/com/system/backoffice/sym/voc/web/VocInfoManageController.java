@@ -15,9 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.apache.commons.io.FilenameUtils;
-import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,32 +31,50 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.system.backoffice.sym.voc.models.VocInfo;
 import com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto;
 import com.system.backoffice.sym.voc.models.dto.VocProcessInfoReqDto;
 import com.system.backoffice.sym.voc.models.dto.VocProcessInfoResDto;
 import com.system.backoffice.sym.voc.service.VocInfoManageService;
 import com.system.backoffice.sym.voc.service.VocProcessInfoManageService;
+import com.system.backoffice.util.service.fileService;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
+import lombok.extern.slf4j.Slf4j;
 
+
+
+
+@Api(tags = {"장애 관리 정보 API"})
+@Slf4j
 @RestController
 @RequestMapping("/api/backoffice/sym/voc/")
 public class VocInfoManageController {
 
-	/** EgovPropertyService */
-	@Resource(name = "propertiesService")
-	protected EgovPropertyService propertyService;
+	//파일 업로드
+    @Autowired
+	private fileService uploadFile;
+    
+	@Value("${page.pageUnit}")
+	private int pageUnitSetting ;
+	
+	@Value("${page.pageSize}")
+	private int pageSizeSetting ;
+	
+	@Value("${Globals.editorPath}")
+	private String editorPath ;
+	
 	
     @Autowired
     private VocInfoManageService vocMangeServiec;
     
     @Autowired
     private VocProcessInfoManageService vocProcessMangeServiec;
+    
     
     /** EgovMessageSource */
 	@Resource(name = "egovMessageSource")
@@ -86,6 +104,7 @@ public class VocInfoManageController {
     		model.addObject(Globals.STATUS_REGINFO, info);
     		
     	}catch(Exception e) {
+    		log.error("selectVocDetailInfo  error:" + e.toString());
     		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   		model.addObject(Globals.STATUS_MESSAGE, e.toString());
     	}
@@ -116,7 +135,7 @@ public class VocInfoManageController {
     }
     @DeleteMapping("{vocSeq}.do")
     public ModelAndView deleteVocInfo(@PathVariable String vocSeq, 
-    											HttpServletRequest request)throws Exception {
+										HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
     		if (!jwtVerification.isVerificationAdmin(request)) {
@@ -147,7 +166,7 @@ public class VocInfoManageController {
         	}else {
         		info.setUserId(jwtVerification.getTokenUserName(request));
         	}
-    		int ret = vocMangeServiec.insertVocInfo(info);
+    		int ret = vocMangeServiec.updateVocInfo(info);
     		String status = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
     		String message = (ret > 0) ? egovMessageSource.getMessage("success.common.delete") : egovMessageSource.getMessage("fail.request.msg");
     		model.addObject(Globals.STATUS, status);
@@ -220,8 +239,8 @@ public class VocInfoManageController {
         	}
         	
         	
-            int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   propertyService.getInt(Globals.PAGE_UNIT) : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
-    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   propertyService.getInt(Globals.PAGE_SIZE) : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
+            int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
+    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
     	   
     	    
         	/** pageing */
@@ -262,8 +281,8 @@ public class VocInfoManageController {
         	}
         	
         	
-            int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   propertyService.getInt(Globals.PAGE_UNIT) : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
-    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   propertyService.getInt(Globals.PAGE_SIZE) : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
+            int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
+    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
     	   
     		
         	/** pageing */
@@ -365,11 +384,20 @@ public class VocInfoManageController {
     	}
     	return model;
     }
+    
     @ResponseBody
 	@PostMapping("image.do")
-	public Map<String, Object> uploadImage(@RequestParam Map<String, Object> paramMap, MultipartRequest request) throws Exception {
+	public Map<String, Object> uploadImage(@RequestParam Map<String, Object> paramMap, 
+											MultipartRequest request) throws Exception {
+    	
+    	
+    	//String fileNm = uploadFile.uploadFileNm(request.getFiles("upload"), editorPath);
+		
+    	
+    	
 		MultipartFile uploadFile = request.getFile("upload");
-		String uploadDir = propertyService.getString("Globals.editorPath");
+		String uploadDir = editorPath;
+		System.out.println("uploadDir:" + uploadDir);
 		LocalDate currentDate = LocalDate.now();
 		DateTimeFormatter yearMonthFormatter = DateTimeFormatter.ofPattern("yyyy/MM");
 		String datePath = currentDate.format(yearMonthFormatter);

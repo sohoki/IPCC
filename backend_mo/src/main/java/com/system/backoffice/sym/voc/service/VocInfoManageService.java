@@ -28,13 +28,10 @@ public class VocInfoManageService {
 	public Optional<VocInfo> selectVocInfoDetail(String VocSeq){
 		return vocMapper.selectVocInfoDetail(VocSeq);
 	}
-	@Transactional(readOnly = false)
-    public int insertVocInfo(VocInfoRequestDto vo) {
-    	return vocMapper.insertVocInfo(vo);
-    }
+	
 	@Transactional(readOnly = false)
     public int updateVocInfo(VocInfoRequestDto vo) {
-    	return vocMapper.updateVocInfo(vo);
+    	return vo.getMode().equals("Ins")? vocMapper.insertVocInfo(vo) : vocMapper.updateVocInfo(vo);
     }
 	@Transactional(readOnly = false)
     public int updateServerResponse(VocInfoRequestDto vo) {
