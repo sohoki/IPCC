@@ -67,6 +67,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
 				.title(API_NAME)
 				.version(API_VERSION)
 				.description(API_DESCRIPTION)
+				.license("MIT License").licenseUrl("http://opensource.org/licenses/MIT")//
 				.contact(new Contact("IPCC 운영자", "https://www.egovframe.go.kr/", "egovframesupport@gmail.com"))
 				.build();
 	}

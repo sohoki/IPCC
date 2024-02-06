@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto;
 import com.system.backoffice.bas.icr.models.dto.InsttCodeRecptnReqDto;
 import com.system.backoffice.bas.icr.service.InsttCodeInfoManageService;
 

@@ -47,26 +47,7 @@ dependencies {
     compile(group: 'org.egovframe.rte', name: 'org.egovframe.rte.ptl.mvc', version:'4.1.0') {
 		exclude(module: 'commons-logging')
     }
-    /*
-    implementation files('lib/activation.jar')
-    implementation files('lib/bcprov-jdk15on-1.54.jar')
-    implementation files('lib/FastInfoset.jar')
-    implementation files('lib/jaxb-api.jar')
-    implementation files('lib/jaxws-api.jar')
-    implementation files('lib/jaxws-rt.jar')
-    implementation files('lib/nxcapi_v2_java1.7-v1.0.15.01.jar')
-    implementation files('lib/nxcapi.jar')
-    implementation files('lib/passni-sso-agent-4.0.007.jar')
-    implementation files('lib/passni-sso-agent-external-lib.jar')
-    implementation files('lib/PniccJNI_1.1_for_bcprov.jar')
-    implementation files('lib/resolver.jar')
-    implementation files('lib/saaj-api.jar')
-    implementation files('lib/saaj-impl.jar')
-    implementation files('lib/sjsxp.jar')
-    implementation files('lib/stax-ex.jar')
-    implementation files('lib/streambuffer.jar')
-    implementation files('lib/systemmanagementservice-xml-stubs.jar')
-    */
+   
     compileOnly fileTree(dir: 'src/main/resources/libs', includes: ['*.jar'])
     
     compile group: 'org.egovframe.rte', name: 'org.egovframe.rte.psl.dataaccess', version:'4.1.0'
@@ -80,6 +61,9 @@ dependencies {
     compile group: 'javax.servlet', name: 'jstl', version:'1.2'
     compile group: 'taglibs', name: 'standard', version:'1.1.2'
     compile group: 'org.antlr', name: 'antlr', version:'3.5'
+    
+    
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     
     // https://mvnrepository.com/artifact/com.drewnoakes/metadata-extractor
 	implementation group: 'com.drewnoakes', name: 'metadata-extractor', version: '2.6.2'
@@ -116,7 +100,9 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.sun.xml.ws/jaxws-rt
 	implementation group: 'com.sun.xml.ws', name: 'jaxws-rt', version: '2.1.4'
 	
-	
+	// RabbitMQ
+    implementation 'org.springframework.boot:spring-boot-starter-amqp'
+    testImplementation 'org.springframework.amqp:spring-rabbit-test'
 	
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
@@ -140,6 +126,14 @@ dependencies {
     
     //redis 연동
     compile 'org.springframework.boot:spring-boot-starter-data-redis:2.3.1.RELEASE'
+    
+    // com.sun.xml.bind : jwt
+	implementation 'com.sun.xml.bind:jaxb-impl:4.0.1'
+	implementation 'com.sun.xml.bind:jaxb-core:4.0.1'
+	// javax.xml.bind : jwt
+	implementation 'javax.xml.bind:jaxb-api:2.4.0-b180830.0359'
+	
+
     // lombok
     implementation 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -193,8 +187,8 @@ dependencies {
     
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
     //testImplementation 'com.h2database:h2'
-    testImplementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
-    testImplementation 'org.springframework.security:spring-security-test'
+    //testImplementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.7'
+    //testImplementation 'org.springframework.security:spring-security-test'
     
 }
 

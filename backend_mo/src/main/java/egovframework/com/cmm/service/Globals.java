@@ -34,6 +34,11 @@ public class Globals {
 	public static final String STATUS_OK = "OK";
 	public static final String STATUS_FAIL = "FAIL";
 	
+	//token 
+	public static final String TOKEN = "jToken";
+	public static final String REFRESH_TOKEN = "refreshToken";
+	
+	
 	public static final String STATUS_UNIQUE = "UNIQUE";
 	public static final String STATUS_UNIQUE_FAIL = "UNIQUE_FAIL";
 	public static final String STATUS_LOGIN_FAIL = "LOGIN_FAIL";

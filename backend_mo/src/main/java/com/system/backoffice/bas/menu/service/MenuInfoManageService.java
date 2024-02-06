@@ -1,6 +1,7 @@
 package com.system.backoffice.bas.menu.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
@@ -137,8 +138,7 @@ public class MenuInfoManageService {
 	public List<Map<String, Object>> selectMainMenuHead(String empNo) throws Exception {
 		return menuMapper.selectMainMenuHead(empNo);
 	}
-
-	@NoLogging
+	@Cacheable(key="#empNo", value="findLeftMenu")
 	public List<Map<String, Object>> selectMainMenuLeft(String empNo, String url) throws Exception {
 		return menuMapper.selectMainMenuLeft(empNo, url);
 	}

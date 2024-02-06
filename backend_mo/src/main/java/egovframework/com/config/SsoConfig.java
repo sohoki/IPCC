@@ -28,7 +28,7 @@ import com.ubintis.sso.agt.pt.SelfTestAgent;
 @Component( "ssoInitialize" )
 public class SsoConfig {
 
-private final static Logger LOGGER = Logger.getLogger( LoggerFactory.LogName );
+	private final static Logger LOGGER = Logger.getLogger( LoggerFactory.LogName );
 	
 	private static final String BC = com.ubintis.cert.bouncycastle.jce.provider.BouncyCastleProvider.PROVIDER_NAME;
 	

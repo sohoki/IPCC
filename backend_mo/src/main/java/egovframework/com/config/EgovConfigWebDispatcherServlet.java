@@ -54,12 +54,14 @@ public class EgovConfigWebDispatcherServlet implements WebMvcConfigurer {
 	public void addInterceptors(InterceptorRegistry registry) {
 		
 		
-		
 		registry.addInterceptor(new AuthenticInterceptor())
 			.addPathPatterns(
 				"/uat/uia/*.do")
 			.excludePathPatterns(
 				"/uat/uia/actionLoginJWT.do",
+				"/uat/uia/actionLogoutJWT.do",
+				"/uat/uia/actionRefreshToken.do",
+				"/api/message/service/sendMessage.do",
 				"/swagger-ui/index.html",
 				"/uat/uia/idSearch.do",
 				"/uat/uia/passwordSearch.do",

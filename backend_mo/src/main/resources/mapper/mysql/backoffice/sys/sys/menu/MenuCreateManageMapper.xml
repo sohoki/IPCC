@@ -47,6 +47,7 @@
 				   , A.MENU_ORDR 
 				   , A.MENU_NM 
 				   , A.UPPER_MENU_NO 
+				   , A.MENU_BASIC_INFO
 				   , ( SELECT COUNT(B.MENU_NO) 
 				       FROM COMTNMENUCREATDTLS B   
 				       WHERE B.MENU_NO  = A.MENU_NO 
@@ -62,12 +63,14 @@
 				   , A.MENU_ORDR 
 				   , A.MENU_NM 
 				   , A.UPPER_MENU_NO 
-			FROM COMTNMENUINFO A, COMTNMENUCREATDTLS b
-			WHERE A.MENU_NO = b.MENU_NO
+				   , B.MENU_BASIC_INFO
+			FROM COMTNMENUINFO A, COMTNMENUCREATDTLS B
+			WHERE A.MENU_NO = B.MENU_NO
 			      AND A.MENU_NO > 0
 			      AND UPPER_MENU_NO <> 0
-			      AND b.ROLE_ID = #{roleId}
-			      AND b.SYSTEM_CODE = #{systemCode}
+			      AND B.ROLE_ID = #{roleId}
+			      AND A.SYSTEM_CODE = B.SYSTEM_CODE
+			      AND B.SYSTEM_CODE = #{systemCode}
 			ORDER BY A.MENU_NO
 		 ]]>
 	</select> 
@@ -82,8 +85,8 @@
 
 	<insert id="insertMenuCreat_S">
 		<![CDATA[
-			INSERT INTO COMTNMENUCREATDTLS ( ROLE_ID ,MENU_NO , SYSTEM_CODE)
-			VALUES (  #{roleId}, #{menuNo} , #{systemCode})
+			INSERT INTO COMTNMENUCREATDTLS ( ROLE_ID ,MENU_NO , SYSTEM_CODE, MENU_BASIC_INFO)
+			VALUES (  #{roleId}, #{menuNo} , #{systemCode}, #{menuBasicInfo})
 		]]>
 	</insert>
 

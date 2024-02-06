@@ -21,7 +21,11 @@ import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
 
+@Api(tags = {"IPCC CTI 연동 정보 API"})
 @RestController
 @RequestMapping("/api/display/cti")
 public class DisplayMnageController {
@@ -44,6 +48,7 @@ public class DisplayMnageController {
 	@Autowired
 	private DisplayManageService displayService;
 	
+	@ApiOperation(value="cti as list", notes = "성공시 CTI AS 소켓 정보를 표출 합니다.")
 	@GetMapping("asList.do")
 	public ModelAndView selectIvrOnlineList ( HttpServletRequest request) throws Exception {
     	

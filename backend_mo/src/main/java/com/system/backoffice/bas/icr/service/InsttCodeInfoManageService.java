@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.system.backoffice.bas.icr.mapper.InsttCodeInfoManageMapper;
 import com.system.backoffice.bas.icr.models.InsttCodeInfo;
 import com.system.backoffice.bas.icr.models.InsttCodeRecptn;
-import com.system.backoffice.bas.icr.models.dto.InsttCodeInfoReqDto;
 import com.system.backoffice.bas.icr.models.dto.InsttCodeRecptnReqDto;
 
 import lombok.RequiredArgsConstructor;

@@ -5,7 +5,7 @@
 		    WITH recursive cte AS 
 			(
 				SELECT TB.MENU_NO, TB.MENU_ORDR, TB.MENU_NM, TB.UPPER_MENU_NO, TB.MENU_DC, TB.PROGRM_FILE_NM, TB.PROGRM_KOREAN_NM,  
-					   TB.URL, TB.RELATE_IMAGE_PATH, TB.RELATE_IMAGE_NM, TB.MENU_PAGE_TARGET, TB.MENU_POPUPNFO, TB.SYSTEM_CODE,
+					   TB.URL, TB.RELATE_IMAGE_PATH, TB.RELATE_IMAGE_NM, TB.MENU_PAGE_TARGET, TB.MENU_POPUPNFO, TB.SYSTEM_CODE, TB.MENU_USEYN,
 					   1 as LEVEL, CONVERT(TB.MENU_NO, char(100)) as ctg_path	
 				FROM 
 				(SELECT  a.MENU_NO           
@@ -21,13 +21,15 @@
 						, a.MENU_PAGE_TARGET
 						, a.MENU_POPUPNFO
 						, a.SYSTEM_CODE
+						, a.MENU_USEYN
 				FROM COMTNMENUINFO a, COMTNPROGRMLIST b
 				WHERE UPPER_MENU_NO is null
 					  AND a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
 				      )  TB
 				UNION all
 				SELECT TA.MENU_NO, TA.MENU_ORDR, TA.MENU_NM, TA.UPPER_MENU_NO, TA.MENU_DC, TA.PROGRM_FILE_NM, TA.PROGRM_KOREAN_NM,  
-					   TA.URL, TA.RELATE_IMAGE_PATH, TA.RELATE_IMAGE_NM, TA.MENU_PAGE_TARGET, TA.MENU_POPUPNFO, TA.SYSTEM_CODE,
+					   TA.URL, TA.RELATE_IMAGE_PATH, TA.RELATE_IMAGE_NM, TA.MENU_PAGE_TARGET, TA.MENU_POPUPNFO,
+					   TA.SYSTEM_CODE, TA.MENU_USEYN,
 					   b.LEVEL + 1, CONCAT(b.ctg_path, '-', TA.MENU_NO)
 				FROM
 				(SELECT   a.MENU_NO           
@@ -43,17 +45,22 @@
 						, a.MENU_PAGE_TARGET
 						, a.MENU_POPUPNFO
 						, a.SYSTEM_CODE
+						, a.MENU_USEYN
 				FROM COMTNMENUINFO a, COMTNPROGRMLIST b
 				WHERE a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
 					 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchSystemCode)">  
 				     	AND a.SYSTEM_CODE = #{params.searchSystemCode}
 				     </if>
+				     <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseyn)">  
+				     	AND a.MENU_USEYN = #{params.searchUseyn}
+				     </if>
 				     ) TA
 				INNER JOIN cte AS b ON TA.UPPER_MENU_NO = b.MENU_NO
 			)
 			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
-				  RELATE_IMAGE_PATH, RELATE_IMAGE_NM, MENU_PAGE_TARGET, MENU_POPUPNFO, SYSTEM_CODE,	
-				   MENU_NO, MENU_ORDR, MENU_NM, UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, PROGRM_KOREAN_NM,  URL,  LEVEL,  ctg_path  
+				   RELATE_IMAGE_PATH, RELATE_IMAGE_NM, MENU_PAGE_TARGET, MENU_POPUPNFO, SYSTEM_CODE,	
+				   MENU_NO, MENU_ORDR, MENU_NM, UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, PROGRM_KOREAN_NM,  URL,  LEVEL,  ctg_path,
+				   '값 들억 가나' MENU_BASIC_INFO  
 			FROM cte
 			WHERE 1=1 
 			 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">  
@@ -61,7 +68,7 @@
 		     	AND MENU_NM like CONCAT ('%', #{params.searchKeyword},'%')
 		      ]]>
 		     </if>
-			ORDER BY MENU_ORDR asc 
+			ORDER BY MENU_ORDR ASC 
 		      
 		   
 	</select> 
@@ -81,6 +88,7 @@
 				, A.SYSTEM_CODE
 				, A.MENU_PAGE_TARGET
 				, A.MENU_POPUPNFO
+				, A.MENU_USEYN
 		FROM COMTNMENUINFO A
 			INNER JOIN COMTNPROGRMLIST B ON A.PROGRM_FILE_NM = B.PROGRM_FILE_NM
 		WHERE MENU_NO = #{value}
@@ -89,13 +97,13 @@
 		<![CDATA[
 			INSERT INTO COMTNMENUINFO ( 
 				MENU_NO , MENU_ORDR , MENU_NM , UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, 
-				RELATE_IMAGE_PATH, RELATE_IMAGE_NM, MENU_PAGE_TARGET, MENU_POPUPNFO, SYSTEM_CODE
+				RELATE_IMAGE_PATH, RELATE_IMAGE_NM, MENU_PAGE_TARGET, MENU_POPUPNFO, SYSTEM_CODE, MENU_USEYN
 			)
 			VALUES 
 			(   
 			    #{menuNo}, #{menuOrdr ,jdbcType=VARCHAR}, #{menuNm}, #{upperMenuNo}, #{menuDc ,jdbcType=VARCHAR}, #{progrmFileNm},
-			    #{relateImagePath ,jdbcType=VARCHAR}, #{relateImageNm ,jdbcType=VARCHAR}, 
-			    #{menuPageTarget ,jdbcType=VARCHAR}, #{menuPopupnfo ,jdbcType=VARCHAR},  #{systemCode} 
+			    #{relateImagePath ,jdbcType=VARCHAR}, #{relateImageNm ,jdbcType=VARCHAR}, MENU_USEYN
+			    #{menuPageTarget ,jdbcType=VARCHAR}, #{menuPopupnfo ,jdbcType=VARCHAR},  #{systemCode} , #{menuUseyn,jdbcType=VARCHAR}
             )
 		]]>
 	</insert>
@@ -122,6 +130,7 @@
 					              <![CDATA[
 					              , MENU_POPUPNFO =  #{menuPopupnfo ,jdbcType=VARCHAR}
 					              ]]>
+					              , MENU_USEYN = #{menuUseyn,jdbcType=VARCHAR}
 		WHERE MENU_NO=#{menuNo}
 		
 	</update>

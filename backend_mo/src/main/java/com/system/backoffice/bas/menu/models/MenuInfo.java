@@ -20,6 +20,7 @@ public class MenuInfo {
 	private String upperMenuNm  = "";
 	private String menuOrdr  = "";
 	private String menuDc  = "";
+	private String menuUseyn = "";
 	private String relateImagePath = ""; 
 	private String relateImageNm = "";
 	private String menuPageTarget;

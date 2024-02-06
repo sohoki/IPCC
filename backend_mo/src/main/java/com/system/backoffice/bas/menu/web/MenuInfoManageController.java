@@ -157,6 +157,7 @@ public class MenuInfoManageController {
 		
 		return model;
 	}
+	
 	@NoLogging
 	@GetMapping("menuNoLeft.do")
 	public ModelAndView selectMenuLeftInfo( HttpServletRequest request) throws Exception {
@@ -168,12 +169,13 @@ public class MenuInfoManageController {
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
     	}else {
     		
-    		System.out.println("url:" + request.getScheme()+"://" + request.getServerName()+":"+ request.getServerPort());
     		
     		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
     		model.addObject(Globals.ADMIN_INFO, jwtVerification.getTokenUserName(request));
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.JSON_RETURN_RESULT, menuService.selectMainMenuLeft(jwtVerification.getTokenUserName(request), request.getScheme()+"://" + request.getServerName()+":"+ request.getServerPort()));
+    		model.addObject(Globals.JSON_RETURN_RESULT, 
+    						menuService.selectMainMenuLeft(jwtVerification.getTokenUserName(request), 
+							request.getScheme()+"://" + request.getServerName()+":"+ request.getServerPort()));
     		
     		return model;
     	}

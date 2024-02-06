@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.system.backoffice.bas.code.web.ClassificationInfoManageController;
 import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.service.AdminInfoManageService;
 import com.system.backoffice.uat.uia.models.AdminInfoVO;
@@ -35,19 +36,21 @@ import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
 import egovframework.let.utl.fcc.service.EgovStringUtil;
 import egovframework.let.utl.sim.service.EgovFileScrty;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 
 //import org.springframework.security.access.prepost.PreAuthorize;
-
+@Api(tags = {"관리자 관련 연동 API"})
+@Slf4j
 @RequiredArgsConstructor // final이 선언된 모든 필드를 인자값으로 하는 생성자를 대신 생성하여, 빈을 생성자로 주입받게 한다.
 @RestController
 @RequestMapping("/api/backoffice/uat/uia/manager")
 public class AdminInfoManageController {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageController.class);
-	
+    
 	@Autowired
 	private AdminInfoManageService userManagerService;
 	
@@ -105,7 +108,7 @@ public class AdminInfoManageController {
 	       model.addObject(Globals.PAGE_INFO, paginationInfo);	       
 		   
 	   }catch (Exception e){
-			LOGGER.debug("selectUserManagerList error:" + e.toString());
+			log.debug("selectUserManagerList error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 	   }

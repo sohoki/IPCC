@@ -1,0 +1,116 @@
+
+SET GLOBAL  log_bin_trust_function_creators=ON;
+
+CREATE  FUNCTION fn_DetailCodeNm(AS_Code varchar(30) ) 
+RETURNS varchar(60)
+BEGIN 
+    DECLARE RTN_CDOENM VARCHAR(60);
+    SET RTN_CDOENM = (SELECT CODE_NM  FROM DB_IPCCINFO.COMTCCMMNDETAILCODE WHERE CODE = AS_Code);
+    RETURN RTN_CDOENM;
+END
+
+
+CREATE  PROCEDURE sp_uniCheck(IN is_tableNm VARCHAR(255),
+                              IN is_chekNm varchar(25),
+                              IN is_tableCondition varchar(1000)
+                              )
+BEGIN
+   set @ot = 0;
+   set @query = CONCAT(' SELECT IFNULL(COUNT( ', is_chekNm, '  ),0)   FROM ', is_tableNm, '  WHERE ',    replace(    is_tableCondition  , '[','''')   );
+   
+   PREPARE stmt FROM @query;
+   EXECUTE STMT; 
+   DEALLOCATE PREPARE stmt;
+
+end
+
+
+CREATE PROCEDURE sp_maxValue(IN IS_FIELD VARCHAR(30), IN IS_TABLE varchar(50))
+BEGIN
+   set @query = CONCAT(' SELECT    IFNULL(   MAX(', IS_FIELD, ') , 0)    FROM ' ,    IS_TABLE  , '' ) ;
+      
+   PREPARE stmt FROM @query;
+   EXECUTE STMT; 
+   DEALLOCATE PREPARE STMT;
+end
+
+CREATE   PROCEDURE  sp_uniDel(IN IS_table VARCHAR(50),
+                              IN IS_condition VARCHAR(1000) )
+BEGIN
+      
+      
+      set @query = CONCAT(' DELETE FROM ', IS_table, '  WHERE ', replace(IS_condition, '[',''''));
+      
+      PREPARE stmt FROM @query;
+      EXECUTE STMT; 
+      DEALLOCATE PREPARE stmt;
+END
+
+
+
+
+CREATE   FUNCTION FN_DETAIL_CODEID(AS_parentCode VARCHAR(20)) 
+RETURNS varchar(20)
+begin 
+    declare RTN_Code VARCHAR(20);
+    SELECT CONCAT (AS_parentCode , '_' , 
+                   ifnull(REPLACE( max(code), CONCAT(AS_parentCode,'_') , ''),0) + 1) 
+    INTO RTN_Code FROM  COMTCCMMNDETAILCODE WHERE CODE_ID = AS_parentCode;
+
+    RETURN RTN_Code;
+
+END
+
+
+CREATE   FUNCTION  fn_hierarchy(value int) 
+RETURNS int
+BEGIN 
+    DECLARE _partid varchar(20); 
+    DECLARE _parentPartId varchar(20); 
+    DECLARE _next INT; 
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET @partId = NULL; 
+    SET _parentPartId = @partId; 
+    SET _partid = -1; 
+
+    IF @partId IS NULL THEN 
+       RETURN NULL; 
+    END IF; 
+    
+    LOOP 
+       SELECT min(part_id)  INTO @partId 
+       FROM TB_PARTINFO  
+       WHERE parent_part_id = _parentPartId 
+              AND part_id > _partid; 
+              
+       IF @partId IS NOT NULL OR _parentPartId = @start_with THEN 
+               SET @level = @level + 1; 
+               RETURN @partId; 
+       END IF;
+        
+       SET @level := @level - 1; 
+       SELECT part_id, parent_part_id 
+               INTO _partid, _parentPartId 
+       FROM TB_PARTINFO 
+       WHERE part_id = _parentPartId; 
+    END LOOP; 
+END
+
+CREATE   FUNCTION fn_manageName(AS_AdminId varchar(20)) 
+RETURNS varchar(60) 
+BEGIN 
+	DECLARE Result VARCHAR(60);
+	SET Result = (SELECT ADMIN_NAME  FROM TB_MANAGERINFO WHERE ADMIN_ID = AS_AdminId);
+	RETURN Result; 
+END
+
+
+
+CREATE   FUNCTION FN_SERVER_CODEID(AS_SYSTEMCode CHAR(4)) 
+RETURNS varchar(30)
+BEGIN 
+	DECLARE Result VARCHAR(30);
+	SELECT CONCAT (AS_SYSTEMCode , '_S' , DATE_FORMAT(NOW(),'%y%m%d'),
+                   ifnull(REPLACE( max(SERVER_CODE), CONCAT(AS_SYSTEMCode,'_S',DATE_FORMAT(NOW(),'%y%m%d')) , ''),0) + 1) 
+    INTO Result FROM  TB_SERVERINFO WHERE SYSTEM_CODE = AS_SYSTEMCode;
+	RETURN Result; 
+END

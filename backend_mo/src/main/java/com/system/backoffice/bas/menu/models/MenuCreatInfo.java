@@ -14,11 +14,13 @@ import lombok.Setter;
 public class MenuCreatInfo {
 
     /** 메뉴번호 */
-    private String   menuNo;
+    private String menuNo;
     /** 맵생성ID */
-    private String   mapCreatId;
+    private String mapCreatId;
     /** 권한코드 */
-    private String   roleId;
+    private String roleId;
     
     private String systemCode;
+    
+    private String menuBasicInfo;
 }

@@ -24,20 +24,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ConfigAspect {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(ConfigAspect.class);
 	
 	@Autowired
 	private LoginLogInfoManageService loginService;
 	
 	@Resource(name = "egovLoginLogIdGnrService")
     private EgovIdGnrService idgenService;
-	
+	/*
+	 *  로그인 체크 기록 하기 
+	 * 
+	 */
 	@Before("execution(public * egovframework.let.uat.uia.web.EgovLoginApiController.actionLoginJWT(..))")
 	public void logBefore(JoinPoint joinPoint) throws FdlException {
 		
 		String uniqId = "";
         String ip = "";
-	    LOGGER.debug("-------------------------------------------------------------------------------LOGGIN CHECK");
+	    log.debug("-------------------------------------------------------------------------------LOGGIN CHECK");
 	      /* Authenticated  */
 	    Boolean isAuthenticated = EgovUserDetailsHelper.isAuthenticated();
 	    

@@ -29,6 +29,7 @@ public class MenuInfoRequestDto {
 	@NotBlank(message="메뉴 순서를 입력해 주세요.")
 	private String menuOrdr  = "";
 	private String menuDc  = "";
+	private String menuUseyn  = "";
 	private String relateImagePath = ""; 
 	private String relateImageNm = "";
 	private String userId;
