@@ -16,7 +16,20 @@ public class SystemInfoResDto {
 	private String systemCode;
 	private String systemName;
 	private String systemGubun;
+	private String systemIcon;
 	private String systemGubunTxt;
+	
+	private String systemMenugubun;
+	private String systemMenugubunTxt;
+	private String systemHealthCheck;
+	private String systemHealthCheckTxt;
+	private String systemHealthCheckUrl;
+	
+	private String systemConnLevelTxt;
+	private String systemConnLevel;
+	
+	
+	
 	private String systemDc;
 	private String systemUseyn;
 	

@@ -127,14 +127,14 @@ public class JwtVerification {
 		boolean verificationFlag = true;
 		
 		// step 1. request header에서 토큰을 가져온다.
-		if (request.getHeader("authorization_refreshtoken") == null  ) {
-			log.error("authorization_refreshtoken error");
+		if (request.getHeader("refreshToken") == null  ) {
+			log.error("refreshToken error");
 			return false;
 		}
 		
 		
 		
-		String refreshToken = EgovStringUtil.isNullToString(request.getHeader("authorization_refreshtoken"));
+		String refreshToken = EgovStringUtil.isNullToString(request.getHeader("refreshToken"));
 		
 		String id = jwtTokenUtil.getUsernameFromToken(refreshToken);
 		

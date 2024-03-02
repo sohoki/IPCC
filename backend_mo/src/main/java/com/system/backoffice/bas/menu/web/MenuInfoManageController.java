@@ -27,6 +27,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.apache.commons.lang3.StringUtils;
+
+import com.system.backoffice.bas.menu.models.MenuCreatInfo;
 import com.system.backoffice.bas.menu.models.MenuInfo;
 import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
 import com.system.backoffice.bas.menu.service.MenuCreateManageService;
@@ -48,6 +50,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Api(tags = {"메뉴 관리 정보 API"})
 @Slf4j
@@ -195,7 +198,7 @@ public class MenuInfoManageController {
 											HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
-		System.out.println("=========================== menuUpdate 시작");
+		//System.out.println("=========================== menuUpdate 시작");
 		
 		if (!jwtVerification.isVerificationAdmin(request)) {
     		ResultVO resultVO = new ResultVO();
@@ -375,7 +378,7 @@ public class MenuInfoManageController {
 			params.put("menuNo", menuIno.getMenuNo());
 			
 			
-		if (menuService.selectMenuNoByPk(params) != 0 && menuIno.getMode().equals(Globals.SAVE_MODE_INSERT)) {
+		if (menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) && menuService.selectMenuNoByPk(params) != 0 ) {
 			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.isExist.msg"));
 			return model;
@@ -584,15 +587,23 @@ public class MenuInfoManageController {
 		if (!jwtVerification.isVerificationAdmin(request)) {
     		ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}else {
+    		
+    		String roleId = String.valueOf(params.get("roleId"));
+    		String checkedMenuNo = String.valueOf(params.get("checkedMenuNo"));
+    		String systemCode = String.valueOf(params.get("systemCode"));
+    		String userId = jwtVerification.getTokenUserName(request);
+    		String hid_menuGubun = String.valueOf(params.get("hid_menuGubun"));
+    		List<Map<String, Object>> menuList = (List<Map<String, Object>>) params.get("checkedMenuBasic");
+    		
+    		menuCreateService.insertMenuCreatList(roleId, systemCode, userId, checkedMenuNo, hid_menuGubun, menuList);
+    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+    		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.update"));
+    		
     	}
 		
 		
-		String roleId = String.valueOf(params.get("roleId"));
-		String checkedMenuNo = String.valueOf(params.get("checkedMenuNo"));
-		String systemCode = String.valueOf(params.get("systemCode"));
-		menuCreateService.insertMenuCreatList(roleId, systemCode, checkedMenuNo);
-		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.update"));
+		
 		
 		return model;
 	}
@@ -616,8 +627,9 @@ public class MenuInfoManageController {
     	}
 		
 		String systemCode = UtilInfoService.NVL(commandMap.get("systemCode"),"IPCC");
+		String hidMenuGubun = UtilInfoService.NVL(commandMap.get("hidMenuGubun"),"MENU_GUBUN_1");
 		
-		List<Map<String, Object>> list = menuCreateService.selectMenuCreatList_Author(roleId, systemCode);
+		List<Map<String, Object>> list = menuCreateService.selectMenuCreatList_Author(roleId, systemCode, hidMenuGubun);
 		model.addObject(Globals.JSON_RETURN_RESULT_LIST, list);
 		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		

@@ -11,7 +11,7 @@ import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
 
 @Configuration
 @Import({
-	EgovConfigAppAspect.class,
+	//EgovConfigAppAspect.class,
 	EgovConfigAppCommon.class,
 	EgovConfigAppDatasource.class,
 	EgovConfigAppIdGen.class,

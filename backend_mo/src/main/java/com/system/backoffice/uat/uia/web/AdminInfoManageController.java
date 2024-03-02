@@ -114,6 +114,7 @@ public class AdminInfoManageController {
 	   }
 	   return model;
 	}
+	
 	@PostMapping("passChangeCheck.do")
     public ModelAndView updatePasswordCheck( @RequestBody Map<String, Object> searchVO, 
 										    HttpServletResponse response,

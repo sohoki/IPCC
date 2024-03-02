@@ -42,7 +42,8 @@ rabbitmq:
   routing:
     key: ipcc.key
 token:
-  expiration_time : 600000
+  #expiration_time : 600000
+  expiration_time : 6000000
   refresh_time : 86400000 #24*60*60*1000
   secret : Q4NSl604sgyHJj1qwEkR3ycUeR4uUAt7WJraD7EN3O9DVM4yyYuHxMEbSF4XXyYJkal13eqgB0F7Bq4HQ4NSl604sgyHJj1qwEkR3ycUeR4uUAt7W
 Globals:

@@ -25,5 +25,6 @@ public class MenuInfo {
 	private String relateImageNm = "";
 	private String menuPageTarget;
 	private String menuPopupnfo;
+	private String menuPrivacy;
 	private int cnt = 0;
 }

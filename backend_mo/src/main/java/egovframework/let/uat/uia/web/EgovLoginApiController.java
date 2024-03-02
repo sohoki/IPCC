@@ -155,7 +155,7 @@ public class EgovLoginApiController {
 		//loginVO.setUserIp(request.getRemoteAddr());
 		// 1. 일반 로그인 처리
 		
-		log.debug(request.getHeader("authorization_refreshtoken").toString());
+		log.debug(request.getHeader("refreshToken").toString());
 		if (!jwtVerification.isVerificationRefresh(request)) {
 			resultMap.put(Globals.STATUS, Globals.STATUS_FAIL);
 			resultMap.put(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.refreshlogin"));
@@ -165,7 +165,7 @@ public class EgovLoginApiController {
 		
 		
 		AdminLoginVO loginResultVO = loginService.actionLoginSso(
-									jwtTokenUtil.getUsernameFromToken(request.getHeader("authorization_refreshtoken").toString())
+									jwtTokenUtil.getUsernameFromToken(request.getHeader("refreshToken").toString())
 									);
 		
 		if (loginResultVO != null && loginResultVO.getAdminId() != null && !loginResultVO.getAdminId().equals("")) {

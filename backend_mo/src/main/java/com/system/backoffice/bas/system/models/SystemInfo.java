@@ -1,7 +1,5 @@
 package com.system.backoffice.bas.system.models;
 
-import com.system.backoffice.bas.program.models.ProgrmInfo;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,5 +20,10 @@ public class SystemInfo {
 	private String domainInfo;
 	private String systemUseyn;
 	private String systemCreatedc;
+	private String systemIcon;
+	private String systemMenugubun;
+	private String systemHealthCheck;
+	private String systemHealthCheckUrl;
+	private String systemConnLevel;
 	
 }

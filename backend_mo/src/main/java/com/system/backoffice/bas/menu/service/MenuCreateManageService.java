@@ -29,8 +29,8 @@ public class MenuCreateManageService {
 	}
 
 	
-	public List<Map<String, Object>> selectMenuCreatList_Author(String roleId, String systemCode) throws Exception {
-		return createMapper.selectMenuCreatList_Author(roleId, systemCode);
+	public List<Map<String, Object>> selectMenuCreatList_Author(String roleId, String systemCode, String hidMenuGubun) throws Exception {
+		return createMapper.selectMenuCreatList_Author(roleId, systemCode, hidMenuGubun);
 	}
 	
 	
@@ -54,25 +54,37 @@ public class MenuCreateManageService {
 	}
 
 	@Transactional(readOnly = false)
-	public void insertMenuCreatList(String authorCode, String systemCode, String checkedMenuNoForInsert) throws Exception {
+	public void insertMenuCreatList(String authorCode, String systemCode, String userId, 
+									String checkedMenuNoForInsert, String hid_menuGubun, List<Map<String, Object>> menuList) throws Exception {
 		int AuthorCnt = 0;
-		checkedMenuNoForInsert = checkedMenuNoForInsert.contains(",0") == false ? checkedMenuNoForInsert = checkedMenuNoForInsert.concat(",0") : checkedMenuNoForInsert;
-        List<String> insertMenuNo =  UtilInfoService.dotToList(checkedMenuNoForInsert).stream().distinct().collect(Collectors.toList());
-
+		
 		MenuCreatInfo menuCreatVO = new MenuCreatInfo();
 		menuCreatVO.setRoleId(authorCode);
 		menuCreatVO.setSystemCode(systemCode);
+		
 		AuthorCnt = createMapper.selectMenuCreatCnt_S(menuCreatVO);
-
-		// 이전에 존재하는 권한코드에 대한 메뉴설정내역 삭제
 		if (AuthorCnt > 0) {
 			createMapper.deleteMenuCreat_S(menuCreatVO);
 		}
-		for (String menu : insertMenuNo) {
-			menuCreatVO.setRoleId(authorCode);
-			menuCreatVO.setMenuNo(menu);
-			menuCreatVO.setSystemCode(systemCode);
-			createMapper.insertMenuCreat_S(menuCreatVO);
+		if (hid_menuGubun.equals("MENU_GUBUN_1")) {
+			checkedMenuNoForInsert = checkedMenuNoForInsert.contains(",0") == false ? checkedMenuNoForInsert = checkedMenuNoForInsert.concat(",0") : checkedMenuNoForInsert;
+	        List<String> insertMenuNo =  UtilInfoService.dotToList(checkedMenuNoForInsert).stream().distinct().collect(Collectors.toList());			
+			for (String menu : insertMenuNo) {
+				menuCreatVO.setRoleId(authorCode);
+				menuCreatVO.setMenuNo(menu);
+				menuCreatVO.setSystemCode(systemCode);
+				menuCreatVO.setUserId(userId);
+				createMapper.insertMenuCreat_S(menuCreatVO);
+			}
+		}else {
+			for (Map<String, Object> menuBasic: menuList) {
+				menuCreatVO.setRoleId(authorCode);
+				menuCreatVO.setMenuNo(menuBasic.get("id").toString());
+				menuCreatVO.setMenuBasicInfo(menuBasic.get("basicMenu").toString());
+				menuCreatVO.setSystemCode(systemCode);
+				menuCreatVO.setUserId(userId);
+				createMapper.insertMenuCreat_S(menuCreatVO);
+			}
 		}
 	}
 	

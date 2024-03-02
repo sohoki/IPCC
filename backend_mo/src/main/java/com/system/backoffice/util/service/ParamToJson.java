@@ -19,25 +19,34 @@ public class ParamToJson {
 		if (param == null || param == "") return "";
 		String ReqValue = "";
 		try{
+			
 			Gson gson = new GsonBuilder().setPrettyPrinting().create();
-			Map<String, String>  map = gson.fromJson(gson.toJson(param), Map.class);
-			map.values().removeAll(Collections.singleton(""));
-			Iterator<String> keys = map.keySet().iterator();
-			for( String key : map.keySet() ){
-				Object object = map.get(key);
-				if ( object instanceof Double){
-					 map.put(key,  String.valueOf(   ((Double) object).intValue()  ) ) ;
-				}
-				//System.out.println(key + ":" + Reqkey);
-				if (key.equals(Reqkey)){
-					ReqValue = object.toString();
-					break;
-				}
-	        }   
-			return ReqValue;
+			System.out.println("Reqkey:" + Reqkey);
+			try {
+				Map<String, String>  map = gson.fromJson(gson.toJson(param), Map.class);
+				System.out.println("2" );
+				map.values().removeAll(Collections.singleton(""));
+				System.out.println("3" );
+				Iterator<String> keys = map.keySet().iterator();
+				for( String key : map.keySet() ){
+					Object object = map.get(key);
+					if ( object instanceof Double){
+						 map.put(key,  String.valueOf(   ((Double) object).intValue()  ) ) ;
+					}
+					
+					if (key.equals(Reqkey)){
+						ReqValue = object.toString();
+						break;
+					}
+		        }   
+				return ReqValue;
+			}catch(Exception e){
+	    		System.err.println("ERROR:" + e);
+	    		return "";
+			}
 		}catch(Exception e){
-	    	System.err.println("ERROR:" + e);
-	    	return "";
+    		System.err.println("ERROR:" + e);
+    		return "";
 	    }
 		
 	}

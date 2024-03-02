@@ -3,18 +3,13 @@ package com.system.backoffice.bas.system.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.system.backoffice.bas.system.mapper.SystemInfoManageMapper;
 import com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto;
 import com.system.backoffice.bas.system.models.dto.SystemInfoResDto;
 import com.system.backoffice.uat.uia.mapper.UniUtilManageMapper;
-import com.system.backoffice.util.service.UtilInfoService;
-
 import lombok.RequiredArgsConstructor;
 
 @Transactional(readOnly = true)
@@ -34,10 +29,13 @@ public class SystemInfoManageService {
 		return sysMapper.selectSystemInfoList(params);
 	}
 
-	public List<Map<String, Object>> selectSystemCombo(String useYn){
-		return sysMapper.selectSystemCombo(useYn);
+	public List<Map<String, Object>> selectSystemCombo(Map<String, Object> params){
+		return sysMapper.selectSystemCombo(params);
 	}
 	
+	public boolean selectMenuNoByPk(String systemCode)throws Exception {
+		return sysMapper.selectSystemByPk(systemCode) > 0 ? false : true;
+	}
 	public Optional<SystemInfoResDto> selectSystemInfoDetail(String systemCode) throws Exception {
 		return sysMapper.selectSystemInfoDetail(systemCode);
 	}

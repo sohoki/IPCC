@@ -219,7 +219,7 @@ public class EgovJwtTokenUtil implements Serializable{
     	String accessToken, refreshToken;
     	
     	accessToken = EgovStringUtil.isNullToString(request.getHeader("authorization").replace("Bearer", ""));
-    	refreshToken = EgovStringUtil.isNullToString(request.getHeader("authorization_refreshtoken"));
+    	refreshToken = EgovStringUtil.isNullToString(request.getHeader("refreshToken"));
     	Boolean deleteRefresh = true;
     	if (!refreshToken.isEmpty()) {
 	    	try {

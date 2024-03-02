@@ -6,14 +6,9 @@ plugins {
     id 'war'
 }
 
-bootWar {
-	archiveBaseName = 'backend_mo'
-	archiveFileName ='backend_mo.war'
-	archiveVersion ="1.0.0"
-
-}
 
 
+group = 'com.system'
 version = '0.1'
 sourceCompatibility = '1.8'
 
@@ -36,7 +31,6 @@ repositories {
         }
     }
     flatDir { dirs "lib" }
-    
 }
 
 

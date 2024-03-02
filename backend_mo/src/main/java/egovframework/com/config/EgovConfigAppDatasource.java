@@ -81,12 +81,15 @@ public class EgovConfigAppDatasource {
 		basicDataSource.setUrl(url);
 		basicDataSource.setUsername(userName);
 		basicDataSource.setPassword(password);
-		basicDataSource.setInitialSize(10);
-		basicDataSource.setMaxTotal(10);
+		basicDataSource.setInitialSize(3); //최초 로드될 때 생성할 connection 개수
+		basicDataSource.setMaxTotal(10); //사용할 최대 connection 개수 
 		basicDataSource.setMaxWaitMillis(30000);
-		basicDataSource.setMaxIdle(100);
-		basicDataSource.setMinIdle(10);
+		basicDataSource.setMaxIdle(10);
+		basicDataSource.setMinIdle(2);
 		basicDataSource.setValidationQuery("select 1");
+		basicDataSource.setTestOnBorrow(false);
+		basicDataSource.setTestOnReturn(false);
+        // Connetion pool 검사 testWhileIdle 설정. 'TimeBetweenEvictionRunsMillis'마다 'NumTestsPerEvictionRun'개의 connection 꺼내 'ValidationQuery'를 날려 확인
 		basicDataSource.setTimeBetweenEvictionRunsMillis(5000);
 		return basicDataSource;
 	}

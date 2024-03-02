@@ -1,5 +1,6 @@
 package com.system.backoffice.bas.system.web;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,15 +19,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
 import com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto;
 import com.system.backoffice.bas.system.models.dto.SystemInfoResDto;
 import com.system.backoffice.bas.system.service.SystemInfoManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
-import com.system.backoffice.sym.svr.web.ServerInfoManageController;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import com.system.backoffice.util.service.UtilInfoService;
+import com.system.backoffice.util.service.fileService;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
@@ -52,7 +55,10 @@ public class SystemInfoManageController {
 	@Autowired
     protected SystemInfoManageService systemService;
 	
-	
+	//파일 업로드
+    @Autowired
+	private fileService uploadFile;
+    
 	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
@@ -78,18 +84,18 @@ public class SystemInfoManageController {
     	}
 		
 		
-		int pageUnit = searchVO.get("pageUnit") == null ? propertiesService.getInt("pageUnit")
-				: Integer.valueOf((String) searchVO.get("pageUnit"));
-		  
+		int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ? propertiesService.getInt(Globals.PAGE_UNIT)
+				: Integer.valueOf((String) searchVO.get(Globals.PAGE_UNIT));
+		
    	    PaginationInfo paginationInfo = new PaginationInfo();
-	    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get("pageIndex"),"1")));
+	    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get(Globals.PAGE_INDEX),"1")));
 	    paginationInfo.setRecordCountPerPage(pageUnit);
-	    paginationInfo.setPageSize(propertiesService.getInt("pageSize"));
+	    paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_SIZE));
 	    
 
-	    searchVO.put("firstIndex", paginationInfo.getFirstRecordIndex());
-	    searchVO.put("lastRecordIndex", paginationInfo.getLastRecordIndex());
-	    searchVO.put("recordCountPerPage", paginationInfo.getRecordCountPerPage());
+	    searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+	    searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+	    searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
 	    
 	    
 	    
@@ -106,9 +112,8 @@ public class SystemInfoManageController {
 		return model;
 	}
     @ApiOperation(value="시스템 combo ", notes="통합 시스템 combo box")
-    @ApiImplicitParam(name = "systemUseyn", value = "사용 유무")
-	@GetMapping("systemCombo.do")
-	public ModelAndView systemCombo(@RequestParam("systemUseyn") String systemUseyn,
+    @GetMapping("systemCombo.do")
+	public ModelAndView systemCombo(@RequestParam Map<String, Object> paramMap,
 									HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		try {
@@ -118,11 +123,12 @@ public class SystemInfoManageController {
 	    	}
 			
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(systemUseyn));
+			System.out.println(paramMap.get("systemMenuUse"));
+    		model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(paramMap));
 			
 		}catch(Exception e){
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg") + e.toString());
 		}
 		return model;
 	}
@@ -132,12 +138,16 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
-    @ApiOperation(value="시스템 정보 저장 ", notes="시스템 정보 저장")
+    @NoLogging
+    @ApiOperation(value="시스템 정보 저장 ", notes="시스템 정보 저장 :SYS LOG에 외 안되는지 확인 필요")
 	@PostMapping ("systemInfo.do")
-	public ModelAndView updateSystemInfo(@Valid @RequestBody SystemInfoRequestDto SystemInfoDto,
-										 HttpServletRequest request) throws Exception{
+	public ModelAndView updateSystemInfo(MultipartRequest mRequest,
+										SystemInfoRequestDto SystemInfoDto,
+										HttpServletRequest request) throws Exception {
+		
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
+		// 0. Spring Security 사용자권한 처리
 		if (!jwtVerification.isVerificationAdmin(request)) {
     		ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
@@ -145,26 +155,36 @@ public class SystemInfoManageController {
     		SystemInfoDto.setUserId(jwtVerification.getTokenUserName(request));
     	}
 		
+		//	
+		if (SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) && systemService.selectMenuNoByPk(SystemInfoDto.getSystemCode()) == false ) {
+			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.isExist.msg"));
+			return model;
+		}
+		
+		String fileNm = uploadFile.uploadFileNm(mRequest.getFiles("relateImage"), propertiesService.getString("Globals.filePath"));
 		
 		
-		int ret = systemService.updateSystemInfo(SystemInfoDto);
 		
-		String messageKey = "";
+		String message = "";
+	    String states = "";
+	    SystemInfoDto.setSystemIcon(fileNm); 
+		
+	    int ret = systemService.updateSystemInfo(SystemInfoDto);
+		
 		if (ret > 0) {
-			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			messageKey = StringUtils.equals(SystemInfoDto.getMode(), Globals.SAVE_MODE_INSERT) 
-					? "sucess.common.insert" : "sucess.common.update";
-		}
-		else {
-			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			messageKey = StringUtils.equals(SystemInfoDto.getMode(), Globals.SAVE_MODE_INSERT) 
-					? "fail.common.insert" : "fail.common.update";
-		}
-		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(messageKey));
+	    	message = SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("success.common.insert") : egovMessageSource.getMessage("success.common.update");
+	    	states =  Globals.STATUS_SUCCESS;
+	    }else {
+	    	message = SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("fail.common.insert") : egovMessageSource.getMessage("fail.common.update");
+	    	states =  Globals.STATUS_FAIL;
+	    }
+	    
+	    model.addObject(Globals.STATUS, states);
+		model.addObject(Globals.STATUS_MESSAGE, message);
 		
 		return model;
 	}
-	
 	/**
 	 * 프로그램 삭제
 	 * @param SystemInfo
@@ -188,6 +208,29 @@ public class SystemInfoManageController {
 		}
 		
 		return model;
+	}
+    
+    @ApiOperation(value="시스템 정보 상세", notes="시스템 정보 상세")
+	@GetMapping ("{systemCode}.do")
+	public ModelAndView selectSystemInfoManage(@PathVariable String systemCode, 
+												HttpServletRequest request) throws Exception {
+    	
+    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+			// 기존 세션 체크 인증에서 토큰 방식으로 변경
+        	if (!jwtVerification.isVerificationAdmin(request)) {
+        		ResultVO resultVO = new ResultVO();
+    			return jwtVerification.handleAuthError(resultVO); // 토큰 확
+        	}
+        	model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemInfoDetail(systemCode));
+    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}catch(Exception e){
+			log.error("selectCmmnDetailCodeDetail error:" + e.toString());
+    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+    		model.addObject(Globals.STATUS_MESSAGE, e.toString());
+    	}
+    	return model;
+    	
 	}
 	
 	/**

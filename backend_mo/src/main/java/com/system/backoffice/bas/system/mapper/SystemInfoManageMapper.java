@@ -17,7 +17,9 @@ public interface SystemInfoManageMapper {
 		
 	public Optional<SystemInfoResDto> selectSystemInfoDetail(String systemCode);
 	
-	public List<Map<String, Object>> selectSystemCombo(String searchUseYn);
+	public int selectSystemByPk(String systemCode);
+	
+	public List<Map<String, Object>> selectSystemCombo(@Param("params") Map<String, Object> params);
 	
 	public int insertSystemInfo(SystemInfoRequestDto vo);
 

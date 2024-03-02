@@ -58,21 +58,29 @@
 		 ]]>
 	</select> 
 	<select id="selectMenuCreatList_Author"  resultType="camelmap">
-		<![CDATA[
-			SELECT  A.MENU_NO 
+		
+			SELECT A.MENU_NO 
 				   , A.MENU_ORDR 
 				   , A.MENU_NM 
 				   , A.UPPER_MENU_NO 
-				   , B.MENU_BASIC_INFO
+				   , SUBSTRING(B.MENU_BASIC_INFO,1,1) MENU_S
+				   , SUBSTRING(B.MENU_BASIC_INFO,2,1) MENU_I
+				   , SUBSTRING(B.MENU_BASIC_INFO,3,1) MENU_E
+				   , SUBSTRING(B.MENU_BASIC_INFO,4,1) MENU_D
+				   , SUBSTRING(B.MENU_BASIC_INFO,5,1) MENU_X
 			FROM COMTNMENUINFO A, COMTNMENUCREATDTLS B
 			WHERE A.MENU_NO = B.MENU_NO
+			      <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(hidMenuGubun) and hidMenuGubun != 'MENU_GUBUN_2'">  
 			      AND A.MENU_NO > 0
+			      <![CDATA[
 			      AND UPPER_MENU_NO <> 0
+			      ]]>
+			      </if>
 			      AND B.ROLE_ID = #{roleId}
 			      AND A.SYSTEM_CODE = B.SYSTEM_CODE
 			      AND B.SYSTEM_CODE = #{systemCode}
 			ORDER BY A.MENU_NO
-		 ]]>
+		
 	</select> 
 	<select id="selectMenuCreatCnt_S" resultType="int">
 		<![CDATA[
@@ -85,8 +93,8 @@
 
 	<insert id="insertMenuCreat_S">
 		<![CDATA[
-			INSERT INTO COMTNMENUCREATDTLS ( ROLE_ID ,MENU_NO , SYSTEM_CODE, MENU_BASIC_INFO)
-			VALUES (  #{roleId}, #{menuNo} , #{systemCode}, #{menuBasicInfo})
+			INSERT INTO COMTNMENUCREATDTLS ( ROLE_ID ,MENU_NO , SYSTEM_CODE, MENU_BASIC_INFO, MENU_CREATE_DATE, MENU_CREATE_ID)
+			VALUES (  #{roleId}, #{menuNo} , #{systemCode}, #{menuBasicInfo}, NOW(), #{userId})
 		]]>
 	</insert>
 

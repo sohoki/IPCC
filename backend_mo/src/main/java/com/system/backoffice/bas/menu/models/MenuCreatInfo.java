@@ -23,4 +23,6 @@ public class MenuCreatInfo {
     private String systemCode;
     
     private String menuBasicInfo;
+    
+    private String userId;
 }
