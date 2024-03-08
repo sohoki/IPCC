@@ -15,9 +15,9 @@ public	interface ConsultantManageService {
 
 	int deleteConsultantrManage(String extension) throws Exception;
 	
-	List<Map<String, Object>> selectConstantCombo() throws Exception;
+	List<Map<String, Object>> selectConstantCombo(Map<String, Object> params) throws Exception;
 	
-	List<Map<String, Object>> selectConstantEmpCombo(String empExtension) throws Exception;
+	List<Map<String, Object>> selectConstantEmpCombo(Map<String, Object> params) throws Exception;
 	
 	int insertConsultantrManage(ConsultantInfoRequestDto vo) throws Exception;
 	

@@ -137,7 +137,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 		return model;
 	}
 	@GetMapping("consultantCombo.do")
-	public ModelAndView selectConsultantCombo (HttpServletRequest request)	throws Exception {
+	public ModelAndView selectConsultantCombo (@RequestParam Map<String, Object> commandMap,
+												HttpServletRequest request)	throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
@@ -147,7 +148,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}
 			
-			model.addObject(Globals.JSON_RETURN_RESULT, consulService.selectConstantCombo());
+			model.addObject(Globals.JSON_RETURN_RESULT, consulService.selectConstantCombo(commandMap));
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -155,8 +156,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 		}
 		return model;
 	}
-	@GetMapping("conCombo.do")
-	public ModelAndView selectConsultantAdminCombo (@RequestParam("extenNumber") String extenNumber,
+	@GetMapping("selectConsultantAdminCombo.do")
+	public ModelAndView selectConsultantAdminCombo (@RequestParam Map<String, Object> commandMap,
 													HttpServletRequest request)	throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
@@ -168,7 +169,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 			}
 			
 			
-			model.addObject(Globals.JSON_RETURN_RESULT, consulService.selectConstantEmpCombo(UtilInfoService.NVL("extenNumber", "")));
+			model.addObject(Globals.JSON_RETURN_RESULT, consulService.selectConstantEmpCombo(commandMap));
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);

@@ -9,6 +9,7 @@ import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.service.AdminInfoManageService;
 import com.system.backoffice.uat.uia.models.AdminInfoVO;
 import com.system.backoffice.uat.uia.models.PartInfoVO;
+import com.system.backoffice.uat.uia.models.dto.UserAuthInfoReqDto;
 import com.system.backoffice.uat.uia.service.PartInfoManageService;
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
@@ -165,7 +166,24 @@ public class AdminInfoManageController {
     	}
     	return model;
     }
-	
+	@ApiOperation(value="사용자별 시스템 권한 리스트 ", notes="auth table")
+	@PostMapping("auth/systemMemnu.do")
+	public ModelAndView selectAuthList(@RequestBody UserAuthInfoReqDto req,
+										HttpServletRequest request) throws Exception{
+		
+		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+    	if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}
+    	
+		//공용 확인 하기 
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+        
+    	model.addObject(Globals.JSON_RETURN_RESULT_LIST, userManagerService.selectSystemMenuList(req)); 
+        model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		return model;
+	}
 	@ApiOperation(value="사용자 combobox ", notes="사용자 combobox")
 	@GetMapping("adminCombo.do")
 	public ModelAndView selectAdminCombo(@RequestParam  Map<String, Object> searchVO,
@@ -201,9 +219,9 @@ public class AdminInfoManageController {
 		String jwtToken = EgovStringUtil.isNullToString(request.getHeader("authorization"));
 		
 		System.out.println(jwtToken);
-        Optional<AdminInfoVO> adminVO = userManagerService.selectAdminUserManageDetail(adminId);  
+        Optional<AdminInfo> adminVO = userManagerService.selectAdminUserManageDetail(adminId);  
         if ( adminVO.isPresent()) {
-        	model.addObject("userInfo", adminVO); 
+        	model.addObject(Globals.JSON_RETURN_RESULT, adminVO); 
             model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
         }else {
         	model.addObject(Globals.STATUS_MESSAGE, "사용자가 없습니다."); 
@@ -223,9 +241,10 @@ public class AdminInfoManageController {
     		ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
     	}else {
-
     		vo.setUserId(jwtVerification.getTokenUserName(request));
     	}
+    	System.out.println("==============1");
+    	
     	
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		
@@ -321,16 +340,9 @@ public class AdminInfoManageController {
 	@GetMapping("idCheck/{adminId}.do")
 	public ModelAndView selectUserMangerIDCheck(@PathVariable String adminId,
 												HttpServletRequest request) throws Exception {
-		/*
-		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
-    	*/
+		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		
-    	
-    	
 		try {
 			
 			int IDCheck = userManagerService.selectAdminUserMangerIDCheck(adminId);		

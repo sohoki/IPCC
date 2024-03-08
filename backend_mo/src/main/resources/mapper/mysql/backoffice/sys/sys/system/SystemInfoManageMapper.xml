@@ -15,7 +15,7 @@
 					 A.SYSTEM_ICON, A.SYSTEM_MENUGUBUN, A.SYSTEM_HEALTH_CHECK,
 					 A.SYSTEM_GUBUN, fn_DetailCodeNm(A.SYSTEM_GUBUN) SYSTEM_GUBUN_TXT,
 					 fn_DetailCodeNm( A.SYSTEM_HEALTH_CHECK) SYSTEM_HEALTH_CHECK_TXT, fn_DetailCodeNm( A.SYSTEM_MENUGUBUN) SYSTEM_MENUGUBUN_TXT,
-					 A.SYSTEM_HEALTH_CHECK_URL, A.SYSTEM_CONN_LEVEL, fn_DetailCodeNm( A.SYSTEM_CONN_LEVEL) SYSTEM_CONN_LEVEL_TXT
+					 A.SYSTEM_HEALTH_CHECK_URL, A.SYSTEM_CONN_LEVEL
 				FROM TB_SYSTEMINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -41,6 +41,9 @@
 		WHERE 1=1 
 		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.systemUseyn)">
 		      AND A.SYSTEM_USEYN = #{params.systemUseyn}
+		</if>
+		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.systemNotcode)">
+		      AND A.SYSTEM_CODE != #{params.systemNotcode}
 		</if>
 		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.systemMenuGubun)">
 		      AND A.SYSTEM_MENUGUBUN = #{params.systemMenuGubun}

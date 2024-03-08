@@ -84,14 +84,14 @@ public class ConsultantManageServiceImpl extends EgovAbstractServiceImpl impleme
 	}
 
 	@Override
-	public List<Map<String, Object>> selectConstantCombo() throws Exception {
+	public List<Map<String, Object>> selectConstantCombo(Map<String, Object> params) throws Exception {
 		// TODO Auto-generated method stub
-		return conMapper.selectConstantCombo();
+		return conMapper.selectConstantCombo(params);
 	}
 
 	@Override
-	public List<Map<String, Object>> selectConstantEmpCombo(String empExtension) throws Exception {
+	public List<Map<String, Object>> selectConstantEmpCombo(Map<String, Object> params) throws Exception {
 		// TODO Auto-generated method stub
-		return conMapper.selectConstantEmpCombo(empExtension);
+		return conMapper.selectConstantEmpCombo(params);
 	}
 }

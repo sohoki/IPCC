@@ -15,7 +15,7 @@
 		    FROM TB_MANAGERINFO
 		    WHERE ADMIN_ID = #{adminId}
 		          AND ADMIN_PASSWORD = #{adminPassword}
-		          AND ADMIN_STATUS = 'P'
+		          AND ADMIN_STATUS IN ('USER_STATE_1','USER_STATE_4') 
 		          AND USE_YN = 'Y'
 	</select>
 	<!-- 일반 로그인 -->
@@ -25,7 +25,7 @@
                    LOCK_YN,  EMP_NO, REG_DATE
 		    FROM TB_MANAGERINFO
 		    WHERE ADMIN_ID = #{adminId}
-		          AND ADMIN_STATUS = 'P'
+		          AND ADMIN_STATUS IN ('USER_STATE_1','USER_STATE_4')
 		          AND USE_YN = 'Y'
 	</select>
 	<select id="searchId" resultType="String">

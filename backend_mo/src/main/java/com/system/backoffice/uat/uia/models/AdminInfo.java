@@ -2,6 +2,9 @@ package com.system.backoffice.uat.uia.models;
 
 import java.io.Serializable;
 import java.util.List;
+import com.system.backoffice.uat.uia.models.dto.UserAuthInfoDto;
+
+
 
 public class AdminInfo implements Serializable {
 
@@ -36,11 +39,32 @@ public class AdminInfo implements Serializable {
 	private String lastUpdtPnttm;
 	private String insttCode;
 	private String roleGubun;
+	private String systemcodeUsecode;
+	private String adminState;
 	
+	//private List<UserRoleInfo> roleInfo;
+	private List<UserAuthInfoDto> authInfo;
+	public List<UserAuthInfoDto> getAuthInfo() {
+		return authInfo;
+	}
+	public void setAuthInfo(List<UserAuthInfoDto> authInfo) {
+		this.authInfo = authInfo;
+	}
 	
+    public String getSystemcodeUsecode() {
+		return systemcodeUsecode;
+	}
+	public void setSystemcodeUsecode(String systemcodeUsecode) {
+		this.systemcodeUsecode = systemcodeUsecode;
+	}
+	public String getAdminState() {
+		return adminState;
+	}
+	public void setAdminState(String adminState) {
+		this.adminState = adminState;
+	}
 	
-	
-    public String getRoleGubun() {
+	public String getRoleGubun() {
 		return roleGubun;
 	}
 	public void setRoleGubun(String roleGubun) {
@@ -58,15 +82,14 @@ public class AdminInfo implements Serializable {
 	public void setLastUpdtPnttm(String lastUpdtPnttm) {
 		this.lastUpdtPnttm = lastUpdtPnttm;
 	}
-	private List<UserRoleInfo> roleInfo;
-	
-	
+	/*
 	public List<UserRoleInfo> getRoleInfo() {
 		return roleInfo;
 	}
 	public void setRoleInfo(List<UserRoleInfo> roleInfo) {
 		this.roleInfo = roleInfo;
 	}
+	*/
 	public String getRoleId() {
 		return roleId;
 	}

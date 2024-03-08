@@ -123,7 +123,6 @@ public class SystemInfoManageController {
 	    	}
 			
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			System.out.println(paramMap.get("systemMenuUse"));
     		model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(paramMap));
 			
 		}catch(Exception e){

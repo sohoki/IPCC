@@ -15,9 +15,9 @@ import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
 @Mapper
 public interface ConsultantManageMapper {
 
-	public List<Map<String, Object>> selectConstantCombo() throws Exception;
+	public List<Map<String, Object>> selectConstantCombo(@Param("params") Map<String, Object> params) throws Exception;
 	
-	public List<Map<String, Object>> selectConstantEmpCombo(String empExtension) throws Exception;
+	public List<Map<String, Object>> selectConstantEmpCombo(@Param("params") Map<String, Object> params) throws Exception;
 	
 	public int deleteConsultantrManage(String extension) throws Exception;
 	

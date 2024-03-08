@@ -2,12 +2,6 @@ package com.system.backoffice.uat.uia.models;
 
 import java.io.Serializable;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 
 public class AdminInfoVO extends AdminInfo implements Serializable {
 
@@ -36,10 +30,23 @@ public class AdminInfoVO extends AdminInfo implements Serializable {
     private String roleName;
     private String partNm;
     private String allInsttNm;
-
+    private String roleGubunTxt;
+    private String adminStatusTxt;
     
     
-    
+	
+	public String getAdminStatusTxt() {
+		return adminStatusTxt;
+	}
+	public void setAdminStatusTxt(String adminStatusTxt) {
+		this.adminStatusTxt = adminStatusTxt;
+	}
+	public String getRoleGubunTxt() {
+		return roleGubunTxt;
+	}
+	public void setRoleGubunTxt(String roleGubunTxt) {
+		this.roleGubunTxt = roleGubunTxt;
+	}
 	public String getAllInsttNm() {
 		return allInsttNm;
 	}
@@ -130,8 +137,6 @@ public class AdminInfoVO extends AdminInfo implements Serializable {
 	public void setIdCheck(String idCheck) {
 		this.idCheck = idCheck;
 	}
-    
-    
-    
+	
 	
 }

@@ -1,5 +1,7 @@
 package com.system.backoffice.uat.uia.service.impl;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,8 +17,12 @@ import org.springframework.stereotype.Service;
 import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.models.AdminInfoVO;
 import com.system.backoffice.uat.uia.models.UserRoleInfo;
+import com.system.backoffice.uat.uia.models.dto.UserAuthInfoDto;
+import com.system.backoffice.uat.uia.models.dto.UserAuthInfoReqDto;
 import com.system.backoffice.uat.uia.models.dto.UserRoleInfoRequestDto;
 import com.system.backoffice.uat.uia.service.AdminInfoManageService;
+import com.system.backoffice.uat.uia.service.UniUtilManageService;
+import com.system.backoffice.util.service.UtilInfoService;
 
 import egovframework.let.utl.sim.service.EgovFileScrty;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +38,7 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 	@Autowired 
 	private UserRoleInfoManageMapper userRoleMapper;
 	
-	
+
 	@Override
 	public int deleteAdminUserManage(String mberId) throws Exception {
 		// TODO Auto-generated method stub
@@ -54,37 +60,70 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		}
 		
 		
-		int ret = (vo.getMode().equals("Ins")) ? adminMapper.insertAdminUserManage(vo) : adminMapper.updateAdminUserManage(vo) ;		
-		List<UserRoleInfo> userRole = userRoleMapper.userRoleInfoSelectList(vo.getAdminId());
-		List<String> userRoleArray = userRole.stream().map(x -> x.getRoleId()).collect(Collectors.toList());
-		List<String> updtRoleList = vo.getRoleInfo().stream().map(x -> x.getRoleId())
-															 .collect(Collectors.toList());
+		int ret = (vo.getMode().equals("Ins")) ? adminMapper.insertAdminUserManage(vo) : adminMapper.updateAdminUserManage(vo) ;
+		//기존 시스템 Auth 값
+		List<UserAuthInfoDto> userAuth =  adminMapper.selectSystemUserMenuInfo_s(vo.getAdminId());
 		
-		//신규 Role
-		List<UserRoleInfoRequestDto> insertRole = vo.getRoleInfo().stream()
-									               .filter(x -> !userRoleArray.contains(x.getRoleId()))
-									               .map( x -> new UserRoleInfoRequestDto("", x.getRoleId(), vo.getAdminId() ))
-									               .collect(Collectors.toList());
-		//삭제 Role 
-		List<String> delRoleList = userRole.stream()
-								   .filter(x -> !updtRoleList.contains(x.getRoleId()))
-								   .map(x-> x.getUserRoleSeq())
-								   .collect(Collectors.toList());
-		ret = delRoleList.size() < 1 ? 1 :   userRoleMapper.deleteUserRoleList(delRoleList);
-		ret = insertRole.size() < 1 ? 1 : userRoleMapper.insertUserRoleList(insertRole);
+		List<String> updtAuthList = new ArrayList<String>(Arrays.asList(vo.getSystemcodeUsecode().split("\\s*,\\s*")));
+		
+		System.out.println("updtAuthList.size()" + updtAuthList.size());
+		//auth 삭제
+		List<UserAuthInfoReqDto> delAuthList = userAuth.stream().filter(x -> !updtAuthList.contains(x.getSystemCode()))
+												.map( x -> new UserAuthInfoReqDto(vo.getAdminId(), x.getSystemCode(), null ))
+												.collect(Collectors.toList());
+		
+		ret = delAuthList.size() < 1 ? 1 : adminMapper.deleteUserAuthList(delAuthList);
+		//auth 입력
+		
+		
+		
+		//update 입력 추후 값 비교 해서 넣기 
+		//userAuth =  adminMapper.selectSystemUserMenuInfo_s(vo.getAdminId());
+		if (vo.getAuthInfo().size() > 0) {
+			
+			List<UserAuthInfoDto> insertRole = vo.getAuthInfo().stream()
+												.filter(x -> !updtAuthList.contains(x.getSystemCode()))
+												.map( x -> new UserAuthInfoDto(x.getSystemCode(), "", UtilInfoService.NVLObj(x.getAuthGubun(), ""), 
+		            		   					x.getUserId(), vo.getUserId(), UtilInfoService.NVLObj(x.getRoleId(), ""),
+		            		   						  "", "", "", "", "", UtilInfoService.NVLObj(x.getAuthDc(), "")))
+		               .collect(Collectors.toList());
+			ret = insertRole.size() < 1 ? 1 : adminMapper.insertSystemMenuInfo(insertRole);
+			
+			//
+			List<UserAuthInfoDto> updateRole = vo.getAuthInfo().stream()
+		               .filter(x -> updtAuthList.contains(x.getSystemCode()))
+		               .map( x -> new UserAuthInfoDto(x.getSystemCode(), "", UtilInfoService.NVLObj(x.getAuthGubun(), ""), 
+		            		   						  x.getUserId(), vo.getUserId(), UtilInfoService.NVLObj(x.getRoleId(), ""),
+		            		   						  "", "", "", "", "", UtilInfoService.NVLObj(x.getAuthDc(), "")))
+		               .collect(Collectors.toList());
+			ret = updateRole.size() < 1 ? 1 : adminMapper.updateSystemMenuInfo(updateRole);
+		}
+		
+		
 		return ret;
 	}
 
 	@Override
-	public Optional<AdminInfoVO> selectAdminUserManageDetail(String mberId) throws Exception {
+	public Optional<AdminInfo> selectAdminUserManageDetail(String mberId) throws Exception {
 		// TODO Auto-generated method stub
 		
-		Optional<AdminInfoVO> userInfo = adminMapper.selectAdminUserManageDetail(mberId);
+		Optional<AdminInfo> userInfo = adminMapper.selectAdminUserManageDetail(mberId);
 		if (userInfo.isPresent()) {
-			List<UserRoleInfo> userRole = userRoleMapper.userRoleInfoSelectList(mberId);
-			userInfo.orElseThrow().setRoleInfo(userRole);
+			System.out.println("================selectAdminUserManageDetail");
+			UserAuthInfoReqDto req = new UserAuthInfoReqDto();
+			req.setUserId(mberId);
+			req.setSystemCode(userInfo.get().getSystemcodeUsecode());
+			req.setSearchCode(Arrays.asList(userInfo.get().getSystemcodeUsecode().split("\\s*,\\s*")));
+			
+			userInfo.orElseThrow().setAuthInfo(adminMapper.selectSystemUserMenuInfo(req));
 		}
 		return userInfo;
+	}
+	@Override
+	public List<UserAuthInfoDto> selectSystemMenuList(UserAuthInfoReqDto req) throws Exception {
+		// TODO Auto-generated method stub
+		req.setSearchCode(Arrays.asList(req.getSystemCode().split("\\s*,\\s*")));
+		return adminMapper.selectSystemUserMenuInfo(req);
 	}
 
 	@Override
@@ -127,4 +166,5 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		// TODO Auto-generated method stub
 		return adminMapper.selectAdminUserCombo(params);
 	}
+	
 }
