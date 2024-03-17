@@ -74,7 +74,7 @@ public class EgovLoginServiceImpl extends EgovAbstractServiceImpl implements Ego
 
 		// 3. 결과를 리턴한다.
 		if (loginVO != null && !loginVO.getAdminId().equals("") && !loginVO.getAdminPassword().equals("")) {
-			
+			//추후 여기 부분을 system 권한 으로 변경 
 			loginVO.setRoleInfo(userRoleMapper.userRoleInfoSelectList(loginVO.getAdminId()));
 			return loginVO;
 		} else {

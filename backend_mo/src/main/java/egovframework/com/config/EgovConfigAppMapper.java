@@ -10,7 +10,6 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -41,7 +40,6 @@ import org.springframework.jdbc.support.lob.DefaultLobHandler;
  */
 @Configuration
 @PropertySources({
-	//@PropertySource("classpath:/application.properties")
 	@PropertySource("classpath:/application.yml")
 })
 @MapperScan(value="com.system.backoffice.**.mapper, egovframework.**.mapper",sqlSessionFactoryRef="sqlSession")

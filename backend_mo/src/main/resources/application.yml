@@ -55,7 +55,7 @@ Globals:
     #Url : jdbc:log4jdbc:mysql://192.168.85.45:3306/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
     #UserName : ipcc
     #Password : Qwer1234!@#$
-    Url : jdbc:log4jdbc:mysql://59.14.245.89:13306/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    Url : jdbc:log4jdbc:mysql://59.14.245.89:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
     UserName : root
     Password : Qwer1234!@#$
   ctisql:

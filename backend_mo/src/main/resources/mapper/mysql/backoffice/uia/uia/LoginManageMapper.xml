@@ -10,8 +10,9 @@
 	<!-- 일반 로그인 -->
 	<select id="actionLogin" resultType="AdminLoginVO">
 			SELECT ADMIN_ID, ADMIN_PASSWORD, ADMIN_NAME, USE_YN, PART_ID, 
-				   ADMIN_EMAIL, ADMIN_TEL, UPDATE_PASSWORD, 
-                   LOCK_YN,  EMP_NO, REG_DATE
+					INSTT_CODE, ROLE_ID,
+					ADMIN_EMAIL, ADMIN_TEL, UPDATE_PASSWORD, 
+					LOCK_YN,  EMP_NO, REG_DATE
 		    FROM TB_MANAGERINFO
 		    WHERE ADMIN_ID = #{adminId}
 		          AND ADMIN_PASSWORD = #{adminPassword}
@@ -22,6 +23,7 @@
 	<select id="actionLoginSso" resultType="AdminLoginVO">
 			SELECT ADMIN_ID, ADMIN_PASSWORD, ADMIN_NAME, USE_YN, PART_ID, 
 				   ADMIN_EMAIL, ADMIN_TEL, UPDATE_PASSWORD, 
+				   INSTT_CODE, ROLE_ID,
                    LOCK_YN,  EMP_NO, REG_DATE
 		    FROM TB_MANAGERINFO
 		    WHERE ADMIN_ID = #{adminId}

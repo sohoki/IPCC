@@ -1,6 +1,5 @@
 package com.system.backoffice.bas.program.models.dto;
 
-import com.system.backoffice.bas.program.models.ProgrmInfo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

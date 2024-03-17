@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.system.backoffice.uat.uia.mapper.AdminInfoManagerMapper;
+import com.system.backoffice.uat.uia.mapper.AdminStateChangeInfoManagerMapper;
 import com.system.backoffice.uat.uia.mapper.UserRoleInfoManageMapper;
 
 import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.models.AdminInfoVO;
+import com.system.backoffice.uat.uia.models.AdminStateChangeInfo;
 import com.system.backoffice.uat.uia.models.UserRoleInfo;
 import com.system.backoffice.uat.uia.models.dto.UserAuthInfoDto;
 import com.system.backoffice.uat.uia.models.dto.UserAuthInfoReqDto;
@@ -27,7 +29,7 @@ import com.system.backoffice.util.service.UtilInfoService;
 import egovframework.let.utl.sim.service.EgovFileScrty;
 import org.springframework.transaction.annotation.Transactional;
 
-
+@Transactional(readOnly = true)
 @Service("AdminInfoManageService")
 public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implements  AdminInfoManageService {
 
@@ -38,17 +40,22 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 	@Autowired 
 	private UserRoleInfoManageMapper userRoleMapper;
 	
-
+	@Autowired
+	private AdminStateChangeInfoManagerMapper stateChangeMapper;
+	
+	@Transactional(readOnly = false)
 	@Override
 	public int deleteAdminUserManage(String mberId) throws Exception {
 		// TODO Auto-generated method stub
 		int ret = adminMapper.deleteAdminUserManage(mberId);
 		if (ret > 0) {
 			userRoleMapper.deleteUserRole(mberId);
+			adminMapper.deleteSystemMenuInfo(mberId);
+			stateChangeMapper.deleteAdminStateChangeAllManage(mberId);
 		}
 		return ret;
 	}
-	@Transactional
+	@Transactional(readOnly = false)
 	@Override
 	public int updateAdminUserManage(AdminInfoVO vo) throws Exception {
 		// TODO Auto-generated method stub
@@ -109,7 +116,6 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		
 		Optional<AdminInfo> userInfo = adminMapper.selectAdminUserManageDetail(mberId);
 		if (userInfo.isPresent()) {
-			System.out.println("================selectAdminUserManageDetail");
 			UserAuthInfoReqDto req = new UserAuthInfoReqDto();
 			req.setUserId(mberId);
 			req.setSystemCode(userInfo.get().getSystemcodeUsecode());
@@ -137,14 +143,14 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		// TODO Auto-generated method stub
 		return adminMapper.selectAdminUserMangerIDCheck(code);
 	}
-	@Transactional
+	@Transactional(readOnly = false)
 	@Override
 	public int updateAdminUserLockManage(String adminId) throws Exception {
 		// TODO Auto-generated method stub
 		return adminMapper.updateAdminUserLockManage(adminId);
 	}
 
-	@Transactional
+	@Transactional(readOnly = false)
 	@Override
 	public int updatePassChange(AdminInfo vo) throws Exception {
 		// TODO Auto-generated method stub
@@ -165,6 +171,24 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 	public List<Map<String, Object>> selectAdminUserCombo(Map<String, Object> params) throws Exception {
 		// TODO Auto-generated method stub
 		return adminMapper.selectAdminUserCombo(params);
+	}
+	@Transactional(readOnly = false)
+	@Override
+	public int updateAdminStateChange(AdminStateChangeInfo vo) throws Exception {
+		// TODO Auto-generated method stub
+		return stateChangeMapper.insertAdminStateChangeManage(vo);
+	}
+	@Transactional(readOnly = false)
+	@Override
+	public int deleteAdminStateChangeSeqManage(String gubun, String manageSeq) throws Exception {
+		// TODO Auto-generated method stub
+		return gubun.equals("All") ? stateChangeMapper.deleteAdminStateChangeAllManage(manageSeq) :  
+									 stateChangeMapper.deleteAdminStateChangeSeqManage(manageSeq);
+	}
+	@Override
+	public List<?> selectAdminStateChangeManageListByPagination(Map<String, Object> params) throws Exception {
+		// TODO Auto-generated method stub
+		return stateChangeMapper.selectAdminStateChangeManageListByPagination(params);
 	}
 	
 }

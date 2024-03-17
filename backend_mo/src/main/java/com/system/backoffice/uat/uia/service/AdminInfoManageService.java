@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.models.AdminInfoVO;
+import com.system.backoffice.uat.uia.models.AdminStateChangeInfo;
 import com.system.backoffice.uat.uia.models.dto.UserAuthInfoDto;
 import com.system.backoffice.uat.uia.models.dto.UserAuthInfoReqDto;
 
@@ -16,9 +17,13 @@ public  interface AdminInfoManageService {
 
 	int deleteAdminUserManage(String mberId) throws Exception;
 	
+	int deleteAdminStateChangeSeqManage(String gubun, String manageSeq) throws Exception;
+	
 	int updateAdminUserManage(AdminInfoVO vo) throws Exception;
 	
 	int updateAdminUserLockManage(String adminId) throws Exception;
+	
+	int updateAdminStateChange(AdminStateChangeInfo vo)throws Exception;
 	
 	int updatePassChange(AdminInfo vo) throws Exception;
 	
@@ -27,6 +32,8 @@ public  interface AdminInfoManageService {
 	List<UserAuthInfoDto> selectSystemMenuList(UserAuthInfoReqDto req) throws Exception;
 	
 	List<?> selectAdminUserManageListByPagination(Map<String, Object> params) throws Exception;  
+	
+	List<?> selectAdminStateChangeManageListByPagination(Map<String, Object> params) throws Exception;
 	
 	//List<UserAuthInfoDto> selectSystemUserMenuInfo(String userId) throws Exception;
 	

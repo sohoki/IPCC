@@ -37,8 +37,6 @@ import egovframework.let.utl.sim.service.EgovClntInfo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import org.springframework.util.StopWatch;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -136,7 +134,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 				.forEach(arg -> {
 					try {
 						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: mapper " + objectMapper.writeValueAsString(arg));
-					} catch (JsonProcessingException e) {
+					} catch (Exception e) {
 						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: arg " + arg);
 					}
 			});
@@ -213,7 +211,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 				.forEach(arg -> {
 					try {
 						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + objectMapper.writeValueAsString(arg));
-					} catch (JsonProcessingException e) {
+					} catch (Exception e) {
 						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + arg);
 					}
 				});

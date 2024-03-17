@@ -71,6 +71,7 @@ public class EgovJwtTokenUtil implements Serializable{
 		//redisTemplate.opsForValue().get(refreshKey) ==  ? true : false;
 		return  redis.isKeyNullCheck(refreshKey);
     }
+	//info 전체 가지고 오는거 넣기
 	
 	
 	//retrieve username from jwt token
@@ -103,11 +104,16 @@ public class EgovJwtTokenUtil implements Serializable{
     public String generateAdminToken(AdminLoginVO loginVO) {
         Map<String, Object> claims = new HashMap<>();
         //권한 체크 
+        /*
         for (UserRoleInfo info : loginVO.getRoleInfo()) {
         	//claims.put(Globals.TOKEN_CLAIM_NAME , info.getRoleId());
         	claims.put(secret , info.getRoleId());
         }
-        return doGenerateToken(claims, loginVO.getAdminName()+"|"+loginVO.getAdminId());
+        */
+        claims.put("roleId" , loginVO.getRoleId());
+        claims.put("partId" , loginVO.getPartId());
+        claims.put("insttCode" , loginVO.getInsttCode());
+        return doGenerateToken(claims, loginVO.getAdminName()+"|"+loginVO.getAdminId()+"|"+loginVO.getRoleId()+"|"+loginVO.getPartId()+"|"+loginVO.getInsttCode());
     }
     //generate token for user
     public String generateToken(LoginVO loginVO) {
@@ -122,7 +128,7 @@ public class EgovJwtTokenUtil implements Serializable{
     public String generateToken(LoginVO loginVO, Map<String, Object> claims) {
         return doGenerateToken(claims, loginVO.getUserSe()+loginVO.getId());
     }
-  //refreshToken 생성 나중에 spring spring secur 생성
+    //refreshToken 생성 나중에 spring spring secur 생성
     public String generateRefreshToken(AdminLoginVO loginVO) {
     	
     	//token 있는지 확인 후 있으면 삭제 하 다시 전송

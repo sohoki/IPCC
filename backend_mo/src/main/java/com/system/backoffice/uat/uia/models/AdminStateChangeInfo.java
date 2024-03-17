@@ -19,7 +19,7 @@ public class AdminStateChangeInfo {
 	private String partId;
 	private String adminStatus;
 	private String adminPosition;
-	private String lastUpdusrId;
+	private String updateId;
 	private String stateRegdate;
 	private String changeDc;
 }

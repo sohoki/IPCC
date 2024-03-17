@@ -3,14 +3,15 @@ package com.system.backoffice.uat.uia.web;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import com.system.backoffice.bas.code.web.ClassificationInfoManageController;
 import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.service.AdminInfoManageService;
 import com.system.backoffice.uat.uia.models.AdminInfoVO;
-import com.system.backoffice.uat.uia.models.PartInfoVO;
+import com.system.backoffice.uat.uia.models.AdminStateChangeInfo;
+//import com.system.backoffice.uat.uia.models.PartInfoVO;
 import com.system.backoffice.uat.uia.models.dto.UserAuthInfoReqDto;
-import com.system.backoffice.uat.uia.service.PartInfoManageService;
+//import com.system.backoffice.uat.uia.service.PartInfoManageService;
+import com.system.backoffice.util.service.UtilInfoService;
+
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import egovframework.com.cmm.EgovMessageSource;
@@ -19,8 +20,6 @@ import egovframework.com.cmm.EgovMessageSource;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,8 +35,8 @@ import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
 import egovframework.let.utl.fcc.service.EgovStringUtil;
-import egovframework.let.utl.sim.service.EgovFileScrty;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,9 +61,10 @@ public class AdminInfoManageController {
     @Resource(name="egovMessageSource")
 	protected EgovMessageSource egovMessageSource;
 	
+    /*
 	@Autowired
 	private PartInfoManageService partService;
-	
+	*/
 	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
@@ -72,6 +72,7 @@ public class AdminInfoManageController {
 	
 	
 	//@PreAuthorize("hasAnyRole('ROLE_B2C','ROLE_B2B')")
+	@ApiOperation(value="관리자 리스트", notes = "성공시 관리자 리스트를 반환 합니다.")
 	@PostMapping("empList.do")
 	public ModelAndView selectUserManagerList(@RequestBody Map<String, Object> searchVO,
 											 HttpServletRequest request) throws Exception {  
@@ -115,7 +116,7 @@ public class AdminInfoManageController {
 	   }
 	   return model;
 	}
-	
+	@ApiOperation(value="관리자 패스워드 체크", notes = "관리자 패스워드 체크 합니다.")
 	@PostMapping("passChangeCheck.do")
     public ModelAndView updatePasswordCheck( @RequestBody Map<String, Object> searchVO, 
 										    HttpServletResponse response,
@@ -144,7 +145,7 @@ public class AdminInfoManageController {
     	return model;
     }
 
-	
+	@ApiOperation(value="관리자 패스워드 변경", notes = "관리자 패스워드 변경 합니다.")
 	@PostMapping("passChange.do")
     public ModelAndView updatePasswordChange(@RequestBody AdminInfoVO vo, 
 										    HttpServletResponse response,
@@ -203,6 +204,7 @@ public class AdminInfoManageController {
 		return model;
 	}
 	@ApiOperation(value="사용자 상세 정보", notes="사용자 상세 정보")
+	@ApiImplicitParam(name = "adminId", value = "adminId")
 	@GetMapping("{adminId}.do")
 	public ModelAndView userView( @PathVariable String adminId, HttpServletRequest request) throws Exception{
 		
@@ -229,6 +231,47 @@ public class AdminInfoManageController {
         }
 		return model;
 	}
+	@ApiOperation(value="관리자 상태 업데이트", notes="관리자 상태 업데이트")
+	@ApiImplicitParam(name = "adminId", value = "adminId")
+	@GetMapping("StateChange/{adminId}.do")
+	public ModelAndView updateStateChange (@RequestParam Map<String, Object> commandMap,
+											HttpServletRequest request, 
+											@PathVariable String adminId) throws Exception{
+		AdminStateChangeInfo vo = new AdminStateChangeInfo();
+		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+    	if (!jwtVerification.isVerificationAdmin(request)) {
+    		ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+    	}else {
+    		vo.setUserId(adminId);
+    		vo.setAdminStatus( UtilInfoService.NVLObj(commandMap.get("adminState"),""));
+    		vo.setAdminPosition(UtilInfoService.NVLObj(commandMap.get("adminPosition"),""));
+    		vo.setUpdateId(jwtVerification.getTokenUserName(request));
+    	}
+    	
+    	
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		
+		model.addObject("regist", vo);
+		
+		try{
+			
+			int ret = userManagerService.updateAdminStateChange(vo);
+			
+		    if (ret >0){
+				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.insert"));		
+			}else {	
+				
+				throw new Exception();
+			}
+		}catch (Exception e){
+			
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.insert") + e.toString());	
+		}	
+		return model;
+	}
 	//추후 .do 파일 확인 하기 
 	@ApiOperation(value="사용자 업데이트", notes="관리자 업데이트")
 	@PostMapping("managerUpdate.do")
@@ -243,8 +286,6 @@ public class AdminInfoManageController {
     	}else {
     		vo.setUserId(jwtVerification.getTokenUserName(request));
     	}
-    	System.out.println("==============1");
-    	
     	
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		

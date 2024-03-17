@@ -95,4 +95,9 @@ public class Globals {
 	public static final String PAGE_DOMAIN = "domainInfo";
 	public static final String PAGE_SYSTEM_CODE = "systemCode";
 	
+	
+	//지점 코드
+	public static final String STATUS_FLOORS = "selectFloorCombo";
+	public static final String STATUS_FLOORE = "selectFloorEndCombo";
+	public static final String STATUS_GROUP = "selectGroupCombo";
 }

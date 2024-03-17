@@ -195,7 +195,13 @@
                                 , CONSULTANT_USEYN = #{consultantUseyn ,jdbcType=VARCHAR}
                                 , SYSTEMCODE_USECODE = #{systemcodeUsecode, jdbcType=VARCHAR}
                                 , LAST_UPDT_PNTTM = NOW()
-		WHERE ADMIN_ID = #{adminId}
+		WHERE ADMIN_ID = #{adminId};
+		
+		INSERT INTO TB_MANAGERINFO_STATE_CHANAGEINFO(USER_ID, INSTT_CODE, PART_ID, ADMIN_STATUS, ADMIN_POSITION, 
+													LAST_UPDUSR_ID, STATE_REGDATE, CHANGE_DC)
+		SELECT ADMIN_ID, INSTT_CODE, PART_ID, ADMIN_STATUS, ADMIN_POSITION, #{userId},  '관리자 수정'
+		FROM TB_MANAGERINFO
+		WHERE ADMIN_ID = #{userId}
    </update>
    <update id="updatePassChange">
 		UPDATE TB_MANAGERINFO set ADMIN_PASSWORD = #{adminPassword}, 

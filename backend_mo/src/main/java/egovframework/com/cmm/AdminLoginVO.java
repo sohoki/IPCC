@@ -4,14 +4,17 @@ package egovframework.com.cmm;
 import java.util.List;
 
 import com.system.backoffice.uat.uia.models.UserRoleInfo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Schema(title="AdminLoginVO : 관리자 로그인VO " )
 public class AdminLoginVO {
 
-	
+	@Schema(description="관리자 ID", example="Ins/Edt/Del")
 	private String adminId;
 	private String adminName;
 	private String adminPassword;
@@ -27,5 +30,10 @@ public class AdminLoginVO {
 	private String partNm;
 	private String userIp = "";
 	private String adminStatus;
+	private String adminPosition;
+	private String roleGubun;
+	private String roleId;
+	private String insttCode;
+	
 	private List<UserRoleInfo> roleInfo;  
 }
