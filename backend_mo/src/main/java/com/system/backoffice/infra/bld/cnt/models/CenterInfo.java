@@ -21,8 +21,6 @@ public class CenterInfo  implements Serializable{
 	private String centerId;
 	private String centerNm;
 	private String centerZipcode;
-	private String centerZipcode1;
-	private String centerZipcode2;
 	private String centerAddr1;
 	private String centerAddr2;
 	private String centerTel;
@@ -30,6 +28,8 @@ public class CenterInfo  implements Serializable{
 	private String centerRegId;
 	private String centerRegdate;
 	private String centerUpdateId;
+	private String centerUpdateUserId;
+	private String centerUpdateDate;
 	private String centerImg;
 	private String centerUrl;
 	private String centerSeatImg;
@@ -43,6 +43,5 @@ public class CenterInfo  implements Serializable{
 	private String centerFloor;
 	private String partId;
 	private String centerFloorEnd;
-	private String totalRecordCount;
-		
+	private String floorInfo;	
 }

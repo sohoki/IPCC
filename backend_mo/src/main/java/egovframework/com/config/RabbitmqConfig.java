@@ -1,8 +1,12 @@
 package egovframework.com.config;
 
+import java.util.List;
+
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.Declarables;
 import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.core.TopicExchange;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -37,6 +41,9 @@ public class RabbitmqConfig {
     
     @Value("${rabbitmq.routing.key}")
     private String routingKey;
+    
+    @Value("${rabbitmq.topic.key}")
+    private String topicRoutingKey;
     /**
      * 지정된 큐 이름으로 Queue 빈을 생성
      *
@@ -53,8 +60,54 @@ public class RabbitmqConfig {
      * @return TopicExchange 빈 객체
      */
     @Bean
-    DirectExchange directExchange() {
+    public DirectExchange directExchange() {
         return new DirectExchange(exchangeName);
+    }
+    
+    @Bean 
+    public Declarables fanoutExchange(@Value("${rabbitmq.topic.name}") final String exchangeName,
+    								Queue queue) {	
+    	FanoutExchange fanoutExchange = new FanoutExchange("notification-fanout-exchange");
+    	
+    	Queue fanoutQueue1 = new Queue("display.queue", false);
+    	Queue fanoutQueue2 = new Queue("ipcc.queue", false);
+    	    
+    	    
+    	return new Declarables(
+    				queue,
+    				fanoutExchange,
+    				BindingBuilder.bind(fanoutQueue1).to(fanoutExchange),
+    			    BindingBuilder.bind(fanoutQueue2).to(fanoutExchange)
+    			);
+    }
+    /*
+     *  
+     * 
+     */
+    @Bean
+    public Declarables topicExchange (@Value("${rabbitmq.topic.name}") final String exchangeName, 
+    								Queue queue){
+    	
+    	TopicExchange topicExchange = new TopicExchange(exchangeName);
+    	return  new Declarables(
+    				queue,	
+	    			topicExchange,
+					BindingBuilder
+						.bind(queue)
+						.to(topicExchange)
+						.with("*.manager.solved")
+    			/*
+    			for (Queue queue : queues) {
+    				queue,	
+        			topicExchange,
+    				BindingBuilder
+    					.bind(queue)
+    					.to(topicExchange)
+    					.with("ipcc.manager.*");
+    				}
+    			*/
+    			);
+    	//return new TopicExchange(exchangeName);
     }
     
     /**
@@ -63,11 +116,12 @@ public class RabbitmqConfig {
      * @param queue    바인딩할 Queue
      * @param exchange 바인딩할 TopicExchange
      * @return Binding 빈 객체
-     */
+     
     @Bean
-    Binding binding(DirectExchange directExchange, Queue queue) {
-        return BindingBuilder.bind(queue).to(directExchange).with(routingKey);
+    Binding binding(TopicExchange topicExchange, Queue queue) {
+        return BindingBuilder.bind(queue).to(topicExchange).with("*.manager.solved");
     }
+    */
     /**
      * RabbitTemplate을 생성하여 반환
      *

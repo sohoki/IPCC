@@ -21,6 +21,8 @@ public interface MenuCreateManageMapper {
 	public int selectUsrByPk(String empNo);
 	
 	public int selectMenuCreatCnt_S(MenuCreatInfo params);
+	//cache menu 삭제 설정 
+	public List<Map<String, Object>> selectMenuCacheList(@Param("params") Map<String, Object> vo);
 	
 	public List<Map<String, Object>> selectMenuCreatList_D(String authorCode);
 	//tree 메뉴 설정

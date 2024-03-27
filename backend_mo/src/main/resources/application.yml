@@ -33,14 +33,21 @@ springdoc:
     disable-swagger-default-url: true
     display-request-duration: true
     operations-sorter: alpha
-
 rabbitmq:
   queue:
     name: ipcc.queue
   exchange:
-    name: ipcc.exchange
+    name: ipcc.direct.exchange
   routing:
     key: ipcc.key
+  topic :
+    name : ipcc_topic
+    key : ipcc.manager.solved
+  manager:
+    exchange : 
+      name: ipcc_manager_exchange 
+    solved:
+      key : manager.solved
 token:
   #expiration_time : 600000
   expiration_time : 6000000

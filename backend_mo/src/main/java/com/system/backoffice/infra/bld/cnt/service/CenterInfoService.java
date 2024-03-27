@@ -2,6 +2,7 @@ package com.system.backoffice.infra.bld.cnt.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
@@ -45,7 +46,7 @@ public class CenterInfoService {
 		return centerMapper.selectCenterInfoManageCombo();
 	}
 	
-	public CenterInfoVO selectCenterInfoDetail(String centerId)
+	public Optional<CenterInfoVO> selectCenterInfoDetail(String centerId)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return centerMapper.selectCenterInfoManageDetail(centerId);

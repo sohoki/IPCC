@@ -12,6 +12,7 @@ import javax.validation.Valid;
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -593,18 +594,25 @@ public class MenuInfoManageController {
     		String checkedMenuNo = String.valueOf(params.get("checkedMenuNo"));
     		String systemCode = String.valueOf(params.get("systemCode"));
     		String userId = jwtVerification.getTokenUserName(request);
-    		String hid_menuGubun = String.valueOf(params.get("hid_menuGubun"));
-    		List<Map<String, Object>> menuList = (List<Map<String, Object>>) params.get("checkedMenuBasic");
+    		String hid_menuGubun = UtilInfoService.NVLObj(params.get("menuGubun"), "MENU_GUBUN_1");
+    		List<Map<String, Object>> menuList =  (params.get("checkedMenuBasic") != null) ?
+    											 (List<Map<String, Object>>) params.get("checkedMenuBasic"): null;
+    		String message = "";
+    	    String states = "";
+    		int ret =  menuCreateService.insertMenuCreatList(roleId, systemCode, userId, checkedMenuNo, hid_menuGubun, menuList);
     		
-    		menuCreateService.insertMenuCreatList(roleId, systemCode, userId, checkedMenuNo, hid_menuGubun, menuList);
-    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.update"));
-    		
+    		if (ret > 0) {
+    			//@Cacheable 삭제 
+    			
+    	    	message = egovMessageSource.getMessage("success.common.update");
+    	    	states =  Globals.STATUS_SUCCESS;
+    	    }else {
+    	    	message = egovMessageSource.getMessage("fail.common.update");
+    	    	states =  Globals.STATUS_FAIL;
+    	    }
+    	    model.addObject(Globals.STATUS, states);
+    		model.addObject(Globals.STATUS_MESSAGE, message);
     	}
-		
-		
-		
-		
 		return model;
 	}
 	

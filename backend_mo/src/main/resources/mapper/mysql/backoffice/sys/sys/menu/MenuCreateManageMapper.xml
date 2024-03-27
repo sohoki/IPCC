@@ -90,6 +90,20 @@
 				  AND SYSTEM_CODE =  #{systemCode}
 		]]>
 	</select>
+	<!--  추후 쿼리 변경 하기  -->
+	<select id="selectMenuCacheList" resultType="camelmap">
+		SELECT b.ADMIN_ID , (SELECT DOMAIN_INFO FROM TB_SYSTEMINFO WHERE SYSTEM_CODE  = #{params.systemCode}) URL
+		FROM TB_ROLEINFO a, TB_MANAGERINFO b 
+		WHERE a.ROLE_ID  = b.ROLE_ID 
+			  AND a.ROLE_ID =  #{params.roleId}
+			  <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.systemCode) and params.systemCode != 'IPCC'">  
+			  AND b.ADMIN_ID  IN ( SELECT USER_ID 
+									FROM TB_MANAGER_AUTH_INFO
+									WHERE  ROLE_ID  = #{params.roleId}
+									AND SYSTEM_CODE  = #{params.systemCode}
+			  )
+			  </if>
+	</select>
 
 	<insert id="insertMenuCreat_S">
 		<![CDATA[
@@ -102,10 +116,9 @@
 
 	<delete id="updateMenuCreat_S">
 		<![CDATA[ 
-		    UPDATE COMTNMENUCREATDTLS  
-		       SET MAPNG_CREAT_ID=#{mapCreatId}
-		     WHERE ROLE_ID=#{roleId}
-		]]>                                
+			UPDATE COMTNMENUCREATDTLS SET MAPNG_CREAT_ID=#{mapCreatId}
+			WHERE ROLE_ID=#{roleId}
+		]]>
 	</delete> 
 
 	<delete id="deleteMenuCreat_S">

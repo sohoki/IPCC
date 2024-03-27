@@ -3,7 +3,6 @@ package com.system.backoffice.bas.system.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.system.backoffice.bas.system.mapper.SystemInfoManageMapper;
@@ -18,11 +17,9 @@ import lombok.RequiredArgsConstructor;
 public class SystemInfoManageService {
 
 	
-	@Autowired
 	private final SystemInfoManageMapper sysMapper;
 	
-	@Autowired
-	private UniUtilManageMapper uniMapper;
+	private final UniUtilManageMapper uniMapper;
 	
 	
 	public List<SystemInfoResDto> selectSystemInfoList(Map<String, Object> params) throws Exception {

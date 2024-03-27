@@ -16,7 +16,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
-import com.system.backoffice.uat.uia.models.UserRoleInfo;
 import com.system.backoffice.util.service.RedisUtil;
 
 import egovframework.com.cmm.AdminLoginVO;
@@ -231,6 +230,7 @@ public class EgovJwtTokenUtil implements Serializable{
 	    	try {
     			String id = getUsernameFromToken(refreshToken);
     			redis.keyDelete(id);
+    			//메뉴 삭제 
 	    	}catch(Exception e) {
 	    		log.error("delete refresh token error:" + e.toString());
 	    		deleteRefresh = false;

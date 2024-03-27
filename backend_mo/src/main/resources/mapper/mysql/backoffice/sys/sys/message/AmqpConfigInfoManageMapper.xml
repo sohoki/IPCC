@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sys.rabbitmq.mapper.AmqpConfigInfoManageMapper">
+	<select id="selectAmqpConfigInfoManageListByPagination" resultType="camelmap">
+		SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+	        TB.* FROM (
+		    SELECT  a.SYSTEM_CODE, a.MESSAGE_TYPE, a.MESSAGE_EXCHANGE_NAME, a.MESSAGE_ROUTING_KEY, 
+					a.MESSAGE_USEYN, a.MESSAGE_DC, 
+					a.FRST_REGIST_PNTTM, a.FRST_REGISTER_ID, a.LAST_UPDT_PNTTM, a.LAST_UPDUSR_ID 
+		            b.SYSTEM_NAME
+		    FROM    TB_SYSTEMINFO_MESSAGE_CONFIG a, TB_SYSTEMINFO b
+		        WHERE a.SYSTEM_CODE = b.SYSTEM_CODE        
+		        <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+						<choose>
+							<when test="params.searchCondition == 'centerId'">
+								and MESSAGE_EXCHANGE_NAME LIKE CONCAT('%',#{params.searchKeyword},'%') 
+							</when>
+							<otherwise>
+								and MESSAGE_EXCHANGE_NAME LIKE CONCAT('%',#{params.searchKeyword},'%')  
+							</otherwise>
+						</choose>
+				</if>		
+				     		     
+		        ORDER BY a.LAST_UPDT_PNTTM  DESC
+	        ) TB  
+	         ORDER BY TB.LAST_UPDT_PNTTM  DESC
+	        limit   #{params.firstIndex},   #{params.recordCountPerPage}  	
+	</select>
+	<select id="selectAmqpConfigDetail" resultType="AmqpConfigInfo">
+		SELECT SYSTEM_CODE, MESSAGE_TYPE, MESSAGE_EXCHANGE_NAME, MESSAGE_ROUTING_KEY, 
+				MESSAGE_USEYN, MESSAGE_DC, 
+				FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID
+		FROM TB_SYSTEMINFO_MESSAGE_CONFIG
+		WHERE SYSTEM_CODE = #{systemCode} AND MESSAGE_TYPE = #{messageType} AND MESSAGE_EXCHANGE_NAME = #{messageExchangeName}
+	</select>
+	<insert id="insertAmqpConfigInfo">
+		INSERT INTO TB_SYSTEMINFO_MESSAGE_CONFIG (SYSTEM_CODE, MESSAGE_TYPE, MESSAGE_EXCHANGE_NAME, MESSAGE_ROUTING_KEY, 
+												MESSAGE_USEYN, MESSAGE_DC, 
+												FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID)
+		VALUES (#{systemCode}, #{messageType} , #{messageExchangeName} , #{messageRoutingKey, jdbcType=VARCHAR},
+				#{messageUseyn, jdbcType=VARCHAR},#{messageDc, jdbcType=VARCHAR}, 
+				NOW(), #{userId}, NOW(), #{userId})
+	</insert>
+	<update id="updateAmqpConfigInfo">
+		UPDATE TB_SYSTEMINFO_MESSAGE_CONFIG SET MESSAGE_ROUTING_KEY = #{adminApprovalYn, jdbcType=VARCHAR},
+												MESSAGE_USEYN = #{messageUseyn, jdbcType=VARCHAR},
+												MESSAGE_DC = #{messageDc, jdbcType=VARCHAR}
+		WHERE SYSTEM_CODE = #{systemCode} AND MESSAGE_TYPE = #{messageType} AND MESSAGE_EXCHANGE_NAME = #{messageExchangeName}
+	</update>
+	<delete id="deleteAmqpConfigInfo">
+		DELETE FROM TB_SYSTEMINFO_MESSAGE_CONFIG
+		WHERE SYSTEM_CODE = #{systemCode} AND MESSAGE_TYPE = #{messageType} AND MESSAGE_EXCHANGE_NAME = #{messageExchangeName}
+	</delete>
+</mapper>

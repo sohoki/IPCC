@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.system.backoffice.uat.uia.event.AdminInfoEventDispatcher;
+import com.system.backoffice.uat.uia.event.AdminInfoManageEvent;
 import com.system.backoffice.uat.uia.mapper.AdminInfoManagerMapper;
 import com.system.backoffice.uat.uia.mapper.AdminStateChangeInfoManagerMapper;
 import com.system.backoffice.uat.uia.mapper.UserRoleInfoManageMapper;
@@ -36,6 +38,9 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 	
 	@Autowired
 	private AdminInfoManagerMapper adminMapper;
+	
+	@Autowired
+	private AdminInfoEventDispatcher eventDispatcher;
 	
 	@Autowired 
 	private UserRoleInfoManageMapper userRoleMapper;
@@ -104,6 +109,22 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		            		   						  "", "", "", "", "", UtilInfoService.NVLObj(x.getAuthDc(), "")))
 		               .collect(Collectors.toList());
 			ret = updateRole.size() < 1 ? 1 : adminMapper.updateSystemMenuInfo(updateRole);
+		}
+		
+		if (ret > 0) {
+			//rabbitMq topic 을 통해 사용자 상태 전송
+			
+			System.out.println("======================");
+			
+			
+			AdminInfoManageEvent eventInfo = new AdminInfoManageEvent(
+					vo.getAdminId(),
+					vo.getMode(),
+					vo.getAdminId()
+					);
+			
+			eventDispatcher.send(eventInfo);
+			System.out.println("====================== end send " );
 		}
 		
 		
@@ -178,6 +199,7 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		// TODO Auto-generated method stub
 		return stateChangeMapper.insertAdminStateChangeManage(vo);
 	}
+	//여기 부분 체크 하기 
 	@Transactional(readOnly = false)
 	@Override
 	public int deleteAdminStateChangeSeqManage(String gubun, String manageSeq) throws Exception {

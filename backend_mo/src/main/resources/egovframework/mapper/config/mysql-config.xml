@@ -85,7 +85,7 @@
 		<typeAlias alias="CenterInfo"		type="com.system.backoffice.infra.bld.cnt.models.CenterInfo" />
 		<typeAlias alias="CenterInfoVO"		type="com.system.backoffice.infra.bld.cnt.models.CenterInfoVO" />
 		
-		
+		<typeAlias alias="AmqpConfigInfo"		type="com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo" />
 		
 		
 		<package name="com.system.backoffice.infra.bld.cnt.models"/>
@@ -116,7 +116,8 @@
 		<package name="com.system.backoffice.uat.uia.models"/>		
 		<package name="com.system.backoffice.sym.error.models"/>		
 		
-		
+		<package name="com.system.backoffice.sys.rabbitmq.models"/>
+		<package name="com.system.backoffice.sys.rabbitmq.models.dto"/>
 	</typeAliases>
     
 </configuration>

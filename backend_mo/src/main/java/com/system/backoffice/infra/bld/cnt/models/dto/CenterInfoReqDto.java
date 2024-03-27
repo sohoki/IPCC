@@ -45,4 +45,5 @@ public class CenterInfoReqDto {
 	private String centerFloor;
 	private String partId;
 	private String centerFloorEnd;
+	private String floorInfo;
 }

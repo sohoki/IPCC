@@ -86,7 +86,7 @@ public class VocInfoManageController {
     
     @GetMapping("{vocSeq}.do")
     public ModelAndView selectVocDetailInfo(@PathVariable String vocSeq,
-    											HttpServletRequest request)throws Exception {
+    										HttpServletRequest request)throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try {
     		

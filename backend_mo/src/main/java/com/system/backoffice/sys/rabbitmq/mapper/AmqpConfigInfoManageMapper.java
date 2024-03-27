@@ -1,0 +1,25 @@
+package com.system.backoffice.sys.rabbitmq.mapper;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.ibatis.annotations.Param;
+import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
+
+import com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo;
+import com.system.backoffice.sys.rabbitmq.models.dto.AmqpConfigInfoDto;
+
+@Mapper
+public interface AmqpConfigInfoManageMapper {
+
+	public List<Map<String, Object>> selectAmqpConfigInfoManageListByPagination(@Param("params") Map<String, Object> vo);
+	
+	public Optional<AmqpConfigInfo> selectAmqpConfigDetail(String systemCode, String messageType, String messageExchangeName);
+	
+	public int insertAmqpConfigInfo(AmqpConfigInfoDto info);
+	
+	public int updateAmqpConfigInfo(AmqpConfigInfoDto info);
+	
+	public int deleteAmqpConfigInfo(String systemCode, String messageType, String messageExchangeName);
+}

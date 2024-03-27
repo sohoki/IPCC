@@ -13,32 +13,26 @@ import com.system.backoffice.bas.program.mapper.ProgrmInfoManageMapper;
 import com.system.backoffice.bas.program.models.ProgrmInfo;
 import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.util.service.UtilInfoService;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.transaction.Transactional;
-import org.egovframe.rte.fdl.excel.EgovExcelService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class MenuInfoManageService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(MenuInfoManageService.class);
 	
 	@Autowired
 	private MenuInfoManageMapper menuMapper;
@@ -76,12 +70,12 @@ public class MenuInfoManageService {
 	
 	
 
-	
+	@Transactional(readOnly = false)
 	public int updateMenuManage(MenuInfoRequestDto menuInfo) throws Exception {
 		return  menuInfo.getMode().equals("Ins") ? menuMapper.insertMenuManage_S(menuInfo) : menuMapper.updateMenuManage_S(menuInfo);
 	}
 
-	
+	@Transactional(readOnly = false)
 	public int deleteMenuManage(String menuNo) throws Exception {
 		return menuMapper.deleteMenuManage_S(menuNo);
 	}
@@ -93,8 +87,7 @@ public class MenuInfoManageService {
 	 */
 	//@Transactional(rollbackFro = {RuntimeException.class})
 	
-	
-	@Transactional
+	@Transactional(readOnly = false)
 	public int deleteMenuManageList(String checkedMenuNoForDel) throws Exception {
 		int ret = 0;
 		try {
@@ -112,16 +105,15 @@ public class MenuInfoManageService {
 	        }
 	        
 	        ret = delCnt != realDelCnt ? -1 : 1;
-	        System.out.println("delCnt:" + delCnt + "/ realDelCnt:" + realDelCnt + ": ret:" + ret );
 	        if (delCnt != realDelCnt) {
 	        	throw new RuntimeException("Exception for rollback");
 	        }
 		}catch (RuntimeException e1) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-			LOGGER.error("deleteMenuManageList RuntimeException error:" + e1.toString());
+			log.error("deleteMenuManageList RuntimeException error:" + e1.toString());
 			ret = -1 ;
 		}catch(Exception e) {
-			LOGGER.error("deleteMenuManageList Exception error:" + e.toString());
+			log.error("deleteMenuManageList Exception error:" + e.toString());
 			ret = -1 ;
 		}
 		System.out.println("ret:" + ret);
@@ -134,12 +126,12 @@ public class MenuInfoManageService {
 		return menuMapper.selectMenuListT_D();
 	}
 
-	@NoLogging
 	public List<Map<String, Object>> selectMainMenuHead(String empNo) throws Exception {
 		return menuMapper.selectMainMenuHead(empNo);
 	}
-	@Cacheable(key="#empNo", value="findLeftMenu")
+	@Cacheable(key="{#empNo, #url}", value="findLeftMenu")
 	public List<Map<String, Object>> selectMainMenuLeft(String empNo, String url) throws Exception {
+		//cache기간 설정 
 		return menuMapper.selectMainMenuLeft(empNo, url);
 	}
 
@@ -246,39 +238,39 @@ public class MenuInfoManageService {
 
 		switch (Integer.parseInt(message)) {
 			case 99:
-				LOGGER.debug("프로그램목록/메뉴정보테이블 데이타 존재오류 - 초기화 하신 후 다시 처리하세요.");
+				log.debug("프로그램목록/메뉴정보테이블 데이타 존재오류 - 초기화 하신 후 다시 처리하세요.");
 				sMessage = "프로그램목록/메뉴정보테이블 데이타 존재오류 - 초기화 하신 후 다시 처리하세요.";
 				break;
 			case 90:
-				LOGGER.debug("파일존재하지 않음.");
+				log.debug("파일존재하지 않음.");
 				sMessage = "파일존재하지 않음.";
 				break;
 			case 91:
-				LOGGER.debug("프로그램시트의 cell 갯수 오류.");
+				log.debug("프로그램시트의 cell 갯수 오류.");
 				sMessage = "프로그램시트의 cell 갯수 오류.";
 				break;
 			case 92:
-				LOGGER.debug("메뉴정보시트의 cell 갯수 오류.");
+				log.debug("메뉴정보시트의 cell 갯수 오류.");
 				sMessage = "메뉴정보시트의 cell 갯수 오류.";
 				break;
 			case 93:
-				LOGGER.debug("엑셀 시트갯수 오류.");
+				log.debug("엑셀 시트갯수 오류.");
 				sMessage = "엑셀 시트갯수 오류.";
 				break;
 			case 95:
-				LOGGER.debug("메뉴정보 입력시 에러.");
+				log.debug("메뉴정보 입력시 에러.");
 				sMessage = "메뉴정보 입력시 에러.";
 				break;
 			case 96:
-				LOGGER.debug("프로그램목록입력시 에러.");
+				log.debug("프로그램목록입력시 에러.");
 				sMessage = "프로그램목록입력시 에러.";
 				break;
 			default:
-				LOGGER.debug("일괄배치처리 완료.");
+				log.debug("일괄배치처리 완료.");
 				sMessage = "일괄배치처리 완료.";
 				break;
 		}
-		LOGGER.debug(message);
+		log.debug(message);
 		return sMessage;
 	}
 	/**
@@ -359,7 +351,7 @@ public class MenuInfoManageService {
 			}
 			*/
 		} catch (Exception e) {
-			LOGGER.debug("{}", e);
+			log.debug("{}", e);
 
 			requestValue = "99";
 		}
@@ -414,7 +406,7 @@ public class MenuInfoManageService {
 				success = false;
 			}
 		} catch (Exception e) {
-			LOGGER.debug("{}", e);
+			log.debug("{}", e);
 
 			success = false;
 		}
@@ -485,7 +477,7 @@ public class MenuInfoManageService {
 				
 			}
 		} catch (Exception e) {
-			LOGGER.debug("{}", e);
+			log.debug("{}", e);
 			
 			success = false;
 

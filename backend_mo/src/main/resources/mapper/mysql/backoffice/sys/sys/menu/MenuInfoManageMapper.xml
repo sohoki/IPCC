@@ -255,7 +255,7 @@
 
 	<select id="selectMainMenuLeft" resultType="lmap">
 		<![CDATA[ 
-			 WITH RECURSIVE cte AS 
+			WITH RECURSIVE cte AS 
 			(
 				SELECT TB.MENU_NO, TB.MENU_ORDR, TB.MENU_NM, TB.UPPER_MENU_NO, TB.MENU_DC, TB.PROGRM_FILE_NM, TB.PROGRM_KOREAN_NM,  TB.URL, 
 					   1 as LEVEL, convert(TB.MENU_NO, char(100)) as ctg_path, TB.RELATE_IMAGE_NM	
@@ -306,8 +306,7 @@
 			SELECT MENU_NO, MENU_ORDR,  UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, PROGRM_KOREAN_NM,  URL,  LEVEL, 
 					LPAD(MENU_NM, (LENGTH(MENU_NM)+  2*(LEVEL-1)), ' ') MENU_NM, ctg_path, RELATE_IMAGE_NM
 			FROM cte
-			ORDER BY ctg_path ASC 
-		   
+			ORDER BY ctg_path ASC
 		]]> 
 	</select>
 

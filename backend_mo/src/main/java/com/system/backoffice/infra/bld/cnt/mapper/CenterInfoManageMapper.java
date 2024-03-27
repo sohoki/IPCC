@@ -2,6 +2,7 @@ package com.system.backoffice.infra.bld.cnt.mapper;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
@@ -18,7 +19,7 @@ public interface CenterInfoManageMapper {
 	
     public List<CenterInfoVO> selectCenterInfoManageCombo();
 	
-    public CenterInfoVO selectCenterInfoManageDetail(String centerId);
+    public Optional<CenterInfoVO> selectCenterInfoManageDetail(String centerId);
 	
     public int updateCenterInfoManage(CenterInfoReqDto vo);
     

@@ -1,7 +1,9 @@
 package com.system.backoffice.infra.bld.cnt.web;
 
 import com.system.backoffice.infra.bld.cnt.service.CenterInfoService;
+import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnDetailCodeManageService;
+import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
 import com.system.backoffice.infra.bld.cnt.models.CenterInfoVO;
 import com.system.backoffice.infra.bld.cnt.models.dto.CenterInfoReqDto;
 import com.system.backoffice.uat.uia.service.PartInfoManageService;
@@ -17,6 +19,8 @@ import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +78,7 @@ public class CenterInfoManageController {
 	*/
 	fileService uploadFile = new fileService();
 
-	@ApiOperation(value="공통 상세 코드 조회", notes = "성공시 공통 상세 코드를 조회 합니다.")
+	@ApiOperation(value="지점 현황 조회", notes = "성공시 지점 현황을 조회 합니다.")
 	@PostMapping(value="centerList.do")
 	public ModelAndView selectCenterInfoManageListByPagination(@RequestBody Map<String, Object> searchMap, 
 																HttpServletRequest request, 
@@ -132,34 +136,38 @@ public class CenterInfoManageController {
 	@ApiOperation(value="지점  상세 조회", notes = "성공시 지점 정보를 상세 조회 합니다.")
 	@GetMapping(value="detail/{centerId}.do")
 	public ModelAndView selectCenterInfoManageDetail(@PathVariable String centerId, 
-													HttpServletRequest request, 
-													BindingResult bindingResult) throws Exception {
+													HttpServletRequest request) throws Exception {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-		if (!jwtVerification.isVerification(request)) {
-    		ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확
-    	}
+		try {
+			if (!jwtVerification.isVerificationAdmin(request)) {
+	    		ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
+	    	}
+			Optional<CenterInfoVO> info = centerService.selectCenterInfoDetail(centerId);
+			if (info.isPresent()){
+				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+				model.addObject(Globals.STATUS_REGINFO, info.get());
+			}else {
+				model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
+				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			}
+		}catch(Exception e) {
+			model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+		}
 		
-
-		model.addObject(Globals.STATUS_REGINFO, centerService.selectCenterInfoDetail(centerId));
-		/*
-		model.addObject(Globals.STATUS_FLOORS , this.detailService.selectCmmnDetailCombo("CenterFloor"));
-		model.addObject(Globals.STATUS_FLOORE, this.detailService.selectCmmnDetailCombo("CenterFloor"));
-		model.addObject(Globals.STATUS_GROUP, this.partService.selectPartInfoCombo(null));
-		*/
 		return model;
 	}
 	@ApiOperation(value="지점 사용 승인 ", notes = "성공시 지점 지점 사용 변경 합니다.")
 	@GetMapping(value="state/{centerId}.do")
 	public ModelAndView updateCenterStateChange(@PathVariable String centerId, 
 												@RequestParam Map<String, Object> commandMap,
-												HttpServletRequest request, 
-												BindingResult bindingResult) throws Exception {
+												HttpServletRequest request) throws Exception {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
-			if (!jwtVerification.isVerification(request)) {
+			if (!jwtVerification.isVerificationAdmin(request)) {
 	    		ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 	    	}else {
@@ -167,15 +175,15 @@ public class CenterInfoManageController {
 	    		info.setAdminApprovalYn(UtilInfoService.NVLObj(commandMap.get("adminApprovalYn"), "Y"));
 	    		info.setCenterId(centerId);
 	    		info.setUserId(jwtVerification.getTokenUserName(request));
-	    	}
-			int ret = centerService.deleteCenterInfoManage(centerId);
-			if (ret > 0) {
-	    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-	    		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.delete"));
-	    	}
-	    	else {
-	    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		    	model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
+	    		int ret = centerService.updateCenterStateChange(info);
+				if (ret > 0) {
+		    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		    		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));
+		    	}
+		    	else {
+		    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			    	model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg"));
+		    	}
 	    	}
 		}catch (NullPointerException e) {
 			model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
@@ -196,31 +204,7 @@ public class CenterInfoManageController {
 		return model;
 	}
 
-	@ApiOperation(value="지점  상세 조회", notes = "성공시 지점 정보를 상세 조회 합니다.")
-	@GetMapping(value="Info/{centerId}.do")
-	public ModelAndView selectCenterInfo(@PathVariable String centerId, 
-										HttpServletRequest request, 
-										BindingResult bindingResult) throws Exception {
-		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-
-		try {
-			if (!jwtVerification.isVerification(request)) {
-	    		ResultVO resultVO = new ResultVO();
-				return jwtVerification.handleAuthError(resultVO); // 토큰 확
-	    	}
-			
-			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			model.addObject(Globals.STATUS_REGINFO, this.centerService.selectCenterInfoDetail(centerId));
-		}catch (NullPointerException e) {
-			model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
-			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		}catch (Exception e) {
-			model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
-			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		}
-
-		return model;
-	}
+	
 	@ApiOperation(value="지점 삭제", notes = "성공시 지점 정보를 삭제 합니다.")
 	@ApiImplicitParam(name = "centerId", value = "지점 코드")
 	@DeleteMapping(value="{centerId}.do")
@@ -230,7 +214,7 @@ public class CenterInfoManageController {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 
 		try {
-			if (!jwtVerification.isVerification(request)) {
+			if (!jwtVerification.isVerificationAdmin(request)) {
 	    		ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 	    	}
@@ -253,33 +237,34 @@ public class CenterInfoManageController {
 
 		return model;
 	}
+	@NoLogging
 	@ApiOperation(value="지점 업데이트", notes = "성공시 지점 업데이트 합니다.")
 	@PostMapping(value="centerUpdate.do")
-	public ModelAndView updateCenterInfoManage(HttpServletRequest request,
-										 MultipartRequest mRequest,
-										 @Valid @RequestBody CenterInfoReqDto vo,
-										 BindingResult result) throws Exception {
+	public ModelAndView updateCenterInfoManage(MultipartRequest mRequest,
+												CenterInfoReqDto info,
+												HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		
 		try {
-			if (!jwtVerification.isVerification(request)) {
+			if (!jwtVerification.isVerificationAdmin(request)) {
 	    		ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 	    	}else {
-	    		vo.setUserId(jwtVerification.getTokenUserName(request));
+	    		info.setUserId(jwtVerification.getTokenUserName(request));
 	    	}
 			
+			
 			String meesage = "";
-			model.addObject(Globals.STATUS_REGINFO, vo);
-			vo.setCenterZipcode(String.valueOf(vo.getCenterZipcode1())+ vo.getCenterZipcode2());
-			if (mRequest.getFiles("centerImg") != null)
-				vo.setCenterImg(this.uploadFile.uploadFileNm(mRequest.getFiles("centerImg"), filePath));
-			if (mRequest.getFiles("centerImg") != null)
-			vo.setCenterSeatImg(this.uploadFile.uploadFileNm(mRequest.getFiles("centerSeatImg"), filePath));
-			int ret = this.centerService.updateCenterInfoManage(vo);
+			model.addObject(Globals.STATUS_REGINFO, info);
+			
+			String fileNm = uploadFile.uploadFileNm(mRequest.getFiles("centerImgFile"), propertiesService.getString("Globals.filePath"));
+			if (!fileNm.isEmpty())
+				info.setCenterImg(fileNm);
+			 
+			int ret = this.centerService.updateCenterInfoManage(info);
 			if (ret > 0) {
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-				meesage = vo.getMode().equals("Ins") ? "success.common.insert": "success.common.update";
+				meesage = info.getMode().equals("Ins") ? "success.common.insert": "success.common.update";
 				model.addObject(Globals.STATUS_MESSAGE,	this.egovMessageSource.getMessage(meesage));
 			} else {
 				throw new Exception();

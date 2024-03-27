@@ -15,23 +15,36 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MessageService {
 
-	@Value("${rabbitmq.exchange.name}")
+	@Value("${rabbitmq.topic.name}")
 	private String exchangeName;
 
-	@Value("${rabbitmq.routing.key}")
+	@Value("${rabbitmq.topic.key}")
 	private String routingKey;
 
 	private final RabbitTemplate rabbitTemplate;
 
 	/**
-	 * Queue로 메시지를 발행
+	 * MESSAGE 구부에 따른 메세지 보내기  Queue로 메시지를 발행
 	 *
 	 * @param messageDto 발행할 메시지의 DTO 객체
 	 */
-	public void sendMessage(MessageDto messageDto) {
-		log.debug("==============   send ");
+	public void sendMessage(MessageDto messageDto, 
+							String sendGubun, 
+							String exchangeName,
+							String routingKey) {
 		log.info("message sent: {}", messageDto.toString());
+		log.info("sendGubun: {},{},{}", sendGubun,exchangeName , routingKey);
+		//message 보내기 
+		switch (sendGubun) {
+		case "Direct" : 
 		rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
+		break;
+		case "Topic" :
+		rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
+		break;
+		default :
+		rabbitTemplate.convertAndSend(exchangeName, "", messageDto);
+		}
 	}
 
 	/**
@@ -41,7 +54,7 @@ public class MessageService {
 	 */
 	@RabbitListener(queues = "${rabbitmq.queue.name}")
 	public void reciveMessage(MessageDto messageDto) {
-	  log.info("Received message: {}", messageDto.toString());
+	  log.info("backend Received message: {}", messageDto.toString());
+	  
 	}
-	
 }
