@@ -15,7 +15,7 @@
 					 A.SYSTEM_ICON, A.SYSTEM_MENUGUBUN, A.SYSTEM_HEALTH_CHECK,
 					 A.SYSTEM_GUBUN, fn_DetailCodeNm(A.SYSTEM_GUBUN) SYSTEM_GUBUN_TXT,
 					 fn_DetailCodeNm( A.SYSTEM_HEALTH_CHECK) SYSTEM_HEALTH_CHECK_TXT, fn_DetailCodeNm( A.SYSTEM_MENUGUBUN) SYSTEM_MENUGUBUN_TXT,
-					 A.SYSTEM_HEALTH_CHECK_URL, A.SYSTEM_CONN_LEVEL
+					 A.SYSTEM_HEALTH_CHECK_URL, A.SYSTEM_CONN_LEVEL, A.SYSTEM_TOKEN_KEY
 				FROM TB_SYSTEMINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -62,10 +62,20 @@
 	</select>
    	<select id="selectSystemInfoDetail" resultType="SystemInfoResDto">
 		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN,
-			   A.SYSTEM_GUBUN, A.SYSTEM_ICON, A.SYSTEM_MENUGUBUN, A.SYSTEM_HEALTH_CHECK, A.SYSTEM_HEALTH_CHECK_URL
+				A.SYSTEM_GUBUN, A.SYSTEM_ICON, A.SYSTEM_MENUGUBUN, A.SYSTEM_HEALTH_CHECK, A.SYSTEM_HEALTH_CHECK_URL,
+				A.SYSTEM_TOKEN_KEY
 		FROM TB_SYSTEMINFO A
 		WHERE A.SYSTEM_CODE = #{systemCode}
    	</select>
+   	<select id="actionLogin" resultType="SystemInfo">
+		SELECT A.SYSTEM_CODE, A.SYSTEM_NAME, A.SYSTEM_DC, A.SYSTEM_CREATEDC, A.DOMAIN_INFO, A.SYSTEM_USEYN,
+				A.SYSTEM_GUBUN, A.SYSTEM_ICON, A.SYSTEM_MENUGUBUN, A.SYSTEM_HEALTH_CHECK, A.SYSTEM_HEALTH_CHECK_URL,
+				A.SYSTEM_TOKEN_KEY
+		FROM TB_SYSTEMINFO A
+		WHERE A.SYSTEM_CODE = #{systemCode}
+			AND A.SYSTEM_TOKEN_KEY = #{systemTokenKey}
+   	</select>
+   	
    	<select id="selectSystemByPk" resultType="Integer">
    		SELECT IFNULL(COUNT(*), 0)
    		FROM TB_SYSTEMINFO 
@@ -75,7 +85,8 @@
 		INSERT INTO TB_SYSTEMINFO	
 		(
 		    SYSTEM_CODE, SYSTEM_NAME, SYSTEM_DC, SYSTEM_CREATEDC, DOMAIN_INFO ,SYSTEM_USEYN, SYSTEM_GUBUN, 
-		    SYSTEM_ICON, SYSTEM_MENUGUBUN, SYSTEM_HEALTH_CHECK, SYSTEM_HEALTH_CHECK_URL, SYSTEM_CONN_LEVEL
+		    SYSTEM_ICON, SYSTEM_MENUGUBUN, SYSTEM_HEALTH_CHECK, SYSTEM_HEALTH_CHECK_URL, SYSTEM_CONN_LEVEL,
+		    SYSTEM_TOKEN_KEY
 		)
 		VALUES 
 		(
@@ -83,6 +94,7 @@
 			, #{systemUseyn,jdbcType=VARCHAR}, #{systemGubun} 
 			, #{systemIcon,jdbcType=VARCHAR}, #{systemMenugubun,jdbcType=VARCHAR}, #{systemHealthCheck,jdbcType=VARCHAR}
 			, #{systemHealthCheckUrl,jdbcType=VARCHAR} , #{systemConnLevel,jdbcType=VARCHAR}
+			, #{systemTokenKey,jdbcType=VARCHAR}
 		)
    	</insert>
 
@@ -92,11 +104,16 @@
 								DOMAIN_INFO = #{domainInfo,jdbcType=VARCHAR}, 
 								SYSTEM_DC = #{systemDc, jdbcType=VARCHAR}  ,
 								SYSTEM_USEYN =#{systemUseyn,jdbcType=VARCHAR} ,
-		                         <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemIcon)">  
-		                         <![CDATA[
-								SYSTEM_ICON = #{systemIcon, jdbcType=VARCHAR} ,
-		                         ]]>
-		                         </if>
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemIcon)">  
+									<![CDATA[
+									SYSTEM_ICON = #{systemIcon, jdbcType=VARCHAR} ,
+									]]>
+								</if>
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemTokenKey)">  
+									<![CDATA[
+									SYSTEM_TOKEN_KEY = #{systemTokenKey, jdbcType=VARCHAR} ,
+									]]>
+								</if>
 								SYSTEM_MENUGUBUN = #{systemMenugubun, jdbcType=VARCHAR} ,
 								SYSTEM_HEALTH_CHECK = #{systemHealthCheck, jdbcType=VARCHAR} , 
 								SYSTEM_HEALTH_CHECK_URL = #{systemHealthCheckUrl, jdbcType=VARCHAR} , 

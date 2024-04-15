@@ -16,6 +16,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
+
+import com.system.backoffice.bas.system.models.SystemInfo;
+import com.system.backoffice.bas.system.models.dto.SystemInfoResDto;
 import com.system.backoffice.util.service.RedisUtil;
 
 import egovframework.com.cmm.AdminLoginVO;
@@ -102,17 +105,16 @@ public class EgovJwtTokenUtil implements Serializable{
     //generate token for admin
     public String generateAdminToken(AdminLoginVO loginVO) {
         Map<String, Object> claims = new HashMap<>();
-        //권한 체크 
-        /*
-        for (UserRoleInfo info : loginVO.getRoleInfo()) {
-        	//claims.put(Globals.TOKEN_CLAIM_NAME , info.getRoleId());
-        	claims.put(secret , info.getRoleId());
-        }
-        */
         claims.put("roleId" , loginVO.getRoleId());
         claims.put("partId" , loginVO.getPartId());
         claims.put("insttCode" , loginVO.getInsttCode());
         return doGenerateToken(claims, loginVO.getAdminName()+"|"+loginVO.getAdminId()+"|"+loginVO.getRoleId()+"|"+loginVO.getPartId()+"|"+loginVO.getInsttCode());
+    }
+    //generate token for admin
+    public String generateSystemToken(SystemInfo sysinfo) {
+        Map<String, Object> claims = new HashMap<>();
+        
+        return doGenerateToken(claims, sysinfo.getSystemCode()+"|"+sysinfo.getSystemName());
     }
     //generate token for user
     public String generateToken(LoginVO loginVO) {
@@ -205,6 +207,16 @@ public class EgovJwtTokenUtil implements Serializable{
         final String username = getUsernameFromToken(token);
         return (!isTokenExpired(token));
     }
+    //validate System token
+    public Boolean validateSystemToken(String token, SystemInfoResDto loginVO) {
+    	
+        final String username = getUsernameFromToken(token);
+        System.out.println("validateSystemToken:" + username);
+        return (username.equals(loginVO.getSystemCode()+":"+loginVO.getSystemName()) && !isTokenExpired(token));
+    }
+    
+    
+    
     public Boolean validateToken(String token) throws BaseException{
         try{
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);

@@ -29,6 +29,8 @@ public class SystemInfoRequestDto {
 	@NotBlank(message="시스템 구분를 선택해 주세요.")
 	@Schema(description="system 구분", example="SYSTEM_GUBUN_1")
 	private String systemGubun;
+	@Schema(description="system Token 정보")
+	private String systemTokenKey;
 	@Schema(description="system URL 접속 정보")
 	private String domainInfo;
 	@Schema(description="system 상세 설명")

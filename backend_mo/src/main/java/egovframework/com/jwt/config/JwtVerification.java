@@ -1,6 +1,7 @@
 package egovframework.com.jwt.config;
 
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,6 +12,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.system.backoffice.bas.code.web.EgovCcmCmmnClCodeManageController;
+import com.system.backoffice.bas.system.models.SystemInfo;
+import com.system.backoffice.bas.system.models.dto.SystemInfoResDto;
+import com.system.backoffice.bas.system.service.SystemInfoManageService;
 
 import egovframework.com.cmm.AdminLoginVO;
 import egovframework.com.cmm.LoginVO;
@@ -31,6 +35,9 @@ public class JwtVerification {
 	
 	@Autowired
 	private EgovJwtTokenUtil jwtTokenUtil;
+	
+	@Autowired
+	private SystemInfoManageService systemService;
 	
 	
 	public boolean isVerification(HttpServletRequest request) {
@@ -113,6 +120,56 @@ public class JwtVerification {
 		
 		// step 4. 가져온 username이랑 2에서 가져온 loginVO랑 비교해서 같은지 체크 & 이 과정에서 한번 더 기간 체크를 한다.
 		if (username == null || !(jwtTokenUtil.validateAdminToken(jwtToken, loginVO))) {
+			//log.debug("jwtToken not validate");
+			verificationFlag =  false;
+			return verificationFlag;
+		}
+		
+		//log.debug("jwtToken validated");
+		
+		return verificationFlag;
+	}
+	
+	public boolean isVerificationSystem(HttpServletRequest request) throws Exception {
+		
+		boolean verificationFlag = true;
+		
+		// step 1. request header에서 토큰을 가져온다.
+		if (request.getHeader("authorization") == null  ) {
+			log.error("authorization error");
+			return false;
+		}
+		
+		String jwtToken = EgovStringUtil.isNullToString(request.getHeader("authorization").replace("Bearer", ""));
+		// step 2.비교를 위해 SystemCode를 가져옴
+		
+		//AdminLoginVO loginVO = (AdminLoginVO) EgovAdminDetailsHelper.getAuthenticatedUser();
+		String systemCode = getTokenUserName(request);
+		
+		Optional<SystemInfoResDto> loginVo = systemService.selectSystemInfoDetail(systemCode);
+		if (!loginVo.isPresent()) {
+			log.error("authorization error");
+			return false;
+		}
+		// step 3. 토큰에 내용이 있는지 확인 & 토큰 기간이 자났는지를 확인해서 username값을 가져옴
+		// Exception 핸들링 추가처리
+		String username = null;
+		
+		try {
+	           username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+		} catch (IllegalArgumentException e) {
+			log.debug("Unable to get JWT Token");
+		} catch (ExpiredJwtException e) {
+			log.debug("JWT Token has expired");
+		} catch (MalformedJwtException e) {
+		    	log.debug("JWT strings must contain exactly 2 period characters");
+		} catch (UnsupportedJwtException e) {
+		    	log.debug("not support JWT token.");
+		}
+		
+		
+		// step 4. 가져온 username이랑 2에서 가져온 loginVO랑 비교해서 같은지 체크 & 이 과정에서 한번 더 기간 체크를 한다.
+		if (username == null || !(jwtTokenUtil.validateSystemToken(jwtToken, loginVo.get()))) {
 			//log.debug("jwtToken not validate");
 			verificationFlag =  false;
 			return verificationFlag;

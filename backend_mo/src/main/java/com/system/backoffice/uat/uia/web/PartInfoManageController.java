@@ -81,6 +81,11 @@ public class PartInfoManageController {
 	           if (!jwtVerification.isVerificationAdmin(request)) {
 	        		ResultVO resultVO = new ResultVO();
 	    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+	           }else {
+	        	   String[] userinfo = jwtVerification.getTokenUserInfo(request);
+	        	   searchVO.put("roleId", userinfo[2]);
+	        	   searchVO.put("partId", userinfo[3]);
+	        	   searchVO.put("insttCode", userinfo[4]);
 	           }
 			   
 			   

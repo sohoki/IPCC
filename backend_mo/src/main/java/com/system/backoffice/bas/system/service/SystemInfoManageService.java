@@ -6,8 +6,10 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.system.backoffice.bas.system.mapper.SystemInfoManageMapper;
+import com.system.backoffice.bas.system.models.SystemInfo;
 import com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto;
 import com.system.backoffice.bas.system.models.dto.SystemInfoResDto;
+import com.system.backoffice.bas.system.models.dto.SystemLoginDto;
 import com.system.backoffice.uat.uia.mapper.UniUtilManageMapper;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +37,9 @@ public class SystemInfoManageService {
 	}
 	public Optional<SystemInfoResDto> selectSystemInfoDetail(String systemCode) throws Exception {
 		return sysMapper.selectSystemInfoDetail(systemCode);
+	}
+	public Optional<SystemInfo> SystemLoginDto(SystemLoginDto loginInfo) throws Exception {
+		return sysMapper.actionLogin(loginInfo);
 	}
 	
 	@Transactional(readOnly = false)

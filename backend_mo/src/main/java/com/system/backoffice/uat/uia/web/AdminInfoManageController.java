@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
+import egovframework.com.jwt.config.EgovJwtTokenUtil;
 import egovframework.com.jwt.config.JwtVerification;
 import egovframework.let.utl.fcc.service.EgovStringUtil;
 import io.swagger.annotations.Api;
@@ -69,7 +70,8 @@ public class AdminInfoManageController {
 	@Autowired
 	private JwtVerification jwtVerification;
 	
-	
+	@Autowired
+	private EgovJwtTokenUtil jwtUtil;
 	
 	//@PreAuthorize("hasAnyRole('ROLE_B2C','ROLE_B2B')")
 	@ApiOperation(value="관리자 리스트", notes = "성공시 관리자 리스트를 반환 합니다.")
@@ -84,6 +86,11 @@ public class AdminInfoManageController {
 	    	if (!jwtVerification.isVerificationAdmin(request)) {
 	    		ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+	    	}else {
+	    		String[] userinfo = jwtVerification.getTokenUserInfo(request);
+	    		searchVO.put("roleId", userinfo[2]);
+	    		searchVO.put("partId", userinfo[3]);
+	    		searchVO.put("insttCode", userinfo[4]);
 	    	}
 
 	    	

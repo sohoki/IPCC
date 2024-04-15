@@ -192,15 +192,6 @@ public class CenterInfoManageController {
 			model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 		}
-		
-		
-
-		
-		/*
-		model.addObject(Globals.STATUS_FLOORS , this.detailService.selectCmmnDetailCombo("CenterFloor"));
-		model.addObject(Globals.STATUS_FLOORE, this.detailService.selectCmmnDetailCombo("CenterFloor"));
-		model.addObject(Globals.STATUS_GROUP, this.partService.selectPartInfoCombo(null));
-		*/
 		return model;
 	}
 

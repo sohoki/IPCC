@@ -33,16 +33,41 @@
 		        <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 						<choose>
 							<when test="params.searchCondition == 'adminId'">
-								and a.ADMIN_ID LIKE CONCAT('%',#{params.searchKeyword},'%') 
+								AND a.ADMIN_ID LIKE CONCAT('%',#{params.searchKeyword},'%') 
 							</when>
 							<when test="params.searchCondition == 'adminEmail'">
-								and a.ADMIN_EMAIL LIKE CONCAT('%',#{params.searchKeyword},'%') 
+								AND a.ADMIN_EMAIL LIKE CONCAT('%',#{params.searchKeyword},'%') 
 							</when>
 							<otherwise>
-								and a.ADMIN_NAME LIKE CONCAT('%',#{params.searchKeyword},'%') 
+								AND a.ADMIN_NAME LIKE CONCAT('%',#{params.searchKeyword},'%') 
 							</otherwise>
 						</choose>
-				</if>		        
+				</if>	
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.roleId) and params.roleId != 'ROLE_ADMIN'">
+					AND a.INSTT_CODE = #{params.insttCode} 
+					<choose>
+						<when test="params.roleId == 'ROLE_TEAM'">
+							AND a.PART_ID IN (WITH RECURSIVE  CTE AS (
+												SELECT 
+													PART_ID, PARENT_PART_ID
+												FROM TB_PARTINFO
+												WHERE PART_ID  = #{params.partId}
+												UNION ALL
+												SELECT 
+													ac.PART_ID, ac.PARENT_PART_ID
+												FROM TB_PARTINFO ac
+												INNER JOIN CTE bbc on ac.PARENT_PART_ID = bbc.PART_ID
+												)
+												SELECT PART_ID from CTE
+											)
+						</when>
+						
+						<otherwise>
+							AND a.PART_ID = #{params.partId} 
+						</otherwise>
+					</choose>
+				</if>
+				AND params.roleId != 'ROLE_ADMIN'
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseYn)">
 				         and a.USE_YN = #{params.useYn}
 				</if>

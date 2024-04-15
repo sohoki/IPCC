@@ -38,6 +38,8 @@ public class Globals {
 	public static final String TOKEN = "jToken";
 	public static final String REFRESH_TOKEN = "refreshToken";
 	
+	public static final String RESULTVO = "resultVO";
+	
 	
 	public static final String STATUS_UNIQUE = "UNIQUE";
 	public static final String STATUS_UNIQUE_FAIL = "UNIQUE_FAIL";

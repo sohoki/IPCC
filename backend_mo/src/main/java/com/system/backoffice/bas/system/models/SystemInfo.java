@@ -25,5 +25,5 @@ public class SystemInfo {
 	private String systemHealthCheck;
 	private String systemHealthCheckUrl;
 	private String systemConnLevel;
-	
+	private String systemTokenKey;
 }

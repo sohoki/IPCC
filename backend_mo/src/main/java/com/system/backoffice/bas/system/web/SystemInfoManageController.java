@@ -3,6 +3,7 @@ package com.system.backoffice.bas.system.web;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -11,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,17 +26,21 @@ import org.springframework.web.multipart.MultipartRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
+import com.system.backoffice.bas.system.models.SystemInfo;
 import com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto;
 import com.system.backoffice.bas.system.models.dto.SystemInfoResDto;
+import com.system.backoffice.bas.system.models.dto.SystemLoginDto;
 import com.system.backoffice.bas.system.service.SystemInfoManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import com.system.backoffice.util.service.UtilInfoService;
 import com.system.backoffice.util.service.fileService;
 
+import egovframework.com.cmm.AdminLoginVO;
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
+import egovframework.com.jwt.config.EgovJwtTokenUtil;
 import egovframework.com.jwt.config.JwtVerification;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -65,6 +72,10 @@ public class SystemInfoManageController {
 	
     @Autowired
     private UniUtilManageService uniMangeServiec;
+    
+    /** JWT */
+	@Autowired
+    private EgovJwtTokenUtil jwtTokenUtil;
 	/**
 	 * 시스템 목록 조회
 	 * @param searchVO
@@ -257,4 +268,35 @@ public class SystemInfoManageController {
 		
     	return model;
     }
+    @ApiOperation(value="system JWT 로그인", notes = "system  JWT 로그인을 처리한다")
+	@ApiImplicitParam(name = "SystemLoginDto", value = "로그인 정보(아이디, 패스워드)")
+	@PostMapping(value = "systemLoginJWT.do")
+	public HashMap<String, Object> actionLoginJWT(@RequestBody SystemLoginDto loginVO, 
+													HttpServletRequest request, 
+													ModelMap model) throws Exception {
+		
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+
+		
+		
+		//loginVO.setUserIp(request.getRemoteAddr());
+		// 1. 일반 로그인 처리
+		Optional<SystemInfo> loginResultVO = systemService.SystemLoginDto(loginVO);
+		
+		if (loginResultVO.isPresent() && loginResultVO.get().getSystemCode() != null && !loginResultVO.get().getSystemCode().equals("")) {
+			
+			String jwtToken = jwtTokenUtil.generateSystemToken(loginResultVO.get());
+			resultMap.put(Globals.RESULTVO, loginResultVO);
+			resultMap.put(Globals.TOKEN, jwtToken);
+			resultMap.put(Globals.STATUS, Globals.STATUS_SUCCESS);
+			resultMap.put(Globals.STATUS_MESSAGE ,  egovMessageSource.getMessage("success.common.login"));
+			
+		} else {
+			resultMap.put(Globals.STATUS, Globals.STATUS_FAIL);
+			resultMap.put(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.login"));
+		}
+		
+		return resultMap;
+	}
+    
 }
