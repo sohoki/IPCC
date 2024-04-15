@@ -190,8 +190,6 @@ public class JwtVerification {
 			return false;
 		}
 		
-		
-		
 		String refreshToken = EgovStringUtil.isNullToString(request.getHeader("refreshToken"));
 		
 		String id = jwtTokenUtil.getUsernameFromToken(refreshToken);
