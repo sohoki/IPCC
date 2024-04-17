@@ -175,7 +175,7 @@ public class JwtVerification {
 			return verificationFlag;
 		}
 		
-		//log.debug("jwtToken validated");
+		log.debug("isVerificationSystem:" + verificationFlag);
 		
 		return verificationFlag;
 	}

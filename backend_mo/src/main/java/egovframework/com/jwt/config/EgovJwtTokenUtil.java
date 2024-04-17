@@ -113,8 +113,8 @@ public class EgovJwtTokenUtil implements Serializable{
     //generate token for admin
     public String generateSystemToken(SystemInfo sysinfo) {
         Map<String, Object> claims = new HashMap<>();
-        
-        return doGenerateToken(claims, sysinfo.getSystemCode()+"|"+sysinfo.getSystemName());
+        //추후 어떠
+        return doGenerateToken(claims, sysinfo.getSystemName()+"|"+sysinfo.getSystemCode()+"|ROLE_ADMIN|SYSTEM|0");
     }
     //generate token for user
     public String generateToken(LoginVO loginVO) {

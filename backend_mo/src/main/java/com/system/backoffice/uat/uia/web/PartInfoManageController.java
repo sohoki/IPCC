@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,11 +35,17 @@ import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
 
 import com.system.backoffice.bas.code.web.EgovCcmCmmnDetailCodeManageController;
 import com.system.backoffice.sym.log.service.EgovSysLogService;
+import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
+import com.system.backoffice.sys.rabbitmq.models.dto.MessageInfoDto;
+import com.system.backoffice.sys.rabbitmq.service.MessageService;
+import com.system.backoffice.uat.uia.event.AdminInfoEventDispatcher;
+import com.system.backoffice.uat.uia.event.AdminInfoManageEvent;
 import com.system.backoffice.uat.uia.models.PartInfo;
 import com.system.backoffice.uat.uia.models.PartInfoVO;
 import com.system.backoffice.uat.uia.models.UniUtilInfo;
 import com.system.backoffice.uat.uia.service.PartInfoManageService;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
+import com.system.backoffice.util.service.UtilInfoService;
 
 @Api(tags = {"기관별 부서 정보 API"})
 @Slf4j
@@ -59,7 +66,7 @@ public class PartInfoManageController {
 	private PartInfoManageService partService;
 	
 	@Autowired
-	private EgovSysLogService sysLogService;
+	private MessageService messageService;
 	
 	@Autowired
 	private UniUtilManageService utilService;
@@ -68,70 +75,77 @@ public class PartInfoManageController {
 	@Autowired
 	private JwtVerification jwtVerification;
 	
+	@Value("${rabbitmq.topic.name}")
+	private String exchangeName;
+
+	@Value("${rabbitmq.topic.key}")
+	private String routingKey;
+	
+	
+	
 	@ApiOperation(value="기관별 부서 코드 조회", notes = "성공시 기관별 부서 코드 조회 합니다.")
 	@PostMapping("partList.do")
 	public ModelAndView selectPartManagerList( @RequestBody Map<String, Object> searchVO 
 												 , HttpServletRequest request
 												 , BindingResult bindingResult) throws Exception {  
 		 
-		   ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-		   try{
-			   			   
+			ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+			try{		   
 	    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-	           if (!jwtVerification.isVerificationAdmin(request)) {
-	        		ResultVO resultVO = new ResultVO();
-	    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-	           }else {
-	        	   String[] userinfo = jwtVerification.getTokenUserInfo(request);
-	        	   searchVO.put("roleId", userinfo[2]);
-	        	   searchVO.put("partId", userinfo[3]);
-	        	   searchVO.put("insttCode", userinfo[4]);
-	           }
 			   
+				if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
+					ResultVO resultVO = new ResultVO();
+					return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+				}else {
+					String[] userinfo = jwtVerification.getTokenUserInfo(request);
+					searchVO.put(Globals.USER_ROLE_ID, userinfo[2]);
+					searchVO.put(Globals.USER_PART_ID, userinfo[3]);
+					searchVO.put(Globals.USER_INSTT_CODE, userinfo[4]);
+				}
+				
+				
+				if (searchVO.get(Globals.USER_PART_ID).equals("SYSTEM"))
+					searchVO.put(Globals.PAGE_UNIT, UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT)));
+				else 
+					searchVO.put(Globals.PAGE_UNIT, 1000);
+				searchVO.put(Globals.PAGE_SIZE, UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_SIZE), propertiesService.getInt(Globals.PAGE_SIZE)));
+				model.addObject(Globals.STATUS_REGINFO, searchVO);
+				
+				
+				PaginationInfo paginationInfo = new PaginationInfo();
+				paginationInfo.setCurrentPageNo(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_INDEX), 1));
+				paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_UNIT));
+				paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_UNIT));
 			   
-		       searchVO.put(Globals.PAGE_UNIT, propertiesService.getInt(Globals.PAGE_UNIT));
-		       searchVO.put(Globals.PAGE_SIZE, propertiesService.getInt(Globals.PAGE_SIZE));
-		       
-		       
-		       model.addObject(Globals.STATUS_REGINFO, searchVO);
-		       
-		       //** pageing *//   
-		       
-		   	   PaginationInfo paginationInfo = new PaginationInfo();
-			   paginationInfo.setCurrentPageNo(Integer.parseInt(searchVO.get(Globals.PAGE_INDEX).toString()));
-			   
-			   paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_UNIT));
-			   paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_UNIT));
-			   
-			   searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
-			   searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
-			   searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
-			   
-			   List<PartInfoVO> partList = partService.selectPartInfoPageInfoManageListByPagination(searchVO);
-			   
-			   int totCnt = partList.size() > 0 ? partList.get(0).getTotalRecordCount() : 0;  
-			   model.addObject(Globals.JSON_RETURN_RESULT_LIST ,  partList );      
-		             
-			   paginationInfo.setTotalRecordCount(totCnt);
-		       model.addObject(Globals.PAGE_INFO, paginationInfo);
-		       model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
-		       model.addObject("selectGroupCombo", partService.selectPartInfoCombo(searchVO));
-		      
-		   }catch (Exception e){
-			   System.out.println("e:" + e.toString());
-		   }
-		   return model;
+				searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+				searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+				searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+				List<PartInfoVO> partList = partService.selectPartInfoPageInfoManageListByPagination(searchVO);
+				int totCnt = partList.size() > 0 ? partList.get(0).getTotalRecordCount() : 0;  
+				model.addObject(Globals.JSON_RETURN_RESULT_LIST ,  partList );
+				paginationInfo.setTotalRecordCount(totCnt);
+				model.addObject(Globals.PAGE_INFO, paginationInfo);
+				model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
+				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+				//model.addObject("selectGroupCombo", partService.selectPartInfoCombo(searchVO));
+			}catch (Exception e){
+				log.error("error number:"+ e.getStackTrace()[0].getLineNumber());
+				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				model.addObject(Globals.STATUS_MESSAGE,  e.toString());
+			}
+			return model;
 	}
 	@ApiOperation(value="기관별 부서 상세 정보 조회", notes = "성공시 기관별 부서 상세 정보 조회 합니다.")
 	@ApiImplicitParam(name = "partId", value = "부서 코드 ")
 	@GetMapping("partDetail/{partId}.do")
 	public ModelAndView partInfoDetail ( @PathVariable String partId
-									  , HttpServletRequest request
-									  , BindingResult bindingResult) throws Exception {  
+									  , HttpServletRequest request) throws Exception {  
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW); 
+		
+		log.info("partInfoDetail:" + partId);
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-		if (!jwtVerification.isVerificationAdmin(request)) {
+		if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
 			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
 		}
@@ -140,7 +154,7 @@ public class PartInfoManageController {
 		try{ 
 			PartInfoVO info = partService.selectPartInfoDetail(partId);
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.STATUS_REGINFO, info);
+    		model.addObject(Globals.JSON_RETURN_RESULT, info);
     		
 		 }catch(Exception e){
 			log.error("partInfoDetail : error" + e.toString());
@@ -240,12 +254,27 @@ public class PartInfoManageController {
 		String status  = "";
 		try{
 				
-			int ret = ret = partService.updatePartInfoManage(partInfo);	
-			System.out.println("partUpdate " + ret);
+			int ret = partService.updatePartInfoManage(partInfo);	
+			//messageMQ 정리 하기 
 			
 			status = ret >0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			meesage = partInfo.getMode().equals("Ins") ? "sucess.common.insert" : "sucess.common.update";
-			
+			if (ret > 0) {
+				
+				MessageDto dto =  MessageDto.builder()
+									.id(partInfo.getPartId())
+									.processGubun(partInfo.getMode())
+									.processName("PARTINFO")
+									.urlMethod("GET")
+									.url("/api/backoffice/uat/uia/part/partDetail/"+partInfo.getPartId()+".do")
+									.build();
+							
+				messageService.sendMessage(dto, 
+						"Topic", 
+						exchangeName,
+						routingKey);
+				log.info("=========== send message");
+			}
 			
 			model.addObject(Globals.STATUS, status);
 			model.addObject(Globals.STATUS_MESSAGE , egovMessageSource.getMessage(meesage));

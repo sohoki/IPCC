@@ -174,6 +174,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			
 			final String userId =  jwtVerification.getTokenUserName(request);
 			// 시스템 로그 기록
+			/*
 			SysLog sysLog = new SysLog();
 			sysLog.setErrorCode(HttpStatus.OK.value()+"");
 			sysLog.setSrvcNm(clazz.getSimpleName());
@@ -184,6 +185,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			sysLog.setRqesterId(userId);
 			sysLog.setSqlParam(ParamToJson.paramToJson(sqlId));
 			sysLogService.logInsertSysLog(sysLog);
+			*/
 		}
 	}
 	/**
@@ -196,6 +198,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			+ " && !@target(com.system.backoffice.sym.log.annotation.NoLogging)"
             + " && !@annotation(com.system.backoffice.sym.log.annotation.NoLogging))")	
 	public Object logSelect(ProceedingJoinPoint joinPoint) throws Throwable {
+		
 		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
 		Class<?> clazz = joinPoint.getTarget().getClass();
 		Object result = null;
@@ -237,6 +240,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			final String processSeCode = Globals.SYSLOG_PROCESS_SE_CODE_SELECT;
 			final String ipAddr = EgovClntInfo.getClntIP(request);
 			final String processTime = Long.toString(stopWatch.getTotalTimeMillis());
+			/*
 			if (jwtVerification.isVerificationAdmin(request)) {
 				
 				final String userId =  jwtVerification.getTokenUserName(request);
@@ -254,8 +258,9 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			}else {
 				LOGGER.debug("====================== TOKEN 만료");
 			}
-			
+			*/
 		}
+		
 	}
 	/**
 	 * 데이터 삭제 관련 Controller 호출 후 반환 시 
@@ -285,6 +290,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			throw e;
 		} finally {
 			stopWatch.stop();
+			/*
 			if (result instanceof ModelAndView  && result != null) {
 				ModelAndView mav = ((ModelAndView) result);
 				if (!mav.getModel().isEmpty()) {
@@ -306,7 +312,9 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			sysLog.setRqesterIp(ipAddr);
 			sysLog.setRqesterId(userId);
 			sysLogService.logInsertSysLog(sysLog);
+			*/
 		}
+		
 	}
 	/**
 	 * Contoller 호출 후 오류 발생 시 

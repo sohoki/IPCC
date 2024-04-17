@@ -30,6 +30,5 @@ public class PartInfo implements Serializable{
 	private String partHeadUserId;
 	private String partEndyn;
 	
-	
 
 }

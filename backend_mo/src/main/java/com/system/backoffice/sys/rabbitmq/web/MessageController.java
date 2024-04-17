@@ -41,10 +41,8 @@ public class MessageController {
 	@PostMapping("sendMessage/{sendType}.do")
 	public ResponseEntity<?> sendMessage(@PathVariable String sendType,
 										 @RequestBody MessageInfoDto messageDto) {
-		//메세지 정송 기본
-
-		
-		
+		//메세지 정송 기본 
+		// 추후 서비스 형태로 개발 필요 
 		messageService.sendMessage(messageDto.getMessaegDto(), 
 									sendType, 
 									messageDto.getExchangeName(),

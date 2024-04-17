@@ -1,8 +1,6 @@
 package com.system.backoffice.uat.uia.event;
 
-
-import com.system.backoffice.uat.uia.models.AdminInfo;
-
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +8,7 @@ import lombok.ToString;
 
 @RequiredArgsConstructor
 @Getter
+@Builder
 @ToString
 @EqualsAndHashCode
 public class AdminInfoManageEvent {

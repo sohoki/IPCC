@@ -269,7 +269,7 @@ public class SystemInfoManageController {
     	return model;
     }
     @ApiOperation(value="system JWT 로그인", notes = "system  JWT 로그인을 처리한다")
-	@ApiImplicitParam(name = "SystemLoginDto", value = "로그인 정보(아이디, 패스워드)")
+	@ApiImplicitParam(name = "SystemLoginDto", value = "로그인 정보(아이디, 토큰 정보)")
 	@PostMapping(value = "systemLoginJWT.do")
 	public HashMap<String, Object> actionLoginJWT(@RequestBody SystemLoginDto loginVO, 
 													HttpServletRequest request, 

@@ -78,7 +78,7 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		
 		List<String> updtAuthList = new ArrayList<String>(Arrays.asList(vo.getSystemcodeUsecode().split("\\s*,\\s*")));
 		
-		System.out.println("updtAuthList.size()" + updtAuthList.size());
+		
 		//auth 삭제
 		List<UserAuthInfoReqDto> delAuthList = userAuth.stream().filter(x -> !updtAuthList.contains(x.getSystemCode()))
 												.map( x -> new UserAuthInfoReqDto(vo.getAdminId(), x.getSystemCode(), null ))
@@ -110,11 +110,11 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		               .collect(Collectors.toList());
 			ret = updateRole.size() < 1 ? 1 : adminMapper.updateSystemMenuInfo(updateRole);
 		}
-		
+		/*
 		if (ret > 0) {
 			//rabbitMq topic 을 통해 사용자 상태 전송
 			
-			System.out.println("======================");
+			
 			
 			
 			AdminInfoManageEvent eventInfo = new AdminInfoManageEvent(
@@ -124,9 +124,9 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 					);
 			
 			eventDispatcher.send(eventInfo);
-			System.out.println("====================== end send " );
+			
 		}
-		
+		*/
 		
 		return ret;
 	}

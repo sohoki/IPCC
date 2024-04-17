@@ -97,6 +97,10 @@ public class Globals {
 	public static final String PAGE_DOMAIN = "domainInfo";
 	public static final String PAGE_SYSTEM_CODE = "systemCode";
 	
+	//token 
+	public static final String USER_ROLE_ID = "roleId";
+	public static final String USER_PART_ID = "partId";
+	public static final String USER_INSTT_CODE = "insttCode";
 	
 	//지점 코드
 	public static final String STATUS_FLOORS = "selectFloorCombo";

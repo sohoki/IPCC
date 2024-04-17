@@ -10,6 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class MessageDto {
@@ -17,5 +18,7 @@ public class MessageDto {
 	private String systemCode;
 	private String processName;
 	private String processGubun;
+	private String url;
+	private String urlMethod;
 	private String id;
 }

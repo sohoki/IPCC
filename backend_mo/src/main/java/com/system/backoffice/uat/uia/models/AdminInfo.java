@@ -23,7 +23,7 @@ public class AdminInfo implements Serializable {
 	private String useYn;
 	private String mode;
 	private String empNo;
-	private String partId;
+	private String partCode;
 	private int totalRecordCount;
 	private String adminStatus;
 	//신규
@@ -151,13 +151,12 @@ public class AdminInfo implements Serializable {
 	public void setAdminPassword2(String adminPassword2) {
 		this.adminPassword2 = adminPassword2;
 	}
-	public String getPartId() {
-		return partId;
+	public String getPartCode() {
+		return partCode;
 	}
-	public void setPartId(String partId) {
-		this.partId = partId;
+	public void setPartCode(String partCode) {
+		this.partCode = partCode;
 	}
-
 	public String getEmpNo() {
 		return empNo;
 	}

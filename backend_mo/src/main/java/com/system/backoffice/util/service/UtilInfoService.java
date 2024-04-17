@@ -144,8 +144,13 @@ public class UtilInfoService {
     public static String NVLObj(Object _val, String _replace) {
     	return _val == null ? _replace : StringUtils.isBlank(_val.toString()) ? _replace : _val.toString();
     }
+    public static int NVLObj(Object _val, int _replace) {
+    	return _val == null ? _replace :  StringUtils.isBlank(_val.toString()) ? _replace :  Integer.parseInt((String.valueOf(_val)));
+    }
     
-    public static int NVL(Object _val, int _replace) {
+
+
+	public static int NVL(Object _val, int _replace) {
     	return _val == null ? _replace : Integer.valueOf( _val.toString());
     }
 	
