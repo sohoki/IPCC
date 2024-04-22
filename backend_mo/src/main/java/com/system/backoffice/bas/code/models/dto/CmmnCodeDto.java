@@ -21,6 +21,7 @@ public class CmmnCodeDto {
     private String useAt;
 	private String menuGubun;
     private String systemCode;
+    private String systemName;
 	// 공통
 	private String mode; 			// 등록/수정 식별값 
 	private String frstRegisterId; 	// 최초 등록자

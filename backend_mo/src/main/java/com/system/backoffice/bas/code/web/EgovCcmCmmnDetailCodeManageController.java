@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 import com.system.backoffice.bas.code.models.CmmnDetailCode;
@@ -68,17 +69,19 @@ public class EgovCcmCmmnDetailCodeManageController {
 	@ApiImplicitParam(name = "code", value = "공통상세코드 CODE")
     @DeleteMapping("{code}.do")
 	public ModelAndView deleteCmmnDetailCode (@PathVariable String code, 
-			                                  ModelMap modelMe,
-			                                  HttpServletRequest request) throws Exception {
+											@RequestParam("systemCode") String systemCode,
+											ModelMap modelMe,
+											HttpServletRequest request) throws Exception {
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	try{
     		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+    		System.out.println("systemCode:" + systemCode);
         	if (!jwtVerification.isVerificationAdmin(request)) {
 
         		ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
         	}
-    		int ret = cmmnDetailCodeManageService.deleteCmmnDetailCode(code);
+    		int ret = cmmnDetailCodeManageService.deleteCmmnDetailCode(code, systemCode);
         	if (ret > 0) {
         		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
         		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.delete"));
@@ -109,6 +112,7 @@ public class EgovCcmCmmnDetailCodeManageController {
 	@ApiImplicitParam(name = "code", value = "공통상세코드 CODE")
 	@GetMapping("{code}.do")
  	public ModelAndView selectCmmnDetailCodeDetail (@PathVariable String code, 
+ 												@RequestParam String systemCode,
  												HttpServletRequest request)	throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
@@ -117,7 +121,7 @@ public class EgovCcmCmmnDetailCodeManageController {
         		ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확
         	}
-        	model.addObject(Globals.JSON_RETURN_RESULT, cmmnDetailCodeManageService.selectCmmnDetailCodeDetail(code));
+        	model.addObject(Globals.JSON_RETURN_RESULT, cmmnDetailCodeManageService.selectCmmnDetailCodeDetail(code, systemCode));
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			log.error("selectCmmnDetailCodeDetail error:" + e.toString());
@@ -129,7 +133,8 @@ public class EgovCcmCmmnDetailCodeManageController {
     @ApiOperation(value="공통 상세 코드 combo list", notes = "성공시 공통 상세 코드를 combo list 합니다.")
 	@ApiImplicitParam(name = "code", value = "공통코드 CODE")
 	@GetMapping("combo/{codeId}.do")
- 	public ModelAndView selectCmmnDetailComboList (@PathVariable String codeId, 
+ 	public ModelAndView selectCmmnDetailComboList (@PathVariable String codeId,
+ 												@RequestParam String systemCode,
  												HttpServletRequest request)	throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
@@ -138,7 +143,7 @@ public class EgovCcmCmmnDetailCodeManageController {
         		ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확
         	}
-        	model.addObject(Globals.JSON_RETURN_RESULT, cmmnDetailCodeManageService.selectCmmnDetailComboLamp(codeId));
+        	model.addObject(Globals.JSON_RETURN_RESULT, cmmnDetailCodeManageService.selectCmmnDetailComboLamp(codeId, systemCode));
     		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			log.error("selectCmmnDetailComboList error:" + e.toString());
@@ -169,7 +174,9 @@ public class EgovCcmCmmnDetailCodeManageController {
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확
         	}
         	
-            List<CmmnDetailCodeDto> codeDetailList = cmmnDetailCodeManageService.selectCmmnDetailCodeList(searchMap.get("codeId").toString());
+            List<CmmnDetailCodeDto> codeDetailList = cmmnDetailCodeManageService.selectCmmnDetailCodeList(
+            																		searchMap.get("codeId").toString(),
+            																		searchMap.get("systemCode").toString());
             int totCnt = codeDetailList.size() > 0 ? codeDetailList.size()  : 0;
 
     		model.addObject( Globals.STATUS_REGINFO, searchMap.get("codeId"));

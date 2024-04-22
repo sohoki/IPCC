@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 
 import com.system.backoffice.bas.code.models.CmmnCode;
 import com.system.backoffice.bas.code.models.dto.CmmnCodeDto;
+import com.system.backoffice.bas.code.models.dto.CmmnCodeReqDto;
 
 @Mapper
 public interface EgovCmmnCodeManageMapper {
@@ -18,9 +19,9 @@ public interface EgovCmmnCodeManageMapper {
 	
 	public CmmnCodeDto selectCmmnCodeDetail(String codeId);
 	
-	public int insertCmmnCode(CmmnCode vo);
+	public int insertCmmnCode(CmmnCodeReqDto vo);
 	
-	public int updateCmmnCode(CmmnCode vo);
+	public int updateCmmnCode(CmmnCodeReqDto vo);
 	
-	public int deleteCmmnCode(String codeId);
+	public int deleteCmmnCode(String codeId, String systemCode);
 }

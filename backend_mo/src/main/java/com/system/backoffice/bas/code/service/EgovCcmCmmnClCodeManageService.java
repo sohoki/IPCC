@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.system.backoffice.bas.code.mapper.EgovCmmnClCodeManageMapper;
 import com.system.backoffice.bas.code.models.CmmnClCode;
+import com.system.backoffice.bas.code.models.dto.CmmnClCodeReqDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,10 +22,9 @@ public class EgovCcmCmmnClCodeManageService {
 	private final EgovCmmnClCodeManageMapper cmmMapper;
 	
 	
-    public List<Map<String, Object>> selectCmmnClCodeListByPagination(Map<String, Object> params){
-    	
-    	return cmmMapper.selectCmmnClCodeListByPagination(params);
-    }
+	public List<Map<String, Object>> selectCmmnClCodeListByPagination(Map<String, Object> params){	
+		return cmmMapper.selectCmmnClCodeListByPagination(params);
+	}
 	
 	public List<Map<String, Object>> selectCmmnClCodeList(){
 		return cmmMapper.selectCmmnClCodeList();
@@ -35,7 +35,7 @@ public class EgovCcmCmmnClCodeManageService {
 	}
 	
 	@Transactional(readOnly = false)
-	public int updateCmmnClCode(CmmnClCode vo) {
+	public int updateCmmnClCode(CmmnClCodeReqDto vo) {
 		return vo.getMode().equals("Ins") ? cmmMapper.insertCmmnClCode(vo) : cmmMapper.updateCmmnClCode(vo);
 	}
 	@Transactional(readOnly = false)

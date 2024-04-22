@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.system.backoffice.bas.code.mapper.EgovCmmnCodeManageMapper;
 import com.system.backoffice.bas.code.models.CmmnCode;
 import com.system.backoffice.bas.code.models.dto.CmmnCodeDto;
+import com.system.backoffice.bas.code.models.dto.CmmnCodeReqDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,11 +33,11 @@ public class EgovCcmCmmnCodeManageService {
 	}
 	
 	@Transactional(readOnly = false)
-	public int updateCmmnCode(CmmnCode vo) {
+	public int updateCmmnCode(CmmnCodeReqDto vo) {
 		return vo.getMode().equals("Ins") ? cmmMapper.insertCmmnCode(vo) : cmmMapper.updateCmmnCode(vo);
 	}
 	@Transactional(readOnly = false)
-	public int deleteCmmnCode(String codeId) {
-		return cmmMapper.deleteCmmnCode(codeId);
+	public int deleteCmmnCode(String codeId, String systemCode) {
+		return cmmMapper.deleteCmmnCode(codeId, systemCode);
 	}
 }

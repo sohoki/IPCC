@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 import com.system.backoffice.bas.code.models.CmmnClCode;
+import com.system.backoffice.bas.code.models.dto.CmmnClCodeReqDto;
 
 @Mapper
 public interface EgovCmmnClCodeManageMapper {
@@ -17,9 +18,9 @@ public interface EgovCmmnClCodeManageMapper {
 	
 	public Optional<CmmnClCode> selectCmmnClCodeDetail(String clCode);
 	
-	public int insertCmmnClCode(CmmnClCode vo);
+	public int insertCmmnClCode(CmmnClCodeReqDto vo);
 	
-	public int updateCmmnClCode(CmmnClCode vo);
+	public int updateCmmnClCode(CmmnClCodeReqDto vo);
 	
 	public int deleteCmmnClCode(String clCode);
 }

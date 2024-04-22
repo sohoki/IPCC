@@ -12,17 +12,17 @@ import com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto;
 @Mapper
 public interface EgovCmmnDetailCodeManageMapper {
 
-    public List<CmmnDetailCodeDto> selectCmmnDetailCodeListByPagination(String codeId);
+    public List<CmmnDetailCodeDto> selectCmmnDetailCodeListByPagination(String codeId, String systemCode);
 	
-	public List<CmmnDetailCodeDto> selectCmmnDetailCombo (String code);
+	public List<CmmnDetailCodeDto> selectCmmnDetailCombo (String code, String systemCode);
 	
-	public List<CmmnDetailCodeDto> selectCmmnDetailComboLamp (String code);
+	public List<CmmnDetailCodeDto> selectCmmnDetailComboLamp (String code, String systemCode);
 	
 	public List<CmmnDetailCodeDto> selectCmmnDetailComboEtc(@Param("params") Map<String, Object> params);
 	
-	public CmmnDetailCodeDto selectCmmnDetailCodeDetail(String code);
+	public CmmnDetailCodeDto selectCmmnDetailCodeDetail(String code, String systemCode);
 	
-	public CmmnDetailCodeDto selectCmmnDetail(String code);
+	public CmmnDetailCodeDto selectCmmnDetail(String code, String systemCode);
 	
 	public List<CmmnDetailCodeDto> selectComboSwcCon();
 		
@@ -30,9 +30,9 @@ public interface EgovCmmnDetailCodeManageMapper {
 	               
 	public int updateCmmnDetailCode(CmmnDetailCode vo);
 	
-	public int deleteCmmnDetailCode(String code);
+	public int deleteCmmnDetailCode(String code, String systemCode);
 	
-	public int deleteCmmnDetailCodeId(String value);
+	public int deleteCmmnDetailCodeId(String value, String systemCode);
 	
 	public List<CmmnDetailCodeDto> selectCmmnDetailResTypeCombo (Map<String, Object> vo);
 }

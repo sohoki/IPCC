@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.egovframe.rte.fdl.property.EgovPropertyService;
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
@@ -17,10 +18,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
-import com.system.backoffice.bas.code.models.CmmnCode;
 import com.system.backoffice.bas.code.models.dto.CmmnCodeDto;
+import com.system.backoffice.bas.code.models.dto.CmmnCodeReqDto;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnCodeManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.uat.uia.models.UniUtilInfo;
@@ -79,104 +81,95 @@ public class EgovCcmCmmnCodeManageController {
 	 */
 	@ApiOperation(value="공통코드를 삭제", notes = "성공시 공통코드를 삭제 합니다.")
 	@ApiImplicitParam(name = "codeId", value = "공통코드 CODE ID")
-    @DeleteMapping("{codeId}.do")
+	@DeleteMapping("{codeId}.do")
 	public ModelAndView deleteCmmnCode (@PathVariable String codeId 
-								  , HttpServletRequest request
-								  , BindingResult bindingResult	) throws Exception {
-    	
-    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-    	try {
-    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-        	if (!jwtVerification.isVerificationAdmin(request)) {
-
-        		ResultVO resultVO = new ResultVO();
-    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-        	}
-    		
-    		int ret = cmmnCodeManageService.deleteCmmnCode(codeId);
-        	
-    		
-        	if (ret > 0){
-    			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    			model.addObject(Globals.STATUS_MESSAGE,   egovMessageSource.getMessage("success.common.delete"));    		
-        	}else {
-        		throw new Exception();    		
-        	}
-        	
-    	}catch(Exception e) {
-    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-    		model.addObject(Globals.STATUS_MESSAGE, e.toString());
-    	}
-    	return model;
-    	//상세 코드 삭제 
-    	
+									, @RequestParam("systemCode") String systemCode
+									, HttpServletRequest request) throws Exception {
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+			// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}
+			int ret = cmmnCodeManageService.deleteCmmnCode(codeId, systemCode);
+			
+			if (ret > 0){
+				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+				model.addObject(Globals.STATUS_MESSAGE,   egovMessageSource.getMessage("success.common.delete"));    		
+			}else {
+	    		throw new Exception();    		
+	    	}
+	    	
+		}catch(Exception e) {
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, e.toString());
+		}
+		return model;
+		//상세 코드 삭제 
+	
 	}
 
 	
-    @ApiOperation(value="공통코드 리스트", notes = "성공시 공통코드 조회 합니다.")
-    @PostMapping("code/codeList.do")
+	@ApiOperation(value="공통코드 리스트", notes = "성공시 공통코드 조회 합니다.")
+	@PostMapping("code/codeList.do")
 	public ModelAndView selectCmmnCodeList (@RequestBody Map<String, Object> searchMap
 										, HttpServletRequest request
 										, BindingResult bindingResult
 										) throws Exception {
-    	
-    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-    	try
-    	{
-    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-        	if (!jwtVerification.isVerificationAdmin(request)) {
-        		ResultVO resultVO = new ResultVO();
-    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-        	}
-        	
-        	
-        	int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
-    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
-    	   
-    		
-    	    
-        	/** pageing */
-    		PaginationInfo paginationInfo = new PaginationInfo();
-    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX) == null  ?
-    														  "1" : searchMap.get(Globals.PAGE_INDEX).toString() ));
-    		paginationInfo.setRecordCountPerPage(pageUnit);
-    		paginationInfo.setPageSize(pageSize);
 
-    		searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
-    		searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
-    		searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
-    	    
-    	    List<CmmnCodeDto> codeList = cmmnCodeManageService.selectCmmnCodeListByPagination(searchMap);
-    	    int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).getTotalRecordCount().toString()) :0;
-            
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try
+			{
+				// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}
+			
+			int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
+			int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
+			
+			
+			/** pageing */
+			PaginationInfo paginationInfo = new PaginationInfo();
+			paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX) == null  ?
+															  "1" : searchMap.get(Globals.PAGE_INDEX).toString() ));
+			paginationInfo.setRecordCountPerPage(pageUnit);
+			paginationInfo.setPageSize(pageSize);
+	
+			searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+			searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+			searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+			List<CmmnCodeDto> codeList = cmmnCodeManageService.selectCmmnCodeListByPagination(searchMap);
+			int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).getTotalRecordCount().toString()) :0;
 
-    		paginationInfo.setTotalRecordCount(totCnt);
-    		
-    		model.addObject(Globals.STATUS_REGINFO, searchMap);
-    		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
-    		model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
-    		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
-    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		
-    		
-    		
-    	}catch (Exception e){
+	
+			paginationInfo.setTotalRecordCount(totCnt);
+			
+			model.addObject(Globals.STATUS_REGINFO, searchMap);
+			model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
+			model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
+			model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+
+		}catch (Exception e){
 			log.debug("selectCmmnCodeList error:" + e.toString());
 			log.debug("selectCmmnCodeList number:" + e.getStackTrace()[0].getLineNumber());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	    }
-	    
-        return model;
-        
-        
+		}
+		return model;
+
 	}
     @ApiOperation(value="공통코드 중복체크", notes = "성공시 공통코드 중복체크 합니다.")
     //ID 체크 
     @NoLogging
     @GetMapping("codeIDCheck/{codeId}.do")
     public ModelAndView selectIdCheck(@PathVariable String codeId ,
-    								 HttpServletRequest request)throws Exception{
+    									@RequestParam String systemCode,
+    									HttpServletRequest request)throws Exception{
     	
     	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
     	
@@ -189,7 +182,7 @@ public class EgovCcmCmmnCodeManageController {
     	
     	
     	UniUtilInfo util = new UniUtilInfo();
-    	util.setInCondition("CODE_ID = [" + codeId + "[");
+    	util.setInCondition("CODE_ID = [" + codeId + "[ AND SYSTEM_CODE =["+ systemCode + "[");
     	util.setInTable("COMTCCMMNCODE");
     	util.setInCheckName("CODE_ID");
     	
@@ -209,7 +202,7 @@ public class EgovCcmCmmnCodeManageController {
   	@SuppressWarnings("finally")	
   	@ApiOperation(value="공통코드 업데이트", notes = "성공시 공통코드 업데이트 합니다.")
   	@PostMapping("code/codeUpdate.do")
-  	public ModelAndView  updateCmmCode (@RequestBody CmmnCode vo
+  	public ModelAndView  updateCmmCode (@Valid @RequestBody CmmnCodeReqDto vo
                                        , HttpServletRequest request
                       			       , BindingResult bindingResult) throws Exception {
 			

@@ -104,7 +104,7 @@ public class PartInfoManageController {
 				}
 				
 				
-				if (searchVO.get(Globals.USER_PART_ID).equals("SYSTEM"))
+				if (!searchVO.get(Globals.USER_PART_ID).equals("SYSTEM"))
 					searchVO.put(Globals.PAGE_UNIT, UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT)));
 				else 
 					searchVO.put(Globals.PAGE_UNIT, 1000);

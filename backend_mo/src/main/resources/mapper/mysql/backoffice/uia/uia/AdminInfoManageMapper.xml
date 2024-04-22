@@ -28,7 +28,7 @@
 				              END AS ROLE_NAME, SYSTEMCODE_USECODE
 			    FROM   TB_MANAGERINFO a, TB_PARTINFO c, COMTNINSTTCODE d
 				WHERE  1=1  
-					   AND a.PART_ID = c.PART_CODE
+					   AND a.PART_ID = c.PART_ID
 					   AND a.INSTT_CODE = d.INSTT_CODE
 		        <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 						<choose>
@@ -49,16 +49,16 @@
 						<when test="params.roleId == 'ROLE_TEAM'">
 							AND a.PART_ID IN (WITH RECURSIVE  CTE AS (
 												SELECT 
-													PART_CODE, PARENT_PART_ID
+													PART_ID, PARENT_PART_ID
 												FROM TB_PARTINFO
-												WHERE PART_CODE  = #{params.partId}
+												WHERE PART_ID  = #{params.partId}
 												UNION ALL
 												SELECT 
-													ac.PART_CODE, ac.PARENT_PART_ID
+													ac.PART_ID, ac.PARENT_PART_ID
 												FROM TB_PARTINFO ac
-												INNER JOIN CTE bbc on ac.PARENT_PART_ID = bbc.PART_CODE
+												INNER JOIN CTE bbc on ac.PARENT_PART_ID = bbc.PART_ID
 												)
-												SELECT PART_CODE from CTE
+												SELECT PART_ID from CTE
 											)
 						</when>
 						
@@ -67,7 +67,6 @@
 						</otherwise>
 					</choose>
 				</if>
-				AND params.roleId != 'ROLE_ADMIN'
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseYn)">
 				         and a.USE_YN = #{params.useYn}
 				</if>

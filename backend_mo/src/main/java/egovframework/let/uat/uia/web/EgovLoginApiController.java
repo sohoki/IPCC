@@ -155,15 +155,11 @@ public class EgovLoginApiController {
 		//loginVO.setUserIp(request.getRemoteAddr());
 		// 1. 일반 로그인 처리
 		
-		log.debug(request.getHeader("refreshToken").toString());
 		if (!jwtVerification.isVerificationRefresh(request)) {
 			resultMap.put(Globals.STATUS, Globals.STATUS_FAIL);
 			resultMap.put(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.refreshlogin"));
 			return resultMap;
 		}
-		
-		
-		
 		AdminLoginVO loginResultVO = loginService.actionLoginSso(
 									jwtTokenUtil.getUsernameFromToken(request.getHeader("refreshToken").toString())
 									);
