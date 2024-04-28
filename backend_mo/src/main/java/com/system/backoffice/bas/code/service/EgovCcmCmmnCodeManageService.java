@@ -13,7 +13,8 @@ import com.system.backoffice.bas.code.models.dto.CmmnCodeDto;
 import com.system.backoffice.bas.code.models.dto.CmmnCodeReqDto;
 
 import lombok.RequiredArgsConstructor;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class EgovCcmCmmnCodeManageService {
@@ -28,8 +29,8 @@ public class EgovCcmCmmnCodeManageService {
 		return cmmMapper.selectCmmnCodeList();
 	}
 	
-	public CmmnCodeDto selectCmmnCodeDetail(String codeId) {
-		return cmmMapper.selectCmmnCodeDetail(codeId);
+	public CmmnCodeDto selectCmmnCodeDetail(String codeId, String systemCode) {
+		return cmmMapper.selectCmmnCodeDetail(codeId, systemCode);
 	}
 	
 	@Transactional(readOnly = false)
@@ -38,6 +39,12 @@ public class EgovCcmCmmnCodeManageService {
 	}
 	@Transactional(readOnly = false)
 	public int deleteCmmnCode(String codeId, String systemCode) {
-		return cmmMapper.deleteCmmnCode(codeId, systemCode);
+		try {
+			cmmMapper.deleteCmmnCode(codeId, systemCode);
+			return 1;
+		}catch(Exception e){
+			log.error("deleteCmmnClCode service:" + e.toString());
+			return 0;
+		}
 	}
 }

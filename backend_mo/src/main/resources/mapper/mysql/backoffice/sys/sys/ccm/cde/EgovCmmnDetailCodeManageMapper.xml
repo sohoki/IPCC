@@ -8,23 +8,28 @@
 				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
 				ROW_NUMBER() OVER (ORDER BY A.CODE DESC) AS RNUM, 
 				A.CODE_ID, B.CODE_ID_NM, A.CODE, A.CODE_NM, A.CODE_DC, A.USE_AT, A.CODE_ETC1, A.CODE_ETC2,
-				date_format(A.LAST_UPDT_PNTTM, '%Y-%m-%d') AS LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID
+				date_format(A.LAST_UPDT_PNTTM, '%Y-%m-%d %p %h:%i') AS LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID
 			FROM COMTCCMMNDETAILCODE A
-			     INNER JOIN COMTCCMMNCODE B ON A.CODE_ID = B.CODE_ID				     
-			WHERE B.CODE_ID = #{codeId}	AND B.SYSTEM_CODE = #{systemCode}		
+				INNER JOIN COMTCCMMNCODE B ON A.CODE_ID = B.CODE_ID				     
+			WHERE 1=1 
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(codeId)">
+					AND B.CODE_ID = #{codeId}	
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemCode)">
+					AND B.SYSTEM_CODE = #{systemCode}	
+				</if>	
 		) R
 		WHERE 1=1
 		ORDER BY REPLACE(CODE, CONCAT(CODE_ID, '_'), '') ASC
 	</select>
 	
 	<select id="selectCmmnDetailCodeDetail" resultType="CmmnDetailCodeDto">
-		SELECT 
-			C.CL_CODE AS clCode, C.CL_CODE_NM AS clCodeNm, B.CODE_ID AS codeId, B.CODE_ID_NM AS codeIdNm , A.CODE AS code, 
-			A.CODE_NM AS codeNm, A.CODE_DC AS codeDc, A.USE_AT AS useAt
-		FROM COMTCCMMNDETAILCODE A
-		     INNER JOIN COMTCCMMNCODE B ON A.CODE_ID = B.CODE_ID
-		     INNER JOIN LETTCCMMNCLCODE C ON B.CL_CODE = C.CL_CODE
-		WHERE A.CODE_ID = #{value} AND A.SYSTEM_CODE = #{systemCode}
+		SELECT B.CODE_ID AS codeId, B.CODE_ID_NM AS codeIdNm , A.CODE AS code, 
+				A.CODE_NM AS codeNm, A.CODE_DC AS codeDc, A.USE_AT AS useAt
+		FROM COMTCCMMNDETAILCODE A, COMTCCMMNCODE B
+		WHERE A.CODE = #{code} 
+			AND  A.CODE_ID = B.CODE_ID
+			AND A.SYSTEM_CODE = #{systemCode}
 	</select>
 	
 	<select id="selectCmmnDetailCombo" resultType="CmmnDetailCodeDto">
@@ -101,6 +106,9 @@
 	</select>	
 	
 	<insert id="insertCmmnDetailCode">
+		<selectKey resultType="string" keyProperty="code" order="BEFORE">
+			SELECT FN_DETAIL_CODEID(#{codeId}, #{systemCode})
+		</selectKey> 
 		<![CDATA[
 		INSERT INTO COMTCCMMNDETAILCODE
 		(
@@ -110,7 +118,7 @@
 		VALUES
 		(
 		
-			#{codeId}, FN_DETAIL_CODEID(#{codeId}, #{systemCode}) , #{codeNm}, 
+			#{codeId}, #{code} , #{codeNm}, 
 			#{codeDc,jdbcType=VARCHAR}, #{useAt}, #{codeEtc1}, #{systemCode},
 			NOW(), #{userId}, NOW(), #{userId}
 		)

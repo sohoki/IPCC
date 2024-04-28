@@ -34,11 +34,15 @@ public class Globals {
 	public static final String STATUS_OK = "OK";
 	public static final String STATUS_FAIL = "FAIL";
 	
+	public static final String SYSTEM_IPCC = "IPCC";
 	//token 
 	public static final String TOKEN = "jToken";
 	public static final String REFRESH_TOKEN = "refreshToken";
 	
 	public static final String RESULTVO = "resultVO";
+	
+	public static final String NETWORK_RESULT_PROGRAME = "PROGRAME";
+	public static final String NETWORK_RESULT_MENUINFO = "MENUINFO";
 	
 	
 	public static final String STATUS_UNIQUE = "UNIQUE";
@@ -96,6 +100,11 @@ public class Globals {
 	public static final String PAGE_TOTAL_COUNT = "totalCnt";
 	public static final String PAGE_DOMAIN = "domainInfo";
 	public static final String PAGE_SYSTEM_CODE = "systemCode";
+	
+	public static final String URL_METHOD_POST = "POST";
+	public static final String URL_METHOD_GET = "GET";
+	public static final String URL_METHOD_DELETE = "DELETE";
+	public static final String URL_METHOD_PUT = "PUT";
 	
 	//token 
 	public static final String USER_ROLE_ID = "roleId";

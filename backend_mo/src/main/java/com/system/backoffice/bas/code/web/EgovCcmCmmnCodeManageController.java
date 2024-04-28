@@ -25,8 +25,12 @@ import com.system.backoffice.bas.code.models.dto.CmmnCodeDto;
 import com.system.backoffice.bas.code.models.dto.CmmnCodeReqDto;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnCodeManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
+import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
+import com.system.backoffice.sys.rabbitmq.service.MessageService;
 import com.system.backoffice.uat.uia.models.UniUtilInfo;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
+import com.system.backoffice.util.service.UtilInfoService;
+
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
@@ -62,7 +66,14 @@ public class EgovCcmCmmnCodeManageController {
     @Resource(name = "propertiesService")
     protected EgovPropertyService propertiesService;
 
+	@Value("${rabbitmq.topic.name}")
+	private String exchangeName;
+
+	@Value("${rabbitmq.topic.key}")
+	private String routingKey;
 	
+	@Autowired
+	private MessageService messageService;
 	
 	/** JwtVerification */
 	@Autowired
@@ -95,7 +106,22 @@ public class EgovCcmCmmnCodeManageController {
 			}
 			int ret = cmmnCodeManageService.deleteCmmnCode(codeId, systemCode);
 			
-			if (ret > 0){
+			if (ret > 0 && !systemCode.equals( Globals.SYSTEM_IPCC)){
+				
+				MessageDto dto =  MessageDto.builder()
+								.id(codeId)
+								.processGubun("DEL")
+								.processName("CODEINFO")
+								.urlMethod("DELETE")
+								.url("")
+								.build();
+						
+								messageService.sendMessage(dto, 
+										"Topic", 
+										exchangeName,
+										routingKey);
+								log.info("=========== send message");
+				
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE,   egovMessageSource.getMessage("success.common.delete"));    		
 			}else {
@@ -107,11 +133,36 @@ public class EgovCcmCmmnCodeManageController {
 			model.addObject(Globals.STATUS_MESSAGE, e.toString());
 		}
 		return model;
-		//상세 코드 삭제 
-	
+		//상세 코드 삭제 	
 	}
 
-	
+	@ApiOperation(value="공통코드를 조회", notes = "성공시 공통코드를 조회 합니다.")
+	@ApiImplicitParam(name = "codeId", value = "공통코드 CODE ID")
+	@GetMapping("{codeId}.do")
+	public ModelAndView selectCodeCmmnCode (@PathVariable String codeId 
+									, @RequestParam("systemCode") String systemCode
+									, HttpServletRequest request) throws Exception {
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+			// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}
+			
+				
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			model.addObject(Globals.JSON_RETURN_RESULT, cmmnCodeManageService.selectCmmnCodeDetail(codeId, systemCode));    		
+			
+	    	
+		}catch(Exception e) {
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, e.toString());
+		}
+		return model;
+		//상세 코드 삭제 	
+	}
 	@ApiOperation(value="공통코드 리스트", notes = "성공시 공통코드 조회 합니다.")
 	@PostMapping("code/codeList.do")
 	public ModelAndView selectCmmnCodeList (@RequestBody Map<String, Object> searchMap
@@ -123,13 +174,25 @@ public class EgovCcmCmmnCodeManageController {
 		try
 			{
 				// 기존 세션 체크 인증에서 토큰 방식으로 변경
-			if (!jwtVerification.isVerificationAdmin(request)) {
+			if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
 				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}else {
+				String[] userinfo = jwtVerification.getTokenUserInfo(request);
+				searchMap.put(Globals.USER_ROLE_ID, userinfo[2]);
+				searchMap.put(Globals.USER_PART_ID, userinfo[3]);
+				searchMap.put(Globals.USER_INSTT_CODE, userinfo[4]);
+				if (searchMap.get(Globals.USER_PART_ID).equals("SYSTEM"))
+					searchMap.put("searchSystemCode", userinfo[1]);
+				
 			}
 			
-			int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
-			int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
+			int pageUnit = 0;
+			if (!searchMap.get(Globals.USER_PART_ID).equals("SYSTEM"))
+				pageUnit =  UtilInfoService.NVLObj(searchMap.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT));
+			else 
+				pageUnit =  1000;
+			int pageSize = UtilInfoService.NVLObj(searchMap.get(Globals.PAGE_SIZE), propertiesService.getInt(Globals.PAGE_SIZE));  
 			
 			
 			/** pageing */
@@ -208,20 +271,40 @@ public class EgovCcmCmmnCodeManageController {
 			
   		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
   	    try{
-  	    	
+  	    	String systemCode = "";
   	    	// 기존 세션 체크 인증에서 토큰 방식으로 변경
-        	if (!jwtVerification.isVerificationAdmin(request)) {
+        	if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
         		ResultVO resultVO = new ResultVO();
     			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
         	}else {
-        		vo.setUserId(jwtVerification.getTokenUserName(request));
-        	}
+				String[] userinfo = jwtVerification.getTokenUserInfo(request);
+				vo.setUserId(userinfo[0]);
+				systemCode = userinfo[1];
+				
+			}
   	    	
     		String status = cmmnCodeManageService.updateCmmnCode(vo) > 0 ?
 			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = status.equals( Globals.STATUS_SUCCESS) ?
 					 	 egovMessageSource.getMessage("success.request.msg") :
 						 egovMessageSource.getMessage("fail.request.msg") ;
+			
+			
+			if (status.equals(Globals.STATUS_SUCCESS) && !vo.getSystemCode().equals( Globals.SYSTEM_IPCC)) {
+				MessageDto dto =  MessageDto.builder()
+						.id(vo.getCodeId())
+						.processGubun(vo.getMode())
+						.processName("CODEINFO")
+						.urlMethod("GET")
+						.url("/api/backoffice/sys/cmm/cca/"+ vo.getCodeId() + ".do?systemCode="+vo.getSystemCode())
+						.build();
+				
+						messageService.sendMessage(dto, 
+								"Topic", 
+								exchangeName,
+								routingKey);
+						log.info("=========== send message");
+			}
 			model.addObject(Globals.STATUS, status);
 	   		model.addObject(Globals.STATUS_MESSAGE, message);
 	   		

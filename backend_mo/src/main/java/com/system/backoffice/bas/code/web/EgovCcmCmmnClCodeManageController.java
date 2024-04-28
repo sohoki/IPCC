@@ -12,6 +12,8 @@ import com.system.backoffice.bas.code.models.CmmnClCode;
 import com.system.backoffice.bas.code.models.dto.CmmnClCodeReqDto;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnClCodeManageService;
 import com.system.backoffice.sym.log.annotation.NoLogging;
+import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
+import com.system.backoffice.sys.rabbitmq.service.MessageService;
 import com.system.backoffice.uat.uia.models.UniUtilInfo;
 import com.system.backoffice.uat.uia.service.UniUtilManageService;
 import com.system.backoffice.util.service.UtilInfoService;
@@ -50,7 +52,16 @@ public class EgovCcmCmmnClCodeManageController {
 
 	@Value("${page.pageSize}")
 	private int pageSizeSetting ;
+	
+	@Value("${rabbitmq.topic.name}")
+	private String exchangeName;
 
+	@Value("${rabbitmq.topic.key}")
+	private String routingKey;
+	
+	@Autowired
+	private MessageService messageService;
+	
 	@Autowired
 	EgovMessageSource egovMessageSource;
 	
@@ -71,21 +82,36 @@ public class EgovCcmCmmnClCodeManageController {
 		try {
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			if (!jwtVerification.isVerificationAdmin(request)) {
-	
 				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
 			}
 		
 			cmmnClCodeManageService.deleteCmmnClCode(clCode);
 			int ret = cmmnClCodeManageService.deleteCmmnClCode(clCode);
+			
 			if (ret > 0) {
-			String status = cmmnClCodeManageService.deleteCmmnClCode(clCode) > 0 ?
-					Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
-			String message = status.equals( Globals.STATUS_SUCCESS) ?
-					 	 egovMessageSource.getMessage("success.common.delete") :
-						 egovMessageSource.getMessage("fail.common.delete") ;
-			model.addObject(Globals.STATUS, status);
-			model.addObject(Globals.STATUS_MESSAGE, message);
+				
+				MessageDto dto =  MessageDto.builder()
+						.id(clCode)
+						.processGubun("DELETE")
+						.processName("LCODEINFO")
+						.urlMethod("DELETE")
+						.url("")
+						.build();
+				
+						messageService.sendMessage(dto, 
+								"Topic", 
+								exchangeName,
+								routingKey);
+						log.info("=========== send message");
+				
+				String status = ret > 0 ?
+						Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+				String message = status.equals( Globals.STATUS_SUCCESS) ?
+						 	 egovMessageSource.getMessage("success.common.delete") :
+							 egovMessageSource.getMessage("fail.common.delete") ;
+				model.addObject(Globals.STATUS, status);
+				model.addObject(Globals.STATUS_MESSAGE, message);
 			}else {
 				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
@@ -159,6 +185,25 @@ public class EgovCcmCmmnClCodeManageController {
 			String message = status.equals( Globals.STATUS_SUCCESS) ?
 					 	 egovMessageSource.getMessage("success.request.msg") :
 						 egovMessageSource.getMessage("fail.request.msg") ;
+			
+			
+			if (status.equals(Globals.STATUS_SUCCESS)) {
+				
+				MessageDto dto =  MessageDto.builder()
+									.id(clCode.getClCode())
+									.processGubun(clCode.getMode())
+									.processName("LCODEINFO")
+									.urlMethod("GET")
+									.url("/api/backoffice/sys/cmm/clc/"+clCode.getClCode()+".do")
+									.build();
+							
+				messageService.sendMessage(dto, 
+						"Topic", 
+						exchangeName,
+						routingKey);
+				log.info("=========== send message");
+			}
+			
 			model.addObject(Globals.STATUS, status);
 			model.addObject(Globals.STATUS_MESSAGE, message);
 		}catch(Exception e) {
@@ -185,7 +230,7 @@ public class EgovCcmCmmnClCodeManageController {
 		//공용 확인 하기 
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
-			if (!jwtVerification.isVerificationAdmin(request)) {
+			if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
 				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
 			}
@@ -196,6 +241,7 @@ public class EgovCcmCmmnClCodeManageController {
 			model.addObject(Globals.JSON_RETURN_RESULT, detail);
 		}catch (Exception e){
 			log.debug("selectCmmnClCodeDetail error:" + e.toString());
+			log.debug("selectCmmnClCodeDetail line:" + e.getStackTrace()[0].getLineNumber());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 		}
@@ -249,6 +295,7 @@ public class EgovCcmCmmnClCodeManageController {
 			int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).get(Globals.PAGE_TOTAL_RECORD_COUNT).toString().replace("-", "") ) :0;
 			
 			paginationInfo.setTotalRecordCount(totCnt);
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
 			model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
 		}catch (Exception e){

@@ -17,7 +17,7 @@ public interface EgovCmmnCodeManageMapper {
 	
 	public List<CmmnCodeDto> selectCmmnCodeList();
 	
-	public CmmnCodeDto selectCmmnCodeDetail(String codeId);
+	public CmmnCodeDto selectCmmnCodeDetail(String codeId, String systemCode);
 	
 	public int insertCmmnCode(CmmnCodeReqDto vo);
 	

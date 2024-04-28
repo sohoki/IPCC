@@ -27,6 +27,8 @@ public interface MenuCreateManageMapper {
 	public List<Map<String, Object>> selectMenuCreatList_D(String authorCode);
 	//tree 메뉴 설정
 	public List<Map<String, Object>> selectMenuCreatList_Author(String roleId, String systemCode, String hidMenuGubun);
+	//systemMenu 설정
+	public List<Map<String, Object>> selectMenuCreatList_System(String roleId, String systemCode, String hidMenuGubun);
 	
 	public int insertMenuCreat_S(MenuCreatInfo info);
 	

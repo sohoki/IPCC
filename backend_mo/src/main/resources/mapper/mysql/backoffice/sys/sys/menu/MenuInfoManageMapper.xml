@@ -5,9 +5,9 @@
 		    WITH recursive cte AS 
 			(
 				SELECT TB.MENU_NO, TB.MENU_ORDR, TB.MENU_NM, TB.UPPER_MENU_NO, TB.MENU_DC, TB.PROGRM_FILE_NM, TB.PROGRM_KOREAN_NM,  
-					   TB.URL, TB.RELATE_IMAGE_PATH, TB.RELATE_IMAGE_NM, TB.MENU_PAGE_TARGET, TB.MENU_POPUPNFO, TB.MENU_PRIVACY,
-					   TB.SYSTEM_CODE, TB.MENU_USEYN, 
-					   1 as LEVEL, CONVERT(TB.MENU_NO, char(100)) as ctg_path
+						TB.URL, TB.RELATE_IMAGE_PATH, TB.RELATE_IMAGE_NM, TB.MENU_PAGE_TARGET, TB.MENU_POPUPNFO, TB.MENU_PRIVACY,
+						TB.SYSTEM_CODE, TB.MENU_USEYN, 
+						1 as LEVEL, CONVERT(TB.MENU_NO, char(100)) as ctg_path
 				FROM 
 				(SELECT  a.MENU_NO           
 						, a.MENU_ORDR         
@@ -26,15 +26,15 @@
 						, a.MENU_PRIVACY
 				FROM COMTNMENUINFO a, COMTNPROGRMLIST b
 				WHERE UPPER_MENU_NO is null
-					  AND a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
-				      )  TB
+						AND a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
+					) TB
 				UNION all
 				SELECT TA.MENU_NO, TA.MENU_ORDR, TA.MENU_NM, TA.UPPER_MENU_NO, TA.MENU_DC, TA.PROGRM_FILE_NM, TA.PROGRM_KOREAN_NM,  
-					   TA.URL, TA.RELATE_IMAGE_PATH, TA.RELATE_IMAGE_NM, TA.MENU_PAGE_TARGET, TA.MENU_POPUPNFO, TA.MENU_PRIVACY,
-					   TA.SYSTEM_CODE, TA.MENU_USEYN,
-					   b.LEVEL + 1, CONCAT(b.ctg_path, '-', TA.MENU_NO)
+						TA.URL, TA.RELATE_IMAGE_PATH, TA.RELATE_IMAGE_NM, TA.MENU_PAGE_TARGET, TA.MENU_POPUPNFO, TA.MENU_PRIVACY,
+						TA.SYSTEM_CODE, TA.MENU_USEYN,
+						b.LEVEL + 1, CONCAT(b.ctg_path, '-', TA.MENU_NO)
 				FROM
-				(SELECT   a.MENU_NO           
+				(SELECT a.MENU_NO           
 						, a.MENU_ORDR         
 						, a.MENU_NM           
 						, a.UPPER_MENU_NO    
@@ -51,13 +51,13 @@
 						, a.MENU_PRIVACY
 				FROM COMTNMENUINFO a, COMTNPROGRMLIST b
 				WHERE a.PROGRM_FILE_NM = b.PROGRM_FILE_NM
-					 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchSystemCode)">  
-				     	AND a.SYSTEM_CODE = #{params.searchSystemCode}
-				     </if>
-				     <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseyn)">  
-				     	AND a.MENU_USEYN = #{params.searchUseyn}
-				     </if>
-				     ) TA
+					<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchSystemCode)">  
+						AND a.SYSTEM_CODE = #{params.searchSystemCode}
+					</if>
+					<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseyn)">  
+						AND a.MENU_USEYN = #{params.searchUseyn}
+					</if>
+					) TA
 				INNER JOIN cte AS b ON TA.UPPER_MENU_NO = b.MENU_NO
 			)
 			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
@@ -65,16 +65,37 @@
 				   MENU_NO, MENU_ORDR, MENU_NM, UPPER_MENU_NO, MENU_DC, PROGRM_FILE_NM, PROGRM_KOREAN_NM,  URL,  LEVEL,  ctg_path
 			FROM cte
 			WHERE 1=1 
-			 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">  
-		     <![CDATA[
-		     	AND MENU_NM like CONCAT ('%', #{params.searchKeyword},'%')
-		      ]]>
-		     </if>
+			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">  
+				<![CDATA[
+					AND MENU_NM like CONCAT ('%', #{params.searchKeyword},'%')
+				]]>
+			</if>
 			ORDER BY CTG_PATH ASC ,MENU_ORDR ASC 
-		      
-		   
+		
 	</select> 
-
+	<!--  시스템 코드 가저 가기 -->
+	<select id="selectSystemProgramInfo" resultType="ProgrmInfo">
+		SELECT B.*
+		FROM COMTNMENUINFO A, COMTNPROGRMLIST B 
+		WHERE A.PROGRM_FILE_NM  = B.PROGRM_FILE_NM 
+			AND A.SYSTEM_CODE  = #{systemCode}
+			AND A.MENU_NO IN (
+					SELECT MENU_NO 
+					FROM COMTNMENUCREATDTLS
+					WHERE ROLE_ID  = #{roleId} AND SYSTEM_CODE  = #{systemCode}
+				)
+	</select>
+	<select id="selectSystemMenuInfo" resultType="camelmap">
+		SELECT A.MENU_NO, A.MENU_ORDR , A.MENU_NM , A.UPPER_MENU_NO, A.MENU_DC, A.PROGRM_FILE_NM
+				, A.RELATE_IMAGE_PATH, A.RELATE_IMAGE_NM, A.MENU_PAGE_TARGET, A.MENU_POPUPNFO
+				, A.SYSTEM_CODE, A.MENU_PAGE_TARGET, A.MENU_POPUPNFO, A.MENU_USEYN, A.MENU_PRIVACY
+				, B.MENU_BASIC_INFO, B.ROLE_ID
+		FROM COMTNMENUINFO A, COMTNMENUCREATDTLS B 
+		WHERE A.MENU_NO  = B.MENU_NO 
+			  AND B.ROLE_ID  = #{roleId} 
+			  AND B.SYSTEM_CODE  = #{systemCode}		
+	</select>
+	
 	<select id="selectMenuManage_D" resultType="lmap">
 		SELECT  A.MENU_NO           
 				, A.MENU_ORDR         

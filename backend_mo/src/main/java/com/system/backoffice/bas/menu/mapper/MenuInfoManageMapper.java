@@ -8,6 +8,7 @@ import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.system.backoffice.bas.menu.models.MenuInfo;
 import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
+import com.system.backoffice.bas.program.models.ProgrmInfo;
 
 @Mapper
 public interface MenuInfoManageMapper {
@@ -18,8 +19,22 @@ public interface MenuInfoManageMapper {
 	 * @return List
 	 * @exception Exception
 	 */
-	public List<Map<String, Object>> selectMenuManageList_D(@Param("params") Map<String, Object> vo) ;
-
+	public List<Map<String, Object>> selectMenuManageList_D(@Param("params") Map<String, Object> vo);
+	/**
+	 * 시스템 에서 메뉴별 프로그램 목록을 조회
+	 * @param vo ProgrmInfo
+	 * @return List
+	 * @exception Exception
+	 */
+	public List<ProgrmInfo> selectSystemProgramInfo(String roleId, String systemCode);
+	/**
+	 * 시스템 에서 메뉴 및 권한별 메뉴 목록을 조회
+	 * @param json
+	 * @return List
+	 * @exception Exception
+	 */
+	public List<Map<String, Object>> selectSystemMenuInfo(String roleId, String systemCode);
+	
 	/**
 	 * 메뉴목록관리 기본정보를 조회
 	 * @param vo ComDefaultVO

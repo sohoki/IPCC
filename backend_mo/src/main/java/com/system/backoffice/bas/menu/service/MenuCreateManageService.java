@@ -4,18 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.system.backoffice.bas.menu.mapper.MenuCreateManageMapper;
 import com.system.backoffice.bas.menu.models.MenuCreatInfo;
-import com.system.backoffice.bas.menu.web.MenuInfoManageController;
 import com.system.backoffice.util.service.RedisUtil;
 import com.system.backoffice.util.service.UtilInfoService;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,7 +35,6 @@ public class MenuCreateManageService {
 	public List<Map<String, Object>> selectMenuCreatList_Author(String roleId, String systemCode, String hidMenuGubun) throws Exception {
 		return createMapper.selectMenuCreatList_Author(roleId, systemCode, hidMenuGubun);
 	}
-	
 	
 	public int selectMenuCreatManagTotCnt(MenuCreatInfo searchKeyword) throws Exception {
 		return createMapper.selectMenuCreatCnt_S(searchKeyword);

@@ -11,11 +11,9 @@ import com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto;
 import com.system.backoffice.bas.program.mapper.ProgrameChangeManageMapper;
 import com.system.backoffice.bas.program.mapper.ProgrmInfoManageMapper;
 import com.system.backoffice.bas.program.models.ProgrmInfo;
-import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.util.service.UtilInfoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -51,11 +49,15 @@ public class MenuInfoManageService {
 		// 메뉴목록을 조회
 		return menuMapper.selectMenuManage_D(menuNo);
 	}
-
-	
 	public List<Map<String, Object>> selectMenuManageList(Map<String, Object> vo) throws Exception {
-		List<Map<String, Object>> menuList =  menuMapper.selectMenuManageList_D(vo);
-		return menuList;
+		return  menuMapper.selectMenuManageList_D(vo);
+	}
+	
+	public List<ProgrmInfo> selectSystemProgramInfo(String roleId, String systemCode) throws Exception {
+		return  menuMapper.selectSystemProgramInfo(roleId, systemCode);
+	}
+	public List<Map<String, Object>> selectSystemMenuInfo(String roleId, String systemCode) throws Exception {
+		return  menuMapper.selectSystemMenuInfo(roleId, systemCode);
 	}
 
 	

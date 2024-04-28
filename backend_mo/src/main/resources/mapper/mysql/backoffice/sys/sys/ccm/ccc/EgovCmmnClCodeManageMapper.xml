@@ -4,10 +4,11 @@
 	<select id="selectCmmnClCodeListByPagination" resultType="camelmap">
 	
 		SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
-	    TB.* FROM (
-			    SELECT 
-			    		CL_CODE, CL_CODE_NM, USE_AT, LAST_UPDT_PNTTM, LAST_UPDUSR_ID, CL_CODE_DC
-			    FROM   COMTCCMMNCLCODE a
+		TB.* FROM (
+				SELECT 
+						CL_CODE, CL_CODE_NM, USE_AT, DATE_FORMAT(LAST_UPDT_PNTTM, '%Y-%m-%d %H:%I') AS LAST_UPDT_PNTTM, 
+						LAST_UPDUSR_ID, CL_CODE_DC
+				FROM   COMTCCMMNCLCODE a
 				WHERE  1=1
 		        <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 						<choose>
@@ -20,11 +21,11 @@
 						</choose>
 				</if>		        
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.useYn)">
-				         and a.USE_YN = #{params.useYn}
+					AND a.USE_YN = #{params.useYn}
 				</if>		     
 		        ORDER BY a.LAST_UPDT_PNTTM  DESC
        ) TB 
-       limit #{params.firstIndex} , #{params.recordCountPerPage}    
+       LIMIT #{params.firstIndex} , #{params.recordCountPerPage}    
 	</select>
 	
 	<select id="selectCmmnClCodeList" resultType="lmap">
@@ -36,9 +37,9 @@
 	
 	
 	<select id="selectCmmnClCodeDetail" resultType="CmmnClCode">
-		SELECT CL_CODE, CL_CODE_NM, USE_AT, CL_CODE_DC, FRST_REGISTER_ID
+		SELECT CL_CODE as clCode, CL_CODE_NM clCodeNm, USE_AT useAt, CL_CODE_DC clCodeDc, FRST_REGISTER_ID frstRegisterId
 		FROM COMTCCMMNCLCODE
-		WHERE CL_CODE = #{value}
+		WHERE CL_CODE = #{clCode}
 	</select>
 	
 	<insert id="insertCmmnClCode">
@@ -69,6 +70,12 @@
 	
 	<delete id="deleteCmmnClCode">
 		DELETE FROM COMTCCMMNCLCODE 
-		WHERE CL_CODE = #{value}
+		WHERE CL_CODE = #{clCode} ;
+		
+		DELETE FROM COMTCCMMNCODE 
+		WHERE CL_CODE = #{clCode} ;
+		
+		DELETE FROM COMTCCMMNDETAILCODE 
+		WHERE CODE_ID IN (SELECT CODE_ID FROM COMTCCMMNCODE WHERE CL_CODE = #{clCode}) ;
 	</delete>
 </mapper>

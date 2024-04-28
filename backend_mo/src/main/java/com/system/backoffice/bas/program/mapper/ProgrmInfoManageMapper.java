@@ -13,23 +13,23 @@ import com.system.backoffice.bas.program.models.dto.ProgrmInfoDto;
 @Mapper
 public interface ProgrmInfoManageMapper {
 
-    public List<ProgrmInfoDto> selectProgrmInfoList(@Param("params") Map<String, Object> params);
+	public List<ProgrmInfoDto> selectProgrmInfoList(@Param("params") Map<String, Object> params);
+		
+	public Optional<ProgrmInfoDto> selectProgrmInfoDetail(String progrmFileNm);
 	
-    public Optional<ProgrmInfoDto> selectProgrmInfoDetail(String progrmFileNm);
-    
-    public int selectProgrmListTotCnt();
-    
-    public int insertProgrmInfo(ProgrmInfo vo);
+	public int selectProgrmListTotCnt();
 	
-    public int updateProgrmInfo(ProgrmInfo vo);
-    
-    public int deleteProgrmInfo(String progrmFileNm);
-    
-    public int deleteProgrmManageList(@Param("programFiles") List<String> programFiles);
+	public int insertProgrmInfo(ProgrmInfo vo);
+		
+	public int updateProgrmInfo(ProgrmInfo vo);
+	
+	public int deleteProgrmInfo(String progrmFileNm);
+	
+	public int deleteProgrmManageList(@Param("programFiles") List<String> programFiles);
 	/**
 	 * 프로그램목록 전체삭제 초기화
 	 * @return boolean
 	 * @exception Exception
 	 */
-    public int deleteAllProgrm();
+	public int deleteAllProgrm();
 }

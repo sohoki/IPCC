@@ -291,13 +291,28 @@ public class PartInfoManageController {
 	public ModelAndView partDelete(@PathVariable String partId ) throws Exception {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-        
+
 		UniUtilInfo utilInfo = new UniUtilInfo();
 		utilInfo.setInTable("TB_PARTINFO");
 		utilInfo.setInCondition("PART_ID=["+partId+"[");
 		try{
 			
-		    int ret = utilService.deleteUniStatement(utilInfo);	
+			int ret = utilService.deleteUniStatement(utilInfo);	
+			if (ret > 0) {
+		    	MessageDto dto =  MessageDto.builder()
+						.id(partId)
+						.processGubun("DEL")
+						.processName("PARTINFO")
+						.urlMethod("DELETE")
+						.url("")
+						.build();
+				
+						messageService.sendMessage(dto, 
+								"Topic", 
+								exchangeName,
+								routingKey);
+						log.info("=========== send message");
+		    }
 		    model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));	
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS); 
 		    
