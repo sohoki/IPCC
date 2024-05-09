@@ -87,6 +87,12 @@
 		<typeAlias alias="CenterInfo"		type="com.system.backoffice.infra.bld.cnt.models.CenterInfo" />
 		<typeAlias alias="CenterInfoVO"		type="com.system.backoffice.infra.bld.cnt.models.CenterInfoVO" />
 		
+		<typeAlias alias="StorageInfo"		type="com.system.backoffice.infra.ble.wre.models.StorageInfo" />
+		<typeAlias alias="StorageInfoVO"	type="com.system.backoffice.infra.ble.wre.models.StorageInfoVO" />
+		
+		<typeAlias alias="CompanyInfo"		type="com.system.backoffice.infra.cor.com.models.CompanyInfo" />
+		<typeAlias alias="CompanyInfoVO"	type="com.system.backoffice.infra.cor.com.models.CompanyInfoVO" />
+		
 		<typeAlias alias="AmqpConfigInfo"		type="com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo" />
 		
 		
