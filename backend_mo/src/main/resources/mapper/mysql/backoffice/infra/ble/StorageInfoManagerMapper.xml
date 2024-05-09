@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.infra.ble.wre.mapper.StorageInfoManageMapper">
+   <select id="selectStorageInfoManageListByPagination"  resultType="StorageInfoVO">
+	  SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+	        TB.* FROM (
+		    SELECT  a.STORAGE_CODE, a.CENTER_ID, a.STORAGE_NAME, a.STORAGE_DC, a.INSTT_CODE,
+                    a.STORAGE_USEYN, a.CREATE_DE, a.END_DE, a.FRST_REGISTER_ID, a.FRST_REGIST_PNTTM,
+                    a.LAST_UPDUSR_ID , a.LAST_UPDT_PNTTM
+		    FROM    TB_STORAGE a, TB_CENTERINFO b
+		        WHERE a.CENTER_ID = b.CENTER_ID        	     
+		        ORDER BY a.CENTER_ID  DESC
+	        ) TB  
+	         ORDER BY TB.STORAGE_CODE  DESC
+	        limit   #{params.firstIndex},   #{params.recordCountPerPage}  		 	    
+     </select>
+
+    <insert id="insertStorageInfoManage" >
+        <![CDATA[
+             INSERT INTO TB_STORAGE (STORAGE_CODE, CENTER_ID, STORAGE_NAME, STORAGE_DC, INSTT_CODE, 
+		             					STORAGE_USEYN, CREATE_DE, END_DE, FRST_REGISTER_ID, FRST_REGIST_PNTTM,
+										LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+										)
+             VALUES ( #{storageCode,jdbcType=VARCHAR}, #{centerId ,jdbcType=VARCHAR}, #{storageName ,jdbcType=VARCHAR}, #{storageDc ,jdbcType=VARCHAR}, #{insttCode,jdbcType=VARCHAR}, 
+		             #{storageUseyn,jdbcType=VARCHAR}, DATE_FORMAT(NOW(), '%Y%m%d'), #{endDe,jdbcType=VARCHAR},    #{userId,jdbcType=VARCHAR}, NOW(),
+		             #{userId,jdbcType=VARCHAR}, NOW()
+             )
+         ]]>
+     </insert>
+     <update id="updateStorageInfoManage" >
+		UPDATE  TB_STORAGE SET CENTER_ID = #{centerId ,jdbcType=VARCHAR} ,
+									STORAGE_NAME = #{storageName ,jdbcType=VARCHAR} ,
+									STORAGE_DC = #{storageDc ,jdbcType=VARCHAR} ,
+									INSTT_CODE = #{insttCode ,jdbcType=VARCHAR} ,
+									STORAGE_USEYN = #{storageUseyn,jdbcType=VARCHAR} ,
+									END_DE =DATE_FORMAT(NOW(), '%Y%m%d'),
+									LAST_UPDUSR_ID = #{userId ,jdbcType=VARCHAR} ,
+									LAST_UPDT_PNTTM = NOW()
+		WHERE STORAGE_CODE = #{storageCode}
+     </update>
+
+     
+	<delete id="deleteStorageInfoManage">
+		DELETE FROM TB_STORAGE
+		WHERE  STORAGE_CODE = #{storageCode}
+	</delete>
+</mapper>

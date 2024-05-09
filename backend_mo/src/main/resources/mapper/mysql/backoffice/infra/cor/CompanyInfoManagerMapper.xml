@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.infra.cor.com.mapper.CompanyInfoManageMapper">
+   <select id="selectCompanyInfoManageListByPagination"  resultType="CompanyInfoVO">
+	  SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+	        TB.* FROM (
+		    SELECT  a.COM_CODE, a.COM_NUMBER, a.COM_NAME, a.COM_GUBUN, a.COM_BUSCONDITION,
+                    a.COM_ITEM, a.COM_CEO_NAME, a.COM_TEL, a.COM_FAX, a.COM_ZIPCODE,
+                    a.COM_ADDR1 , a.COM_ADDR2, a.COM_HOMEPAGE, a.COM_STATE, a.COM_LOGO,
+                    a.FRST_REGISTER_ID, a.FRST_REGIST_PNTTM, a.LAST_UPDUSR_ID, a.LAST_UPDT_PNTTM,
+                    a.COM_MEMO
+		    FROM    TB_COMPANYINFO a     	     
+		        ORDER BY a.COM_CODE  DESC
+	        ) TB  
+	         ORDER BY TB.COM_CODE  DESC
+	        limit   #{params.firstIndex},   #{params.recordCountPerPage}  		 	    
+     </select>
+
+    <insert id="insertCompanyInfoManage" >
+        <![CDATA[
+             INSERT INTO TB_COMPANYINFO (COM_CODE, COM_NUMBER, COM_NAME, COM_GUBUN, COM_BUSCONDITION, 
+		             					COM_ITEM, COM_CEO_NAME, COM_TEL, COM_FAX, COM_ZIPCODE,
+										COM_ADDR1, COM_ADDR2, COM_HOMEPAGE, COM_STATE, COM_LOGO,
+										FRST_REGISTER_ID, FRST_REGIST_PNTTM, LAST_UPDUSR_ID, LAST_UPDT_PNTTM,
+										COM_MEMO
+										)
+             VALUES ( #{comCode,jdbcType=VARCHAR}, #{comNumber ,jdbcType=VARCHAR}, #{comName ,jdbcType=VARCHAR}, #{comGubun ,jdbcType=VARCHAR}, #{comBuscondition,jdbcType=VARCHAR}, 
+		             #{comItem,jdbcType=VARCHAR}, #{comCeoName,jdbcType=VARCHAR}, #{comTel,jdbcType=VARCHAR}, #{comFax,jdbcType=VARCHAR}, #{comZipcode,jdbcType=VARCHAR},
+		             #{comAddr1,jdbcType=VARCHAR}, #{comAddr2,jdbcType=VARCHAR}, #{comHomepage,jdbcType=VARCHAR}, #{comState,jdbcType=VARCHAR}, #{comLogo,jdbcType=VARCHAR},
+		             #{userId,jdbcType=VARCHAR}, NOW(), #{userId,jdbcType=VARCHAR}, NOW(), 
+		             #{comMemo,jdbcType=VARCHAR}
+		             
+             )
+         ]]>
+     </insert>
+     <update id="updateCompanyInfoManage" >
+		UPDATE  TB_COMPANYINFO SET COM_NUMBER = #{comNumber ,jdbcType=VARCHAR} ,
+									COM_NAME = #{comName ,jdbcType=VARCHAR} ,
+									COM_GUBUN = #{comGubun ,jdbcType=VARCHAR} ,
+									COM_BUSCONDITION = #{comBuscondition ,jdbcType=VARCHAR} ,
+									COM_ITEM = #{comItem,jdbcType=VARCHAR} ,
+									COM_CEO_NAME = #{comCeoName ,jdbcType=VARCHAR} ,
+									COM_TEL = #{comTel ,jdbcType=VARCHAR} ,
+									COM_FAX = #{comFax ,jdbcType=VARCHAR} ,
+									COM_ZIPCODE = #{comZipcode ,jdbcType=VARCHAR} ,
+									COM_ADDR1 = #{comAddr1 ,jdbcType=VARCHAR} ,
+									COM_ADDR2 = #{comAddr2 ,jdbcType=VARCHAR} ,
+									COM_HOMEPAGE = #{comHomepage ,jdbcType=VARCHAR} ,
+									COM_STATE = #{comState ,jdbcType=VARCHAR} ,
+									COM_LOGO = #{comLogo ,jdbcType=VARCHAR} ,
+									LAST_UPDUSR_ID = #{userId ,jdbcType=VARCHAR} ,
+									LAST_UPDT_PNTTM = NOW(),
+									COM_MEMO = #{comMemo ,jdbcType=VARCHAR} 
+		WHERE COM_CODE = #{comCode}
+     </update>
+
+     
+	<delete id="deleteCompanyInfoManage">
+		DELETE FROM TB_COMPANYINFO
+		WHERE  COM_CODE = #{comCode}
+	</delete>
+</mapper>
