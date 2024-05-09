@@ -228,11 +228,11 @@ public class EgovCcmCmmnDetailCodeManageController {
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}else {
 				String[] userinfo = jwtVerification.getTokenUserInfo(request);
-				searchMap.put(Globals.PAGE_SYSTEM_CODE, userinfo[1]);
+				searchMap.put(Globals.PAGE_LOGIN_SYSTEM_CODE, userinfo[1]);
 			}
 			
 			List<CmmnDetailCodeDto> codeDetailList = cmmnDetailCodeManageService.selectCmmnDetailCodeList("",
-																				searchMap.get(Globals.PAGE_SYSTEM_CODE).toString());
+																				searchMap.get(Globals.PAGE_LOGIN_SYSTEM_CODE).toString());
 			int totCnt = codeDetailList.size() > 0 ? codeDetailList.size()  : 0;
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			model.addObject( Globals.STATUS_REGINFO, searchMap.get("codeId"));

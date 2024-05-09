@@ -28,10 +28,14 @@ public  interface AdminInfoManageService {
 	int updatePassChange(AdminInfo vo) throws Exception;
 	
 	Optional<AdminInfo> selectAdminUserManageDetail(String mberId) throws Exception;
+	
+	Optional<AdminInfo> selectAdminUserManageSystem(String adminId, String systemCode) throws Exception;
 	//system값
 	List<UserAuthInfoDto> selectSystemMenuList(UserAuthInfoReqDto req) throws Exception;
 	
 	List<?> selectAdminUserManageListByPagination(Map<String, Object> params) throws Exception;  
+	
+	List<?> selectAdminUserManageListBySystemInfo(Map<String, Object> params) throws Exception;	
 	
 	List<?> selectAdminStateChangeManageListByPagination(Map<String, Object> params) throws Exception;
 	

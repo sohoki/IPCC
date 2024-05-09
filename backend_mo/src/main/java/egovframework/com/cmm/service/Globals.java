@@ -99,7 +99,11 @@ public class Globals {
 	public static final String PAGE_UNIT = "pageUnit";
 	public static final String PAGE_TOTAL_COUNT = "totalCnt";
 	public static final String PAGE_DOMAIN = "domainInfo";
-	public static final String PAGE_SYSTEM_CODE = "systemCode";
+	
+	public static final String PAGE_LOGIN_SYSTEM_CODE = "systemCode";
+	public static final String PAGE_LOGIN_ROLEID = "roleId";
+	public static final String PAGE_LOGIN_PARTID = "partId";
+	public static final String PAGE_LOGIN_INSTTCODE = "insttCode";
 	
 	public static final String URL_METHOD_POST = "POST";
 	public static final String URL_METHOD_GET = "GET";

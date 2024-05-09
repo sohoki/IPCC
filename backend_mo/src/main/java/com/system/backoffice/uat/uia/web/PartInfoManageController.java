@@ -114,8 +114,9 @@ public class PartInfoManageController {
 				
 				PaginationInfo paginationInfo = new PaginationInfo();
 				paginationInfo.setCurrentPageNo(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_INDEX), 1));
-				paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_UNIT));
-				paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_UNIT));
+				paginationInfo.setRecordCountPerPage(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT)));
+				paginationInfo.setPageSize(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_SIZE), propertiesService.getInt(Globals.PAGE_SIZE)) );
+				
 			   
 				searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
 				searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
@@ -299,7 +300,7 @@ public class PartInfoManageController {
 			
 			int ret = utilService.deleteUniStatement(utilInfo);	
 			if (ret > 0) {
-		    	MessageDto dto =  MessageDto.builder()
+				MessageDto dto =  MessageDto.builder()
 						.id(partId)
 						.processGubun("DEL")
 						.processName("PARTINFO")

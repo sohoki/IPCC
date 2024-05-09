@@ -30,7 +30,11 @@ public interface AdminInfoManagerMapper {
 
 	public Optional<AdminInfo> selectAdminUserManageDetail(String adminId) throws Exception;
 	
+	public Optional<AdminInfo> selectAdminUserManageSystem(String adminId, String systemCode) throws Exception;
+	
 	public List<?> selectAdminUserManageListByPagination(@Param("params") Map<String, Object> params) throws Exception;
+	
+	public List<?> selectAdminUserManageListBySystemInfo(@Param("params") Map<String, Object> params) throws Exception;	
 	//수정 중
 	public List<UserAuthInfoDto> selectSystemUserMenuInfo(UserAuthInfoReqDto req) throws Exception;
 	

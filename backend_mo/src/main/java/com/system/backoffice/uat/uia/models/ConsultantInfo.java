@@ -15,6 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor	
 public class ConsultantInfo {
 
+	private String consultCode;
 	private String pbxExtension;
 	private String pbxType;
 	private String pbxCor;
@@ -66,6 +67,10 @@ public class ConsultantInfo {
 	private String pbxButton07;
 	private String pbxDisplayLangage;
 	
+	//신규
+	private String partId;
+	private String insttCode;
+	private String agentStatus;
 	
 	
 	private List<ConsultantAgentInfo> agentInfo;

@@ -54,8 +54,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 public class EgovLoginApiController {
 	
-	private final Logger log = LogManager.getLogger(EgovLoginApiController.class);
-
 	/** EgovLoginService */
 	@Resource(name = "loginService")
 	private EgovLoginService loginService;

@@ -23,290 +23,270 @@ import com.system.ipcc.pbx.avaya.smsxml.AgentType;
 import com.system.ipcc.pbx.avaya.smsxml.ModelChoices;
 import com.system.ipcc.pbx.avaya.smsxml.ObjectFactory;
 
-class AEServices
-{
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+class AEServices{
+	
+	
 	private ObjectFactory objectFactory;
-    private IPServicesType ipServices ;
-    private ModelChoices modelFields;
-    private ArrayList<IPServicesType> data;
-    
+	private IPServicesType ipServices ;
+	private ModelChoices modelFields;
+	private ArrayList<IPServicesType> data;
+	
 	// Class Loader
 	ClassLoader cl = null;
+		
+	private String qualifier = "";
+	private String root = "";
+	private String login = "";
+	private String pw = "";
+	private String [] servers;
+	private String [] serverPw;
+	private String [] serverEnable;
+	private int [] serverIndex;
+	private int serverCount = 0;
 	
-    private String qualifier = "";
-    private String root = "";
-    private String login = "";
-    private String pw = "";
-    private String [] servers;
-    private String [] serverPw;
-    private String [] serverEnable;
-    private int [] serverIndex;
-    private int serverCount = 0;
+	public final static int DISPLAY = 0;
+	public final static int ADD = 1;
+	public final static int ENABLE = 2;
+	public final static int DISABLE = 3;
+	public final static int REMOVE = 4;
 
-    public final static int DISPLAY = 0;
-    public final static int ADD = 1;
-    public final static int ENABLE = 2;
-    public final static int DISABLE = 3;
-    public final static int REMOVE = 4;
+	private int cmd = DISPLAY;
+	
+	SMSRequest sms;
+	
+	// Property File Values
+	private static final String ROOT = "sms.root";
+	private static final String LOGIN = "cm.login";
+	private static final String PASSWORD = "cm.password";
+	private static final String OPERATION ="operation";
+	private static final String OPTIONS ="options";
+	
+	public AEServices( ) {
+		
+	}
 
-    private int cmd = DISPLAY;
 
-    SMSRequest sms;
-    
-    // Property File Values
-    private static final String ROOT = "sms.root";
-    private static final String LOGIN = "cm.login";
-    private static final String PASSWORD = "cm.password";
-    private static final String OPERATION ="operation";
-    private static final String OPTIONS ="options";
-    
-    public AEServices( ) {
-    	
-    }
-    
+	private void display(){
+		
+		int nRows = ipServices.getAEServicesServer().size();
+		
+		log.info( "------------------ AESVCS Configuration ------------------" );
+		int nPos = indexOf( (ArrayList<ArrayType>) ipServices.getServiceType(),"AESVCS");
+		log.info( "Local Node: " + ipServices.getLocalNode().get(nPos).getValue() );
+		log.info( "Local Port: " + ipServices.getLocalPort().get(nPos).getValue() );
+		log.info( "Enabled: " + ipServices.getEnabled().get(nPos).getValue() );
+		log.info( "" );
+		log.info( "Server ID  Server Name       Password      Enabled  Status" );
+		log.info( "---------  ----------------  ------------  -------  ------" );
+		String strPad = "                    ";
+		String strPw = "********************";
+		
+		for( int n = 0; n < nRows; ++n ){
+			String strServer = ipServices.getAEServicesServer().get(n).getValue();
+			long position = ipServices.getAEServicesServer().get(n).getPosition();
+			if ( strServer != null ){
+				String strId = ( "" + position + ": " + strPad).substring( 0, 11 );
+				String strName = ( strServer + strPad).substring( 0, 18);
+				int pwLen = ("" + ipServices.getAEServicesPassword().get(n).getValue()).length();
+				String strPwPrint = (strPw.substring( 0, pwLen) + strPad).substring( 0, 14);
+				String strEnabled = "   " + ipServices.getAEServicesEnabled().get(n).getValue() + "     ";
+				String strStatus = ipServices.getAEServicesStatus().get(n).getValue();
+				log.info( strId + strName + strPwPrint + strEnabled + strStatus );
+			}
+		}
+	}
 
-    private void display()
-    {
-       int nRows = ipServices.getAEServicesServer().size();
+	private void doSetEnabled( boolean bEnable ){
+		
+		// Check server list against query results
+		if ( ! checkExistingServers( bEnable ? "enable" : "disable" ) ) return;
+		
+		ModelChoices mf_enable = objectFactory.createModelChoices();
+		IPServicesType ip_submit = objectFactory.createIPServicesType(); // Create new IPServicesType to submit
+		
+		for( int n = 0; n < serverCount; ++n ){
+			
+			int ndx = serverIndex[n];
+			
+			// Create ArrayType to set position and value
+			ArrayType enable = objectFactory.createArrayType();
+			enable.setValue(bEnable ? "y" : "n");
+			enable.setPosition(ndx);
+			
+			// Add ArrayType element to ipServerices object
+			ip_submit.getAEServicesEnabled().add(enable);
+			
+		}
+		mf_enable.getIPServices().add(ip_submit);
+		submitChange( mf_enable );
+	}
 
-       System.out.println( "------------------ AESVCS Configuration ------------------" );
-       int nPos = indexOf( (ArrayList<ArrayType>) ipServices.getServiceType(),"AESVCS");
-       System.out.println( "Local Node: " + ipServices.getLocalNode().get(nPos).getValue() );
-       System.out.println( "Local Port: " + ipServices.getLocalPort().get(nPos).getValue() );
-       System.out.println( "Enabled: " + ipServices.getEnabled().get(nPos).getValue() );
-       System.out.println( "" );
-       System.out.println( "Server ID  Server Name       Password      Enabled  Status" );
-       System.out.println( "---------  ----------------  ------------  -------  ------" );
-       String strPad = "                    ";
-       String strPw = "********************";
+	private void doRemove(){
+		
+		if ( ! checkExistingServers( "remove" ) ) return;
+		
+		ModelChoices mf_remove = objectFactory.createModelChoices();
+		IPServicesType ip_submit = objectFactory.createIPServicesType(); // Create new IPServicesType to submit
+		for( int n = 0; n < serverCount; ++n ){
+			int ndx = serverIndex[n];
+			
+			// Set all three modifiable fields to " " to remove (clear) server
+			ArrayType ae_server = objectFactory.createArrayType();
+			ArrayType ae_passwd = objectFactory.createArrayType();
+			ArrayType ae_enabled = objectFactory.createArrayType();
+			ae_server.setPosition(ndx);
+			ae_server.setValue(" ");
+			ae_passwd.setPosition(ndx);
+			ae_passwd.setValue(" ");
+			ae_enabled.setPosition(ndx);
+			ae_enabled.setValue(" ");
+			
+			ip_submit.getAEServicesServer().add(ae_server);
+			ip_submit.getAEServicesPassword().add(ae_passwd);
+			ip_submit.getAEServicesEnabled().add(ae_enabled);
+		}
+		mf_remove.getIPServices().add(ip_submit);
+		submitChange( mf_remove );
+	}
 
-       for( int n = 0; n < nRows; ++n )
-       {
-           String strServer = ipServices.getAEServicesServer().get(n).getValue();
-           long position = ipServices.getAEServicesServer().get(n).getPosition();
-           if ( strServer != null )
-           {
-              String strId = ( "" + position + ": " + strPad).substring( 0, 11 );
-              String strName = ( strServer + strPad).substring( 0, 18);
-              int pwLen = ("" + ipServices.getAEServicesPassword().get(n).getValue()).length();
-              String strPwPrint = (strPw.substring( 0, pwLen) + strPad).substring( 0, 14);
-              String strEnabled = "   " + ipServices.getAEServicesEnabled().get(n).getValue() + "     ";
-              String strStatus = ipServices.getAEServicesStatus().get(n).getValue();
-              System.out.println( strId + strName + strPwPrint + strEnabled + strStatus );
-           }
-        }
-    }
+	private void doAdd(){
+		if ( ! checkAddServers() ) return;
+		
+		// Prepare the add command
+		ModelChoices mf_add = objectFactory.createModelChoices();
+		IPServicesType ip_submit = objectFactory.createIPServicesType(); // Create new IPServicesType to submit
+		
+		for( int n = 0; n < serverCount; ++n ){
+			int ndx = serverIndex[ n ];
+			ArrayType ae_server = objectFactory.createArrayType();
+			ArrayType ae_passwd = objectFactory.createArrayType();
+			ArrayType ae_enabled = objectFactory.createArrayType();
+			ae_server.setPosition(ndx);
+			ae_server.setValue(servers[n]);
+			ae_passwd.setPosition(ndx);
+			ae_passwd.setValue(serverPw[n]);
+			ae_enabled.setPosition(ndx);
+			ae_enabled.setValue(serverEnable[n]);
+			
+			ip_submit.getAEServicesServer().add(ae_server);
+			ip_submit.getAEServicesPassword().add(ae_passwd);
+			ip_submit.getAEServicesEnabled().add(ae_enabled);
+		}
+		mf_add.getIPServices().add(ip_submit);
+		submitChange( mf_add );
+	}
+	
+	
+	private void submitChange( ModelChoices ips ){
+		//log.info( "TEST: Would have submitted the following:");
+		//log.info( "      sms.execRequest( "+model+",change,\"\","+fields+" );");
+		try{
+			sms.execRequest( ips, "change", "" );
+		}catch( Exception e ){
+			log.info( "The request generated an unexpected exception: " + e );
+			return;
+		}
+		
+		if ( sms.success() ){
+			log.info( "The operation completed successfully." );
+		}else{
+			log.info( "Error: " + sms.getFault() );
+		}
+	}
 
-    private void doSetEnabled( boolean bEnable )
-    {
-        // Check server list against query results
-        if ( ! checkExistingServers( bEnable ? "enable" : "disable" ) ) return;
+	private boolean checkAddServers(){
+		boolean bOk = true;
+		int nAvailable = 0; // Zero index is never used -- we'll increment below
+		int nMaxIndex = 16; // current CM's fixed at 16
+		int nUsed = 0;
+		for ( int n = 0; n < serverCount; ++n )
+		{
+			int ndx = indexOf( (ArrayList<ArrayType>) ipServices.getAEServicesServer(), servers[n]);
+			if ( ndx >= 0 )
+			{
+			    log.info( "Server " + servers[n] + " is already added." );
+			    bOk = false;
+			}
+			else
+			{
+				// Find next available index, if any
+				while( ++nAvailable <= nMaxIndex )
+				{
+					int used = indexOfPosition( (ArrayList<ArrayType>)ipServices.getAEServicesServer(), nAvailable);
+					if ( used < 0 )
+					{
+						// it's an unused slot.  Use this index
+						serverIndex[ n ] = nAvailable;
+						++nUsed;
+						break;
+					}
+				}
+				if ( nAvailable > nMaxIndex )
+				{
+					log.info( "Cannot add " + servers.length + " servers.  There are only " + nUsed +
+					  " unused links available." );
+					bOk = false;
+				}
+			}
+		}
+		return bOk;
+	}
 
-        ModelChoices mf_enable = objectFactory.createModelChoices();
-        IPServicesType ip_submit = objectFactory.createIPServicesType(); // Create new IPServicesType to submit
-        
-        for( int n = 0; n < serverCount; ++n )
-        {
-            int ndx = serverIndex[n];
-            
-            // Create ArrayType to set position and value
-            ArrayType enable = objectFactory.createArrayType();
-            enable.setValue(bEnable ? "y" : "n");
-            enable.setPosition(ndx);
-            
-            // Add ArrayType element to ipServerices object
-            ip_submit.getAEServicesEnabled().add(enable);
-            
-        }
-        mf_enable.getIPServices().add(ip_submit);
-        submitChange( mf_enable );
-    }
+	private boolean checkExistingServers( String cmd ){
+		int serverCount = servers.length;
+		boolean bOk = true;
+		for ( int n = 0; n < serverCount; ++n )
+		{
+			int ndx = indexOf( (ArrayList<ArrayType>) ipServices.getAEServicesServer(), servers[n]);
+			if ( ndx < 0 ){
+				log.info( "Server " + servers[n] + " is not configured.  Unable to " + cmd );
+				bOk = false;
+			}else{
+				serverIndex[ n ] = ndx+1;
+				String status = ipServices.getAEServicesStatus().get(ndx).getValue();
+				// Don't modify in use servers
+				if (( status != null ) && status.equals("in use") ){
+					log.info( "Server " + servers[n] + " is in use.  Unable to " + cmd );
+					bOk = false;
+				}else if ( cmd.equals("remove") ){
+					// Check enabled status
+					String enabled = ipServices.getAEServicesEnabled().get(ndx).getValue();
+					if (( enabled != null ) && enabled.equals("y"))
+					{
+						log.info( "Cannot remove enabled server " + servers[n] + "; disable first." );
+						bOk = false;
+					}
+				}
+			}
+		}
+		return bOk;
+	}
 
-    private void doRemove()
-    {
-        if ( ! checkExistingServers( "remove" ) ) return;
-
-        ModelChoices mf_remove = objectFactory.createModelChoices();
-        IPServicesType ip_submit = objectFactory.createIPServicesType(); // Create new IPServicesType to submit
-        for( int n = 0; n < serverCount; ++n )
-        {
-            int ndx = serverIndex[n];
-            
-            // Set all three modifiable fields to " " to remove (clear) server
-            ArrayType ae_server = objectFactory.createArrayType();
-            ArrayType ae_passwd = objectFactory.createArrayType();
-            ArrayType ae_enabled = objectFactory.createArrayType();
-            ae_server.setPosition(ndx);
-            ae_server.setValue(" ");
-            ae_passwd.setPosition(ndx);
-            ae_passwd.setValue(" ");
-            ae_enabled.setPosition(ndx);
-            ae_enabled.setValue(" ");
-            
-            ip_submit.getAEServicesServer().add(ae_server);
-            ip_submit.getAEServicesPassword().add(ae_passwd);
-            ip_submit.getAEServicesEnabled().add(ae_enabled);
-        }
-        mf_remove.getIPServices().add(ip_submit);
-        submitChange( mf_remove );
-    }
-
-    private void doAdd()
-    {
-        if ( ! checkAddServers() ) return;
-
-        // Prepare the add command
-        ModelChoices mf_add = objectFactory.createModelChoices();
-        IPServicesType ip_submit = objectFactory.createIPServicesType(); // Create new IPServicesType to submit
-        
-        for( int n = 0; n < serverCount; ++n )
-        {
-            int ndx = serverIndex[ n ];
-            ArrayType ae_server = objectFactory.createArrayType();
-            ArrayType ae_passwd = objectFactory.createArrayType();
-            ArrayType ae_enabled = objectFactory.createArrayType();
-            ae_server.setPosition(ndx);
-            ae_server.setValue(servers[n]);
-            ae_passwd.setPosition(ndx);
-            ae_passwd.setValue(serverPw[n]);
-            ae_enabled.setPosition(ndx);
-            ae_enabled.setValue(serverEnable[n]);
-            
-            ip_submit.getAEServicesServer().add(ae_server);
-            ip_submit.getAEServicesPassword().add(ae_passwd);
-            ip_submit.getAEServicesEnabled().add(ae_enabled);
-        }
-        mf_add.getIPServices().add(ip_submit);
-        submitChange( mf_add );
-    }
-   
-
-    private void submitChange( ModelChoices ips )
-    {
-        //System.out.println( "TEST: Would have submitted the following:");
-        //System.out.println( "      sms.execRequest( "+model+",change,\"\","+fields+" );");
-        try
-        {
-            sms.execRequest( ips, "change", "" );
-        }
-        catch( Exception e )
-        {
-            System.out.println( "The request generated an unexpected exception: " + e );
-            return;
-        }
-
-        if ( sms.success() )
-        {
-            System.out.println( "The operation completed successfully." );
-        }
-        else
-        {
-            System.out.println( "Error: " + sms.getFault() );
-        }
-    }
-
-    private boolean checkAddServers()
-    {
-        boolean bOk = true;
-        int nAvailable = 0; // Zero index is never used -- we'll increment below
-        int nMaxIndex = 16; // current CM's fixed at 16
-        int nUsed = 0;
-        for ( int n = 0; n < serverCount; ++n )
-        {
-            int ndx = indexOf( (ArrayList<ArrayType>) ipServices.getAEServicesServer(), servers[n]);
-            if ( ndx >= 0 )
-            {
-                System.out.println( "Server " + servers[n] + " is already added." );
-                bOk = false;
-            }
-            else
-            {
-                // Find next available index, if any
-                while( ++nAvailable <= nMaxIndex )
-                {
-                	int used = indexOfPosition( (ArrayList<ArrayType>)ipServices.getAEServicesServer(), nAvailable);
-                    if ( used < 0 )
-                    {
-                        // it's an unused slot.  Use this index
-                        serverIndex[ n ] = nAvailable;
-                        ++nUsed;
-                        break;
-                    }
-                }
-                if ( nAvailable > nMaxIndex )
-                {
-                    System.out.println( "Cannot add " + servers.length + " servers.  There are only " + nUsed +
-                      " unused links available." );
-                    bOk = false;
-                }
-            }
-        }
-        return bOk;
-    }
-
-    private boolean checkExistingServers( String cmd )
-    {
-        int serverCount = servers.length;
-        boolean bOk = true;
-        for ( int n = 0; n < serverCount; ++n )
-        {
-            int ndx = indexOf( (ArrayList<ArrayType>) ipServices.getAEServicesServer(), servers[n]);
-            if ( ndx < 0 )
-            {
-                System.out.println( "Server " + servers[n] + " is not configured.  Unable to " + cmd );
-                bOk = false;
-            }
-            else
-            {
-                serverIndex[ n ] = ndx+1;
-                String status = ipServices.getAEServicesStatus().get(ndx).getValue();
-                // Don't modify in use servers
-                if (( status != null ) && status.equals("in use") )
-                {
-                    System.out.println( "Server " + servers[n] + " is in use.  Unable to " + cmd );
-                    bOk = false;
-                }
-                else if ( cmd.equals("remove") )
-                {
-                    // Check enabled status
-                    String enabled = ipServices.getAEServicesEnabled().get(ndx).getValue();
-                    if (( enabled != null ) && enabled.equals("y"))
-                    {
-                        System.out.println( "Cannot remove enabled server " + servers[n] + "; disable first." );
-                        bOk = false;
-                    }
-                }
-            }
-        }
-        return bOk;
-    }
-
-    public void addServer( String arg )
-    {
-        if ( serverCount >= servers.length )
-        {
-            // Shouldn't see this unless we have buggy code
-            System.out.println( "Internal error - too many server arguments: ignoring " + arg );
-            return;
-        }
-        if ( cmd != ADD )
-        {
-            servers[ serverCount ] = arg;
-        }
-        else
-        {
-            // Format of server info to add is:
-            //     servername:password:enable
-            // where
-            //     password, if omitted, defaults to 1234567890ab (our testing default)
-            //     enable, if omitted, defaults to n
-            String [] addArgs = arg.split( ":" );
-            servers[ serverCount ] = addArgs[0];
-            serverPw[ serverCount ] = addArgs.length > 1 ? addArgs[1] : "1234567890ab";
-            serverEnable[ serverCount ] = addArgs.length > 2 ? addArgs[2] : "n";
-        }
-        ++serverCount;
-    }
+	public void addServer( String arg ){
+		
+		if ( serverCount >= servers.length ){
+			// Shouldn't see this unless we have buggy code
+			log.info( "Internal error - too many server arguments: ignoring " + arg );
+			return;
+		}
+		if ( cmd != ADD ){
+			servers[ serverCount ] = arg;
+		}else{
+			// Format of server info to add is:
+			//     servername:password:enable
+			// where
+			//     password, if omitted, defaults to 1234567890ab (our testing default)
+			//     enable, if omitted, defaults to n
+			String [] addArgs = arg.split( ":" );
+			servers[ serverCount ] = addArgs[0];
+			serverPw[ serverCount ] = addArgs.length > 1 ? addArgs[1] : "1234567890ab";
+			serverEnable[ serverCount ] = addArgs.length > 2 ? addArgs[2] : "n";
+		}
+		++serverCount;
+	}
 
     public void exec()
     {
@@ -327,7 +307,7 @@ class AEServices
             // sms.releaseSession();  // done with the session.
             if ( ! sms.success() )
             {
-                System.out.println( "Error: " + sms.getFault() );
+                log.info( "Error: " + sms.getFault() );
                 sms.releaseSession();
                 return;   // done
             }
@@ -343,7 +323,7 @@ class AEServices
                 // If not, just report the error and quit.
                 // TODO: Consider if we can (or should) automatically add or enable AESVCS
                 // if necessary.
-                System.out.println( "Error: AESVCS is " + ((nPos < 0) ? "not configured." : "disabled.") );
+                log.info( "Error: AESVCS is " + ((nPos < 0) ? "not configured." : "disabled.") );
                 sms.releaseSession();
                 return; // done
             }
@@ -377,7 +357,7 @@ class AEServices
         }
         catch ( Exception e )
         {
-           System.out.println("SMSTest failed with an unexpected exception:");
+           log.info("SMSTest failed with an unexpected exception:");
         }
         sms.releaseSession(); // attempt to release session, no matter what
         return;
@@ -410,7 +390,7 @@ class AEServices
 	        {
 	        	if(tmp.length() <= 0)
 	        	{
-	        		System.out.println("You must enter a SMS Root URL!");
+	        		log.info("You must enter a SMS Root URL!");
 	        		return false;
 	        	}
 	        	this.root = tmp.trim();}
@@ -419,7 +399,7 @@ class AEServices
 	        {
 	        	if(tmp.length() <= 0)
 	        	{
-	        		System.out.println("You must enter a cm login1");
+	        		log.info("You must enter a cm login1");
 	        		return false;
 	        	}
 	        	this.login = tmp.trim();
@@ -429,7 +409,7 @@ class AEServices
 	        {
 	        	if(tmp.length() <= 0)
 	        	{
-	        		System.out.println("You must enter a cm password!");
+	        		log.info("You must enter a cm password!");
 	        		return false;
 	        	}
 	        	this.pw = tmp.trim();
@@ -461,7 +441,7 @@ class AEServices
 		    	// The rest of our arguments are the list of servers to operate on
 		    	if ( nServerArgs <= 0 )
 		    	{
-		    		System.out.println( "Missing required server in options property");
+		    		log.info( "Missing required server in options property");
 		    		return false; // should be at least one server 
 		    	}
 		    }
@@ -492,12 +472,12 @@ class AEServices
   	        
 		 } catch (IllegalArgumentException arge) { 
 			  // A fault was raised. The fault message will contain the explanation
-			  System.out.println(arge.getMessage());
-			  System.out.println("Please verify that aeservices.properties file exists " +
+			  log.info(arge.getMessage());
+			  log.info("Please verify that aeservices.properties file exists " +
 					  			 "in the resources directory and has the proper read permission!");
 			  return false; 
 		 } catch (Exception e) {
-			System.out.println(e.getMessage());
+			log.info(e.getMessage());
 			return false;
 		}
 		return true;
@@ -539,22 +519,21 @@ class AEServices
      *  The remove command will first attempt to disable the listed servers, if necessary
      *  If any servers are listed as "in use", this sample app will not allow you to disable or remove them
      */
-    public static void main(String[] args)
-    {
- 
-        // Instantiate AEServices request handler
-        AEServices handler = new AEServices();
-        
-        // Load properties from file
-        boolean argsOk = handler.loadProps();
-        
-        if ( argsOk == false )
-        {
-        	System.out.println("Please verify your settings in the aeservies.properties file!!");
-            return; // 1;
-        }
-        // Let the handler run the command
-        handler.exec();
-        return;
-    }
+	public static void main(String[] args){
+	
+		// Instantiate AEServices request handler
+		AEServices handler = new AEServices();
+		
+		// Load properties from file
+		boolean argsOk = handler.loadProps();
+		
+		if ( argsOk == false )
+		{
+			log.info("Please verify your settings in the aeservies.properties file!!");
+			return; // 1;
+		}
+		// Let the handler run the command
+		handler.exec();
+		return;
+	}
 }

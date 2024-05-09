@@ -85,8 +85,8 @@ public class StringNotation {
 	// AES-16028 We were having issues with timeout in listpublicunknownnumbering
 	// So we decided to increase the timeout. By trial & error I am setting it 
 	// to 50 seconds now.
-	private Integer responseTimeout = new Integer(50000);
-
+	//private Integer responseTimeout = new Integer(50000);
+	private final Integer responseTimeout = 50000;
 	// Request parameters
 	private String model;
 	private String operation;

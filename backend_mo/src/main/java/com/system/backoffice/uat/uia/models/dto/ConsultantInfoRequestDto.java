@@ -5,8 +5,6 @@ import java.util.List;
 import javax.validation.constraints.NotBlank;
 
 import com.system.backoffice.uat.uia.models.ConsultantAgentInfo;
-import com.system.backoffice.uat.uia.models.ConsultantInfo;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -70,6 +68,12 @@ public class ConsultantInfoRequestDto {
 	private String pbxButton06;
 	private String pbxButton07;
 	private String pbxDisplayLangage;
+	
+	//신규
+	private String partId;
+	private String insttCode;
+	private String agentStatus;
+	private String consultCode;
 	
 	
 	private List<ConsultantAgentInfo> agentInfo;

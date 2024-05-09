@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
 import com.system.backoffice.sys.rabbitmq.service.MessageService;
 import com.system.backoffice.uat.uia.models.AdminInfo;
 import com.system.backoffice.uat.uia.service.AdminInfoManageService;
@@ -38,7 +39,6 @@ import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.EgovJwtTokenUtil;
 import egovframework.com.jwt.config.JwtVerification;
-import egovframework.let.utl.fcc.service.EgovStringUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -97,35 +97,44 @@ public class AdminInfoManageController {
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
 				ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
 			}else {
 				String[] userinfo = jwtVerification.getTokenUserInfo(request);
-				searchVO.put("roleId", userinfo[2]);
-				searchVO.put("partId", userinfo[3]);
-				searchVO.put("insttCode", userinfo[4]);
+				searchVO.put(Globals.PAGE_LOGIN_SYSTEM_CODE, userinfo[1]);
+				searchVO.put(Globals.PAGE_LOGIN_ROLEID, userinfo[2]);
+				searchVO.put(Globals.PAGE_LOGIN_PARTID , userinfo[3]);
+				searchVO.put(Globals.PAGE_LOGIN_INSTTCODE , userinfo[4]);
 			}
 	
-		
-			searchVO.put(Globals.PAGE_UNIT, propertiesService.getInt(Globals.PAGE_UNIT));
-			searchVO.put(Globals.PAGE_SIZE, propertiesService.getInt(Globals.PAGE_SIZE));
+			if (!searchVO.get(Globals.USER_PART_ID).equals("SYSTEM"))
+				searchVO.put(Globals.PAGE_UNIT, UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT)));
+			else 
+				searchVO.put(Globals.PAGE_UNIT, 1000);
+			searchVO.put(Globals.PAGE_SIZE, UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_SIZE), propertiesService.getInt(Globals.PAGE_SIZE)));
+			
+			
+			
 			
 			PaginationInfo paginationInfo = new PaginationInfo();
-			paginationInfo.setCurrentPageNo(Integer.parseInt(searchVO.get(Globals.PAGE_INDEX).toString()));
-			
-			paginationInfo.setRecordCountPerPage(propertiesService.getInt(Globals.PAGE_UNIT));
-			paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_UNIT));
+			paginationInfo.setCurrentPageNo(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_INDEX), 1));		
+			paginationInfo.setRecordCountPerPage(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT)));
+			paginationInfo.setPageSize(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_SIZE), propertiesService.getInt(Globals.PAGE_SIZE)) );
 			
 			searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
 			searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
 			searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
 			
 			model.addObject(Globals.STATUS_REGINFO, searchVO);
-			
-			List<AdminInfoVO> adminList =  (List<AdminInfoVO>) userManagerService.selectAdminUserManageListByPagination(searchVO);
-			model.addObject(Globals.JSON_RETURN_RESULT_LIST,  adminList);      	       
+			List<AdminInfoVO> adminList;
+			if (searchVO.get(Globals.USER_PART_ID).equals("SYSTEM"))
+				adminList =  (List<AdminInfoVO>) userManagerService.selectAdminUserManageListBySystemInfo(searchVO);
+			else 
+				adminList =  (List<AdminInfoVO>) userManagerService.selectAdminUserManageListByPagination(searchVO);
+			model.addObject(Globals.JSON_RETURN_RESULT_LIST,  adminList);
 			int totCnt = adminList.size() > 0 ? adminList.get(0).getTotalRecordCount() : 0;  
 			paginationInfo.setTotalRecordCount(totCnt);
-			model.addObject(Globals.PAGE_INFO, paginationInfo);	       
+			model.addObject(Globals.PAGE_INFO, paginationInfo);
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			
 		}catch (Exception e){
 			log.debug("selectUserManagerList error:" + e.toString());
@@ -173,6 +182,8 @@ public class AdminInfoManageController {
 		try{
 			int ret =  userManagerService.updatePassChange(vo);
 			if (ret > 0){
+				//패스워드 변경 
+				
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("info.user.passwordChange.ok"));
 			}else {
@@ -223,22 +234,31 @@ public class AdminInfoManageController {
 	@ApiOperation(value="사용자 상세 정보", notes="사용자 상세 정보")
 	@ApiImplicitParam(name = "adminId", value = "adminId")
 	@GetMapping("{adminId}.do")
-	public ModelAndView userView( @PathVariable String adminId, HttpServletRequest request) throws Exception{
+	public ModelAndView userView(@PathVariable String adminId, 
+								HttpServletRequest request) throws Exception{
 		
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-		if (!jwtVerification.isVerificationAdmin(request)) {
+		String partId;
+		String systemCode;
+		if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
 			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+		}else {
+			String[] userinfo = jwtVerification.getTokenUserInfo(request);
+			partId = userinfo[3];
+			systemCode = userinfo[1];
+			
 		}
 		
 		//공용 확인 하기 
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		//신규 수정
 		
-		String jwtToken = EgovStringUtil.isNullToString(request.getHeader("authorization"));
-		
-		System.out.println(jwtToken);
-		Optional<AdminInfo> adminVO = userManagerService.selectAdminUserManageDetail(adminId);  
+		Optional<AdminInfo> adminVO;
+		if (!partId.equals("SYSTEM"))
+			adminVO = userManagerService.selectAdminUserManageDetail(adminId); 
+		else 
+			adminVO = userManagerService.selectAdminUserManageSystem(adminId, systemCode); 
 		if ( adminVO.isPresent()) {
 			model.addObject(Globals.JSON_RETURN_RESULT, adminVO); 
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
@@ -269,13 +289,30 @@ public class AdminInfoManageController {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		
-		model.addObject("regist", vo);
+		model.addObject(Globals.STATUS_REGINFO, vo);
 		
 		try{
 			
 			int ret = userManagerService.updateAdminStateChange(vo);
 			
 			if (ret >0){
+				
+				
+				MessageDto dto =  MessageDto.builder()
+						.id(adminId)
+						.processGubun(Globals.SAVE_MODE_UPDATE)
+						.processName("MANAGER")
+						.urlMethod(Globals.URL_METHOD_GET)
+						.url("/api/backoffice/uat/uia/manager/"+adminId+".do")
+						.build();
+				
+				messageService.sendMessage(dto, 
+						"Topic", 
+						exchangeName,
+						routingKey);
+				log.info("=========== admin send message");
+				
+				
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.insert"));		
 			}else {	
@@ -319,6 +356,21 @@ public class AdminInfoManageController {
 			int ret = userManagerService.updateAdminUserManage(vo);
 			meesage =vo.getMode().equals("Ins") ?"success.common.insert" : "success.common.update";
 			if (ret >0){
+				
+				MessageDto dto =  MessageDto.builder()
+						.id(vo.getAdminId())
+						.processGubun(vo.getMode())
+						.processName("MANAGER")
+						.urlMethod(Globals.URL_METHOD_GET)
+						.url("/api/backoffice/uat/uia/manager/"+vo.getAdminId()+".do")
+						.build();
+				
+				messageService.sendMessage(dto, 
+						"Topic", 
+						exchangeName,
+						routingKey);
+				log.info("=========== admin send message");
+				
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(meesage));		
 			}else {	
@@ -341,19 +393,32 @@ public class AdminInfoManageController {
 		vo.setUserId("Admin");
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		
-		model.addObject("regist", vo);
+		model.addObject(Globals.STATUS_REGINFO, vo);
 		String meesage = "";
 		
 		try{
-			if (vo.getMode().equals("Ins") && vo.getIdCheck().equals("N")) {
+			if (vo.getMode().equals(Globals.SAVE_MODE_INSERT) && vo.getIdCheck().equals("N")) {
 				model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.user.idcheck"));	
 				return model;
 			}
 			
 			int ret = userManagerService.updateAdminUserManage(vo);
-			meesage =vo.getMode().equals("Ins") ?"success.common.insert" : "success.common.update";
+			meesage =vo.getMode().equals(Globals.SAVE_MODE_INSERT) ?"success.common.insert" : "success.common.update";
 			if (ret >0){
+				MessageDto dto =  MessageDto.builder()
+						.id(vo.getAdminId())
+						.processGubun(vo.getMode())
+						.processName("MANAGER")
+						.urlMethod(Globals.URL_METHOD_GET)
+						.url("/api/backoffice/uat/uia/manager/"+vo.getAdminId()+".do")
+						.build();
+				
+				messageService.sendMessage(dto, 
+						"Topic", 
+						exchangeName,
+						routingKey);
+				log.info("=========== admin send message");
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(meesage));		
 			}else {	
@@ -381,6 +446,21 @@ public class AdminInfoManageController {
 	   try{
 			
 			int ret =  userManagerService.deleteAdminUserManage(adminId);
+			if (ret>0) {
+				MessageDto dto =  MessageDto.builder()
+						.id(adminId)
+						.processGubun("DEL")
+						.processName("MANAGER")
+						.urlMethod(Globals.URL_METHOD_DELETE)
+						.url("")
+						.build();
+				
+						messageService.sendMessage(dto, 
+								"Topic", 
+								exchangeName,
+								routingKey);
+						log.info("=========== send message");
+			}
 			String status = ret > 0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = ret > 0 ? "success.request.msg" : "fail.request.msg";
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(message));	

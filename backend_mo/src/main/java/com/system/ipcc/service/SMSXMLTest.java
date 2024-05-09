@@ -61,8 +61,7 @@ public class SMSXMLTest {
 	
 	// Set a timeout for the web service response. Here we allow
 	// 10,000 MS (10 seconds)
-	private Integer responseTimeout = new Integer(10000);
-
+	private final Integer responseTimeout = 10000;
 	// Request parameters
 	private String model;
 	private SubmitRequestType submitRequest;

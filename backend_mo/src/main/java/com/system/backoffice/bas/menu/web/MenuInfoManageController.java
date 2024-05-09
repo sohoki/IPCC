@@ -546,7 +546,7 @@ public class MenuInfoManageController {
 			}
 			
 			
-			String systemCode = UtilInfoService.NVL(searchVO.get(Globals.PAGE_SYSTEM_CODE),"IPCC");
+			String systemCode = UtilInfoService.NVL(searchVO.get(Globals.PAGE_LOGIN_SYSTEM_CODE),"IPCC");
 			int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ?  propertiesService.getInt(Globals.PAGE_UNIT) : 
 																Integer.valueOf((String) searchVO.get(Globals.PAGE_UNIT));
 			  
@@ -563,7 +563,7 @@ public class MenuInfoManageController {
 			searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
 			searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
 			searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
-			searchVO.put(Globals.PAGE_SYSTEM_CODE, systemCode);
+			searchVO.put(Globals.PAGE_LOGIN_SYSTEM_CODE, systemCode);
 						  
 			List<Map<String, Object>> list = menuCreateService.selectMenuCreatManagList(searchVO);
 			int totCnt =  list.size() > 0 ? Integer.valueOf(list.get(0).get(Globals.PAGE_TOTAL_RECORD_COUNT).toString()) : 0;

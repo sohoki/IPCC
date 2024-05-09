@@ -2,35 +2,37 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.system.backoffice.uat.uia.mapper.AdminInfoManagerMapper">
 
-   <select id="selectAdminUserManageListByPagination" resultType="AdminInfoVO">     	      
+	<select id="selectAdminUserManageListByPagination" resultType="AdminInfoVO">     	      
 		SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
-			   TB.* FROM (
-			   SELECT
-						      a.ADMIN_ID ,
-				              a.ADMIN_NAME ,
-				              a.ADMIN_TEL ,
-	                          a.ADMIN_EMAIL ,
-				              a.PART_ID  as "partId",
-				              case a.LOCK_YN when 'Y' then 'O'
-	                               else 'X'
-	                          end as lockYn,
-	                          a.Use_YN,		
-	                          DATE_FORMAT(a.REG_DATE, '%Y-%m-%d') as regDate,	
-				              a.PART_ID, a.PASSWORD_HINT, a.PASSWORD_CNSR,
-				              a.ROLE_ID, c.PART_NM,
-				              a.PBX_EXTENSION, 
-				              a.ADMIN_STATUS,  fn_DetailCodeNm(a.ADMIN_STATUS) ADMIN_STATUS_TXT,
-				              a.CONSULTANT_USEYN , a.LAST_UPDT_PNTTM,
-				              a.INSTT_CODE , d.ALL_INSTT_NM,
-				              a.ROLE_GUBUN, fn_DetailCodeNm(a.ROLE_GUBUN) ROLE_GUBUN_TXT,
-				              CASE a.ROLE_GUBUN WHEN 'AUTH_GUBUN_1' THEN (SELECT ROLE_NAME FROM TB_ROLEINFO B WHERE a.ROLE_ID = B.ROLE_ID)
-				              	   ELSE '개인 설정'
-				              END AS ROLE_NAME, SYSTEMCODE_USECODE
-			    FROM   TB_MANAGERINFO a, TB_PARTINFO c, COMTNINSTTCODE d
+				TB.* FROM (
+				SELECT
+						a.ADMIN_ID ,
+						a.ADMIN_PASSWORD ,
+						a.ADMIN_NAME ,
+						a.Use_YN,	
+						a.ADMIN_EMAIL ,
+						a.ADMIN_TEL ,
+						a.LOCK_YN,
+						DATE_FORMAT(a.REG_DATE, '%Y-%m-%d') as regDate,	
+						a.PART_ID, a.PASSWORD_HINT, a.PASSWORD_CNSR,
+						a.ROLE_ID, c.PART_NM,
+						a.EMP_NO ,
+						a.PBX_EXTENSION, 
+						a.ADMIN_STATUS,  
+						fn_DetailCodeNm(a.ADMIN_STATUS) ADMIN_STATUS_TXT,
+						a.CONSULTANT_USEYN , a.LAST_UPDT_PNTTM,
+						a.INSTT_CODE , d.ALL_INSTT_NM,
+						a.ROLE_GUBUN, 
+						fn_DetailCodeNm(a.ROLE_GUBUN) ROLE_GUBUN_TXT,
+						CASE a.ROLE_GUBUN WHEN 'AUTH_GUBUN_1' THEN (SELECT ROLE_NAME FROM TB_ROLEINFO B WHERE a.ROLE_ID = B.ROLE_ID)
+							   ELSE '개인 설정'
+						END AS ROLE_NAME, 
+						SYSTEMCODE_USECODE
+				FROM TB_MANAGERINFO a, TB_PARTINFO c, COMTNINSTTCODE d
 				WHERE  1=1  
-					   AND a.PART_ID = c.PART_ID
-					   AND a.INSTT_CODE = d.INSTT_CODE
-		        <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+						AND a.PART_ID = c.PART_ID
+						AND a.INSTT_CODE = d.INSTT_CODE
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 						<choose>
 							<when test="params.searchCondition == 'adminId'">
 								AND a.ADMIN_ID LIKE CONCAT('%',#{params.searchKeyword},'%') 
@@ -61,64 +63,99 @@
 												SELECT PART_ID from CTE
 											)
 						</when>
-						
+						<when test="params.roleId == 'ROLE_ADMIN' and params.partId == 'SYSTEM'">
+							AND SYSTEMCODE_USECODE LIKE CONCAT('%',#{params.systemCode},'%') 
+						</when>
 						<otherwise>
 							AND a.PART_ID = #{params.partId} 
 						</otherwise>
 					</choose>
 				</if>
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseYn)">
-				         and a.USE_YN = #{params.useYn}
+					AND a.USE_YN = #{params.useYn}
 				</if>
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchRoleId)">
-				         and a.ROLE_ID = #{params.searchRoleId}
+					AND a.ROLE_ID = #{params.searchRoleId}
 				</if>	
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchPartId)">
-				         and a.PART_ID = #{params.searchPartId}
-				</if>		     
-		        ORDER BY a.REG_DATE  DESC
-	        ) TB 
-              limit #{params.firstIndex} , #{params.recordCountPerPage}      		 	    
-   </select>
-   <select id="selectSystemUserMenuInfo" resultType="UserAuthInfoDto">
+					AND a.PART_ID = #{params.searchPartId}
+				</if>
+				ORDER BY a.REG_DATE  DESC
+			) TB 
+			limit #{params.firstIndex} , #{params.recordCountPerPage}      		 	    
+	</select>
+	<select id="selectAdminUserManageListBySystemInfo" resultType="AdminInfoVO">     	      
+		SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+				TB.* FROM (
+				SELECT
+						a.ADMIN_ID ,
+						a.ADMIN_PASSWORD ,
+						a.ADMIN_NAME ,
+						a.Use_YN,	
+						a.ADMIN_EMAIL ,
+						a.ADMIN_TEL ,
+						a.LOCK_YN,
+						a.PART_ID, a.PASSWORD_HINT, 
+						a.PASSWORD_CNSR,
+						a.ROLE_ID,
+						a.EMP_NO,
+						a.PBX_EXTENSION, 
+						a.ADMIN_STATUS,  
+						a.CONSULTANT_USEYN ,
+						a.INSTT_CODE , 
+						b.ROLE_ID
+				FROM   TB_MANAGERINFO a, TB_MANAGER_AUTH_INFO b
+				WHERE  a.ADMIN_ID = B.USER_ID 
+						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseYn)">
+							AND a.USE_YN = #{params.useYn}
+						</if>
+						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchRoleId)">
+							AND a.ROLE_ID = #{params.searchRoleId}
+						</if>	
+						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchPartId)">
+							AND a.PART_ID = #{params.searchPartId}
+						</if>
+				ORDER BY a.REG_DATE  DESC
+			) TB	 	    
+	</select>
+<select id="selectSystemUserMenuInfo" resultType="UserAuthInfoDto">
 		SELECT TA.SYSTEM_CODE,
-			   TA.SYSTEM_NAME,
-			   TB.USER_ID,
-			   TB.AUTH_GUBUN,
-			   TB.ROLE_ID,
-			   IFNULL(TB.AUTH_DC, '') AUTH_DC
+				TA.SYSTEM_NAME,
+				TB.USER_ID,
+				TB.AUTH_GUBUN,
+				TB.ROLE_ID,
+				IFNULL(TB.AUTH_DC, '') AUTH_DC
 		FROM 
 			(SELECT SYSTEM_CODE , SYSTEM_NAME 
-			 FROM TB_SYSTEMINFO A
-			 WHERE SYSTEM_CONN_LEVEL LIKE '%CON_LEVEL_5%'
-			 		<choose>
-			 			<when test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemCode)">
-			 				 AND 
-					 		<foreach collection="searchCode" item="item" open="(" close=")" separator="or">
-					 			SYSTEM_CODE = #{item}
-					 		</foreach>
-			 			</when>
-			 			<otherwise>
-			 				AND SYSTEM_CODE = 'IPCC'
-			 			</otherwise>
-			 		</choose>
-			 		
-			 		AND SYSTEM_CODE != 'IPCC') TA
+			FROM TB_SYSTEMINFO A
+			WHERE SYSTEM_CONN_LEVEL LIKE '%CON_LEVEL_5%'
+					<choose>
+						<when test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemCode)">
+							 AND 
+				 		<foreach collection="searchCode" item="item" open="(" close=")" separator="or">
+				 			SYSTEM_CODE = #{item}
+				 		</foreach>
+						</when>
+						<otherwise>
+							AND SYSTEM_CODE = 'IPCC'
+						</otherwise>
+					</choose>
+					AND SYSTEM_CODE != 'IPCC') TA
 		LEFT OUTER JOIN 
 			(SELECT A.SYSTEM_CODE , A.USER_ID ,
-				    A.AUTH_GUBUN , A.ROLE_ID ,
-				    A.AUTH_DC
+					A.AUTH_GUBUN , A.ROLE_ID ,
+					A.AUTH_DC
 			FROM TB_MANAGER_AUTH_INFO A
 			WHERE USER_ID  =  #{userId} ) TB
 		ON TA.SYSTEM_CODE = TB.SYSTEM_CODE 
 		ORDER BY SYSTEM_CODE ASC
-   </select>  
-   <select id="selectSystemUserMenuInfo_s" resultType="UserAuthInfoDto">
+	</select>  
+	<select id="selectSystemUserMenuInfo_s" resultType="UserAuthInfoDto">
 		SELECT A.SYSTEM_CODE , A.USER_ID, A.AUTH_GUBUN , A.ROLE_ID 
 		FROM TB_MANAGER_AUTH_INFO A
 		WHERE A.USER_ID  =  #{userId}
-   </select> 
-   <select id="selectAdminUserManageDetail" resultType="AdminInfoVO">
+	</select> 
+	<select id="selectAdminUserManageDetail" resultType="AdminInfoVO">
 		SELECT  ADMIN_ID, ADMIN_PASSWORD, ADMIN_NAME, USE_YN, PART_ID,  ADMIN_EMAIL, 
 				ADMIN_TEL, REG_DATE, UPDATE_PASSWORD,  LOCK_YN, EMP_NO, ADMIN_STATUS, 
 				FRST_REGISTER_ID, LAST_UPDUSR_ID, LAST_UPDT_PNTTM,
@@ -127,31 +164,43 @@
 				INSTT_CODE, ROLE_GUBUN, SYSTEMCODE_USECODE 
 		FROM TB_MANAGERINFO
 		WHERE ADMIN_ID = #{adminId}
-   </select>
-   <select id="selectAdminUserMangerIDCheck" resultType="java.lang.Integer">
+	</select>
+	<select id="selectAdminUserManageSystem" resultType="AdminInfoVO">
+		SELECT  a.ADMIN_ID, a.ADMIN_PASSWORD, ADMIN_NAME, a.USE_YN, a.PART_ID, a.ADMIN_EMAIL, 
+				a.ADMIN_TEL, a.REG_DATE, UPDATE_PASSWORD,  a.LOCK_YN, a.EMP_NO, a.ADMIN_STATUS, 
+				a.FRST_REGISTER_ID, a.LAST_UPDUSR_ID, a.LAST_UPDT_PNTTM,
+				b.ROLE_ID, a.PBX_EXTENSION, a.CONSULTANT_USEYN, 
+				a.PASSWORD_HINT, a.PASSWORD_CNSR,
+				a.INSTT_CODE, a.SYSTEMCODE_USECODE 
+		FROM TB_MANAGERINFO a, TB_MANAGER_AUTH_INFO b
+		WHERE a.ADMIN_ID = #{adminId}
+			AND a.ADMIN_ID = b.USER_ID
+			AND b.SYSTEM_CODE = #{systemCode}
+	</select>
+<select id="selectAdminUserMangerIDCheck" resultType="java.lang.Integer">
 		SELECT  IFNULL(COUNT(*),0)      
 		FROM   TB_MANAGERINFO
 		WHERE  ADMIN_ID = #{adminId}
-   </select>
-   <select id="selectAdminUserCombo" resultType="camelmap">
+	</select>
+	<select id="selectAdminUserCombo" resultType="camelmap">
 		SELECT  ADMIN_ID, ADMIN_NAME
 		FROM   TB_MANAGERINFO
 		WHERE  USE_YN = 'Y'
-	  		 <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.roleId)">
-	  		 AND ROLE_ID = #{params.roleId}
-	  		 </if>
-   </select>
-   
-   
-   <select id="selectAdminPasswordCheck" resultType="java.lang.Integer">
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.roleId)">
+				AND ROLE_ID = #{params.roleId}
+				</if>
+	</select>
+	
+	
+	<select id="selectAdminPasswordCheck" resultType="java.lang.Integer">
 		SELECT  IFNULL(COUNT(*),0)      
 		FROM   TB_MANAGERINFO
 		WHERE  ADMIN_ID = #{params.adminId}
 				AND ADMIN_PASSWORD = #{params.adminPasswordEnc}
-   </select>
-   
-   
-   <insert id="insertSystemMenuInfo">
+	</select>
+	
+	
+	<insert id="insertSystemMenuInfo">
 		INSERT INTO TB_MANAGER_AUTH_INFO (SYSTEM_CODE, AUTH_GUBUN, ROLE_ID, USER_ID, 
 										  FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID, AUTH_DC)
 		VALUES
@@ -168,8 +217,8 @@
 			#{item.authDc}
 		)
 		</foreach>
-   </insert>
-   <insert id="insertAdminUserManage">
+	</insert>
+	<insert id="insertAdminUserManage">
 		INSERT INTO TB_MANAGERINFO( ADMIN_ID, ADMIN_PASSWORD, ADMIN_NAME, USE_YN, PART_ID,  ADMIN_EMAIL, 
                                   ADMIN_TEL, REG_DATE, UPDATE_PASSWORD,  LOCK_YN, EMP_NO, ADMIN_STATUS, 
                                   FRST_REGISTER_ID, LAST_UPDUSR_ID, LAST_UPDT_PNTTM,
@@ -177,48 +226,48 @@
                                   PASSWORD_HINT, PASSWORD_CNSR,
                                   INSTT_CODE, ROLE_GUBUN, SYSTEMCODE_USECODE)
 		VALUES (#{adminId}, #{adminPassword}, #{adminName}, #{useYn}, #{partId,jdbcType=VARCHAR },  #{adminEmail ,jdbcType=VARCHAR},
-              #{adminTel ,jdbcType=VARCHAR}, now(), now(), 'N' , #{empNo ,jdbcType=VARCHAR} , #{adminStatus ,jdbcType=VARCHAR}, 
-              #{userId}, #{userId} , NOW(),
-              #{roleId} , #{pbxExtension ,jdbcType=VARCHAR} , #{consultantUseyn ,jdbcType=VARCHAR},
-              #{passwordHint ,jdbcType=VARCHAR} , #{passwordCnsr ,jdbcType=VARCHAR},
-              #{insttCode ,jdbcType=VARCHAR} , #{roleGubun ,jdbcType=VARCHAR},
-              #{systemcodeUsecode, jdbcType=VARCHAR}
-              )
-   </insert>
-   <update id="updateSystemMenuInfo">
+				#{adminTel ,jdbcType=VARCHAR}, now(), now(), 'N' , #{empNo ,jdbcType=VARCHAR} , #{adminStatus ,jdbcType=VARCHAR}, 
+				#{userId}, #{userId} , NOW(),
+				#{roleId} , #{pbxExtension ,jdbcType=VARCHAR} , #{consultantUseyn ,jdbcType=VARCHAR},
+				#{passwordHint ,jdbcType=VARCHAR} , #{passwordCnsr ,jdbcType=VARCHAR},
+				#{insttCode ,jdbcType=VARCHAR} , #{roleGubun ,jdbcType=VARCHAR},
+				#{systemcodeUsecode, jdbcType=VARCHAR}
+				)
+	</insert>
+	<update id="updateSystemMenuInfo">
 		<foreach collection="updateAuthList" item="item" separator=";">
 			INSERT INTO TB_MANAGER_AUTH_INFO (SYSTEM_CODE, AUTH_GUBUN, ROLE_ID, USER_ID, 
 										  FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID, AUTH_DC)
 			VALUES ( #{item.systemCode}, #{item.authGubun}, #{item.roleId}, #{item.userId}, NOW(),
 			#{item.adminId},NOW(), #{item.adminId}, #{item.authDc})
 			ON DUPLICATE KEY UPDATE  AUTH_GUBUN = #{item.authGubun}
-	   										, ROLE_ID = #{item.roleId}
-   		</foreach>
-   </update>
-   <update id="updateAdminUserManage">
+										, ROLE_ID = #{item.roleId}
+		</foreach>
+	</update>
+	<update id="updateAdminUserManage">
 		UPDATE TB_MANAGERINFO SET ADMIN_NAME = #{adminName}
-                                , USE_YN = #{useYn}
-                                , PART_ID = #{partId }
-                                , ADMIN_TEL = #{adminTel, jdbcType=VARCHAR }
-                                , PASSWORD_HINT = #{passwordHint, jdbcType=VARCHAR }
-                                , PASSWORD_CNSR = #{passwordCnsr, jdbcType=VARCHAR }
-                                , INSTT_CODE = #{insttCode ,jdbcType=VARCHAR}
-                                , ROLE_GUBUN = #{roleGubun ,jdbcType=VARCHAR} 
-                                , ADMIN_STATUS = #{adminStatus ,jdbcType=VARCHAR}
-                                <if test="adminPassword != ''">
-                                , ADMIN_PASSWORD = #{adminPassword}
-                                , UPDATE_PASSWORD = now()
-                                , LOCK_YN ='N'
-                                </if> 
-                                <if test="!@org.apache.commons.lang3.StringUtils@isEmpty(empNo)">
-                                ,  EMP_NO = #{empNo, jdbcType=VARCHAR }
-                                </if>
-                                , LAST_UPDUSR_ID = #{userId}
-                                , ROLE_ID = #{roleId ,jdbcType=VARCHAR}
-                                , PBX_EXTENSION = #{pbxExtension ,jdbcType=VARCHAR}
-                                , CONSULTANT_USEYN = #{consultantUseyn ,jdbcType=VARCHAR}
-                                , SYSTEMCODE_USECODE = #{systemcodeUsecode, jdbcType=VARCHAR}
-                                , LAST_UPDT_PNTTM = NOW()
+								, USE_YN = #{useYn}
+								, PART_ID = #{partId }
+								, ADMIN_TEL = #{adminTel, jdbcType=VARCHAR }
+								, PASSWORD_HINT = #{passwordHint, jdbcType=VARCHAR }
+								, PASSWORD_CNSR = #{passwordCnsr, jdbcType=VARCHAR }
+								, INSTT_CODE = #{insttCode ,jdbcType=VARCHAR}
+								, ROLE_GUBUN = #{roleGubun ,jdbcType=VARCHAR} 
+								, ADMIN_STATUS = #{adminStatus ,jdbcType=VARCHAR}
+								<if test="adminPassword != ''">
+								, ADMIN_PASSWORD = #{adminPassword}
+								, UPDATE_PASSWORD = now()
+								, LOCK_YN ='N'
+								</if> 
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(empNo)">
+								,  EMP_NO = #{empNo, jdbcType=VARCHAR }
+								</if>
+								, LAST_UPDUSR_ID = #{userId}
+								, ROLE_ID = #{roleId ,jdbcType=VARCHAR}
+								, PBX_EXTENSION = #{pbxExtension ,jdbcType=VARCHAR}
+								, CONSULTANT_USEYN = #{consultantUseyn ,jdbcType=VARCHAR}
+								, SYSTEMCODE_USECODE = #{systemcodeUsecode, jdbcType=VARCHAR}
+								, LAST_UPDT_PNTTM = NOW()
 		WHERE ADMIN_ID = #{adminId};
 		
 		INSERT INTO TB_MANAGERINFO_STATE_CHANAGEINFO(USER_ID, INSTT_CODE, PART_ID, ADMIN_STATUS, ADMIN_POSITION, 
@@ -226,32 +275,30 @@
 		SELECT ADMIN_ID, INSTT_CODE, PART_ID, ADMIN_STATUS, ADMIN_POSITION, #{userId}, NOW(),  '관리자 수정'
 		FROM TB_MANAGERINFO
 		WHERE ADMIN_ID = #{userId}
-   </update>
-   <update id="updatePassChange">
+	</update>
+	<update id="updatePassChange">
 		UPDATE TB_MANAGERINFO set ADMIN_PASSWORD = #{adminPassword}, 
-       							 UPDATE_PASSWORD = now(),
-       							 LOCK_YN ='N'
+								 UPDATE_PASSWORD = now(),
+								 LOCK_YN ='N'
 		WHERE  ADMIN_ID = #{adminId} 
-   </update>
-   <update id="updateAdminUserLockManage">
+	</update>
+	<update id="updateAdminUserLockManage">
 		UPDATE TB_MANAGERINFO SET LOCK_YN = 'Y'
 		WHERE ADMIN_ID = #{adminId}
-   </update>
-   <delete id="deleteAdminUserManage">
+	</update>
+	<delete id="deleteAdminUserManage">
 		DELETE FROM TB_MANAGERINFO
 		WHERE ADMIN_ID = #{adminId}   
-   </delete>
-   <delete id="deleteSystemMenuInfo">
+	</delete>
+	<delete id="deleteSystemMenuInfo">
 		DELETE FROM TB_MANAGER_AUTH_INFO
 		WHERE USER_ID = #{userId}
-   </delete>
-   <delete id="deleteUserAuthList">
+	</delete>
+	<delete id="deleteUserAuthList">
 		<foreach collection="delAuthList" item="item" separator=";">
 			DELETE FROM TB_MANAGER_AUTH_INFO
 			WHERE SYSTEM_CODE = #{item.systemCode} AND USER_ID = #{item.userId}
 		</foreach>
-   </delete>
-   
-   
+	</delete> 
 </mapper>
 

@@ -42,8 +42,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
  *******************************************************************************/
 
 @SuppressWarnings("unchecked")
-public class SessionIDLogicalHandler implements
-			SOAPHandler<SOAPMessageContext> {
+public class SessionIDLogicalHandler implements SOAPHandler<SOAPMessageContext> {
 
 		private String SID = "";
 		private SOAPFactory factory;
@@ -103,10 +102,9 @@ public class SessionIDLogicalHandler implements
 		private void addSoapHeader(SOAPMessageContext context) {
 			try {
 				
-				if (factory ==null)
-	            {
-	                factory = SOAPFactory.newInstance();
-	            }
+				if (factory ==null){
+					factory = SOAPFactory.newInstance();
+				}
 
 				SOAPMessage soapMsg = context.getMessage();
 				SOAPPart soapPart = soapMsg.getSOAPPart();

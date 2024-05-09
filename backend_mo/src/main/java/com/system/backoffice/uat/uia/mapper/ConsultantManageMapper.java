@@ -33,6 +33,8 @@ public interface ConsultantManageMapper {
 
 	public Optional<ConsultantInfo> selectConsultantrManageDetail(String extension) throws Exception;
 	
+	public Optional<ConsultantInfo> selectConsultantrManageDetailConstantCode(String consultCode) throws Exception;
+	
 	public List<Map<String, Object>> selectConsultantrManageListByPagination(@Param("params") Map<String, Object> params) throws Exception;
 	
 	public int selectConsultantrMangerIDCheck(String extension) throws Exception;

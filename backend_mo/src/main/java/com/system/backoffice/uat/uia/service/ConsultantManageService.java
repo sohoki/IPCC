@@ -3,10 +3,7 @@ package com.system.backoffice.uat.uia.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
 import org.apache.ibatis.annotations.Param;
-import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
-
 import com.system.backoffice.uat.uia.models.ConsultantInfo;
 import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
 
@@ -30,6 +27,8 @@ public	interface ConsultantManageService {
 	int updateConsultantrManage(ConsultantInfoRequestDto adminInfo) throws Exception;
 
 	Optional<ConsultantInfo> selectConsultantrManageDetail(String extension) throws Exception;
+	
+	Optional<ConsultantInfo> selectConsultantrManageDetailConstantCode(String ConstantCode) throws Exception;
 	
 	List<?> selectConsultantrManageListByPagination(@Param("params") Map<String, Object> params) throws Exception;
 	

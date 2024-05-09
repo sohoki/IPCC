@@ -32,7 +32,7 @@ import egovframework.let.utl.sim.service.EgovFileScrty;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional(readOnly = true)
-@Service("AdminInfoManageService")
+@Service
 public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implements  AdminInfoManageService {
 
 	
@@ -110,23 +110,6 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		               .collect(Collectors.toList());
 			ret = updateRole.size() < 1 ? 1 : adminMapper.updateSystemMenuInfo(updateRole);
 		}
-		/*
-		if (ret > 0) {
-			//rabbitMq topic 을 통해 사용자 상태 전송
-			
-			
-			
-			
-			AdminInfoManageEvent eventInfo = new AdminInfoManageEvent(
-					vo.getAdminId(),
-					vo.getMode(),
-					vo.getAdminId()
-					);
-			
-			eventDispatcher.send(eventInfo);
-			
-		}
-		*/
 		
 		return ret;
 	}
@@ -147,6 +130,11 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		return userInfo;
 	}
 	@Override
+	public Optional<AdminInfo> selectAdminUserManageSystem(String adminId, String systemCode) throws Exception {
+		// TODO Auto-generated method stub
+		return adminMapper.selectAdminUserManageSystem(adminId, systemCode);
+	}
+	@Override
 	public List<UserAuthInfoDto> selectSystemMenuList(UserAuthInfoReqDto req) throws Exception {
 		// TODO Auto-generated method stub
 		req.setSearchCode(Arrays.asList(req.getSystemCode().split("\\s*,\\s*")));
@@ -158,7 +146,11 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		// TODO Auto-generated method stub
 		return adminMapper.selectAdminUserManageListByPagination(params);
 	}
-
+	@Override
+	public List<?> selectAdminUserManageListBySystemInfo(Map<String, Object> params) throws Exception {
+		// TODO Auto-generated method stub
+		return adminMapper.selectAdminUserManageListBySystemInfo(params);
+	}
 	@Override
 	public int selectAdminUserMangerIDCheck(String code) throws Exception {
 		// TODO Auto-generated method stub
@@ -212,5 +204,7 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 		// TODO Auto-generated method stub
 		return stateChangeMapper.selectAdminStateChangeManageListByPagination(params);
 	}
+	
+	
 	
 }

@@ -84,7 +84,9 @@ public class SMSReq {
 	private String login = "";
 	private String pw = "";
 
-	private Integer responseTimeout = new Integer(50000);
+	
+	//private Integer responseTimeout = new Integer(50000);
+	private final  Integer responseTimeout = 50000;
 
 	// Request parameters
 	private String model;
@@ -256,6 +258,7 @@ public class SMSReq {
 									.name(submitResult.getResultData().getStation().get(0).getName())
 									.tn(submitResult.getResultData().getStation().get(0).getTN())
 									.displayLangage(submitResult.getResultData().getStation().get(0).getDisplayLanguage())
+									/*
 									.button01(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData1()))
 									.button02(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData2()))
 									.button03(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData3()))
@@ -263,6 +266,7 @@ public class SMSReq {
 									.button05(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData5()))
 									.button06(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData6()))
 									.button07(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData7()))
+									*/
 									.build();
 					
 					stations.add(station);
@@ -293,8 +297,10 @@ public class SMSReq {
 					agent.builder().loginId(loginId)
 									.name(submitResult.getResultData().getAgent().get(0).getName())
 									.extension(submitResult.getResultData().getAgent().get(0).getExtension())
+									/*
 									.sn(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSN()))
 									.sr(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSL()))
+									*/
 									.build();
 					stations.add(agent);
 				}

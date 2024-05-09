@@ -29,6 +29,6 @@ public class PartInfo implements Serializable{
 	private String partEndDe;
 	private String partHeadUserId;
 	private String partEndyn;
-	
-
+	private String partEtc1;
+	private String partEtc2;
 }

@@ -94,22 +94,22 @@ public class MenuInfoManageService {
 		int ret = 0;
 		try {
 			List<String> menuNoList = UtilInfoService.dotToList(checkedMenuNoForDel);
-	        //menuMapper.deleteMenuManage_L(menuNoList)
-	        int delCnt = menuNoList.size();
-	        int realDelCnt = 0;
-	        Collections.sort(menuNoList, Collections.reverseOrder());
-	        MenuInfo  menuinfo = new MenuInfo();
-	       
-	        for (String menuNo : menuNoList) {
-	        	menuinfo.setMenuNo(menuNo);
-	        	menuMapper.deleteMenuNo(menuinfo);
-	        	realDelCnt +=  (menuinfo.getCnt() == 0)? 1 : 0;
-	        }
-	        
-	        ret = delCnt != realDelCnt ? -1 : 1;
-	        if (delCnt != realDelCnt) {
-	        	throw new RuntimeException("Exception for rollback");
-	        }
+			//menuMapper.deleteMenuManage_L(menuNoList)
+			int delCnt = menuNoList.size();
+			int realDelCnt = 0;
+			Collections.sort(menuNoList, Collections.reverseOrder());
+			MenuInfo  menuinfo = new MenuInfo();
+			
+			for (String menuNo : menuNoList) {
+				menuinfo.setMenuNo(menuNo);
+				menuMapper.deleteMenuNo(menuinfo);
+				realDelCnt +=  (menuinfo.getCnt() == 0)? 1 : 0;
+			}
+			
+			ret = delCnt != realDelCnt ? -1 : 1;
+			if (delCnt != realDelCnt) {
+				throw new RuntimeException("Exception for rollback");
+			}
 		}catch (RuntimeException e1) {
 			TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 			log.error("deleteMenuManageList RuntimeException error:" + e1.toString());
@@ -420,7 +420,7 @@ public class MenuInfoManageService {
 	 * @param menuSheet HSSFSheet
 	 * @return boolean
 	 * @exception Exception
-	 */
+	
 	private boolean menuRegist(Sheet menuSheet) throws Exception {
 		boolean success = false;
 		int count = 0;
@@ -486,6 +486,7 @@ public class MenuInfoManageService {
 		}
 		return success;
 	}
+	 */
 	/**
 	 * 프로그램 정보를 등록
 	 * @param  vo ProgrmManageVO
