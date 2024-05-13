@@ -1,30 +1,38 @@
 spring:
-  profiles: 
-    active: dev	
-  redis :
-    host: 59.14.245.89
-    port: 30004
-    password : Rowa230927!@
-  jackson:
-    serialization:
-     WRITE_DATES_AS_TIMESTAMPS: false
-    date-format: yyyy-MM-dd HH:mm:ss
-  #rabbitmq:
-  #  host: 59.14.245.89
-  #  port: 32786
-  #  username: admin
-  #  password: Call110.go.kr
-  rabbitmq:
-    host: 59.14.245.89
-    port: 30003
-    username: admin
-    password: Rowa230927!@
+  profiles:
+    active: prod
+    group:
+      dev:
+        - dev
+        - common
+      prod:
+        - prod
+        - common
+      local:
+        - local
+        - common
+
+
+#################### common 공통 영역 ####################
+---
 server:
   servlet: 
     context-path: /
     session:
       timeout : 3600
     port : 8080
+
+spring:
+  config:
+    activate: 
+      on-profile: common
+      
+      
+jackson:
+    serialization:
+     WRITE_DATES_AS_TIMESTAMPS: false
+    date-format: yyyy-MM-dd HH:mm:ss
+    
 springdoc:
   packages-to-scan: com.colabear754.springdoc_example.controllers
   default-consumes-media-type: application/json;charset=UTF-8
@@ -54,26 +62,8 @@ token:
   expiration_time : 6000000
   refresh_time : 86400000 #24*60*60*1000
   secret : Q4NSl604sgyHJj1qwEkR3ycUeR4uUAt7WJraD7EN3O9DVM4yyYuHxMEbSF4XXyYJkal13eqgB0F7Bq4HQ4NSl604sgyHJj1qwEkR3ycUeR4uUAt7W
-Globals:
-  OsType : WINDOWS
-  LocalIp : 127.0.0.1
-  DbType : mysql
-  mysql:
-    DriverClassName : net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    #Url : jdbc:log4jdbc:mysql://192.168.85.45:3306/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
-    #UserName : ipcc
-    #Password : Qwer1234!@#$
-    Url : jdbc:log4jdbc:mysql://59.14.245.89:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
-    UserName : root
-    Password : Qwer1234!@#$
-  ctisql:
-    Url : jdbc:log4jdbc:mysql://192.168.85.11:3306/cube?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
-    UserName : cube
-    Password : cube123
-  ivrsql:
-    Url : jdbc:log4jdbc:mysql://192.168.85.49:33306/oms_110?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
-    UserName : omsadmin
-    Password : yesdev1!    
+  
+
   MainPage : /cmm/main/mainPage.do  
   fileUpload:
     Extensions: .gif.jpg.jpeg.png.xls.xlsx
@@ -92,3 +82,117 @@ ctiSeting:
     appName : sys_ivr
   registerCallSeconds: 3
   releaseCallMinutes: 3
+
+#################### 개발계 dev 영역 ####################
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+Globals:
+  OsType : WINDOWS
+  LocalIp : 127.0.0.1
+  DbType : mysql
+  mysql:
+    DriverClassName : net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    Url : jdbc:log4jdbc:mysql://59.14.245.89:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : root
+    Password : Qwer1234!@#$
+  ctisql:
+    Url : jdbc:log4jdbc:mysql://192.168.85.11:3306/cube?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : cube
+    Password : cube123
+  ivrsql:
+    Url : jdbc:log4jdbc:mysql://192.168.85.49:33306/oms_110?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : omsadmin
+    Password : yesdev1!    
+
+spring.redis :
+     host: 59.14.245.89
+     port: 30004
+     password : Rowa230927!@  
+
+    
+spring.rabbitmq:
+    host: 59.14.245.89
+    port: 30003
+    username: admin
+    password: Rowa230927!@
+
+
+#################### 실계 prod 영역 ####################
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+Globals:
+  OsType : WINDOWS
+  LocalIp : 127.0.0.1
+  DbType : mysql
+  mysql:
+    DriverClassName : net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    Url : jdbc:log4jdbc:mysql://192.168.22.179:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : root
+    Password : Qwer1234!@#$
+  ctisql:
+    Url : jdbc:log4jdbc:mysql://192.168.85.11:3306/cube?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : cube
+    Password : cube123
+  ivrsql:
+    Url : jdbc:log4jdbc:mysql://192.168.85.49:33306/oms_110?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : omsadmin
+    Password : yesdev1!    
+
+spring.redis :
+     host: 192.168.22.179
+     port: 30004
+     password : Rowa230927!@  
+
+    
+spring.rabbitmq:
+    host: 192.168.22.179
+    port: 30003
+    username: admin
+    password: Rowa230927!@
+
+
+#################### 본인 local 영역 ####################
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+Globals:
+  OsType : WINDOWS
+  LocalIp : 127.0.0.1
+  DbType : mysql
+  mysql:
+    DriverClassName : net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    Url : jdbc:log4jdbc:mysql://59.14.245.89:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : root
+    Password : Qwer1234!@#$
+  ctisql:
+    Url : jdbc:log4jdbc:mysql://192.168.85.11:3306/cube?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : cube
+    Password : cube123
+  ivrsql:
+    Url : jdbc:log4jdbc:mysql://192.168.85.49:33306/oms_110?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    UserName : omsadmin
+    Password : yesdev1!    
+
+spring.redis :
+     host: 59.14.245.89
+     port: 30004
+     password : Rowa230927!@  
+
+    
+spring.rabbitmq:
+    host: localhost
+    port: 25672
+    username: admin
+    password: Rowa230927!@
+
