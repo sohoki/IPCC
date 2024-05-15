@@ -24,8 +24,6 @@ public interface EgovCmmnDetailCodeManageMapper {
 	
 	public CmmnDetailCodeDto selectCmmnDetail(String code, String systemCode);
 	
-	public List<CmmnDetailCodeDto> selectComboSwcCon();
-		
 	public int insertCmmnDetailCode(CmmnDetailCode vo);
 	               
 	public int updateCmmnDetailCode(CmmnDetailCode vo);

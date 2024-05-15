@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
-
 import javax.annotation.Resource;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -19,10 +18,11 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
-
 import com.avaya.smsxml.Result;
 import com.avaya.smsxml.ArrayType;
 import com.avaya.smsxml.ModelChoices;
@@ -37,23 +37,30 @@ import com.sun.xml.ws.developer.WSBindingProvider;
 import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
 import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
 import com.system.ipcc.pbx.avaya.models.PbxMemberInfo;
+import com.system.ipcc.pbx.avaya.models.PbxPropertieinfo;
 import com.system.ipcc.pbx.avaya.models.TrankGroupInfo;
 import com.system.ipcc.pbx.avaya.models.pbxType;
 import com.avaya.smsxml.AgentType;
 import com.avaya.smsxml.ObjectFactory;
-
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
+import lombok.extern.slf4j.Slf4j;
 
-
+@Slf4j
 @SuppressWarnings("unchecked")
+@Service
 public class SMSReq {
 
-	// Package Namespace
-	private static String WEB_REFERENCE_PACKAGE = "com.avaya.smsxml";
+	
+	private final PbxPropertieinfo pbxinfo;
+	
+	@Autowired
+	public SMSReq(PbxPropertieinfo pbxinfo) {
+		this.pbxinfo = pbxinfo;
+	}
+	
 		
-		
-    /** EgovMessageSource */
+	/** EgovMessageSource */
 	@Resource(name = "egovMessageSource")
 	EgovMessageSource egovMessageSource;
 		
@@ -67,8 +74,8 @@ public class SMSReq {
 	private SystemManagementService sms;
 	private SystemManagementPort port;
 	private WSBindingProvider bp;
-	private static String WS_DEFAULT_NAMESPACE="http://xml.avaya.com/ws/SystemManagementService/2008/07/01";
-	// Keep reference to the sessionHeader element, as it is also used
+	
+	
 	// across requests
 	private String requestSID = "";
 	private String responseSID = "";
@@ -80,66 +87,55 @@ public class SMSReq {
 	Class<?> modelChoicesClass;
 	
 	// Connection parameters
-	private String root = "";
-	private String login = "";
-	private String pw = "";
-
 	
-	//private Integer responseTimeout = new Integer(50000);
-	private final  Integer responseTimeout = 50000;
+	public String root = "";
+	public String login = "";
+	public String pw = "";	
+	
+	public final  Integer responseTimeout = 50000;
 
 	// Request parameters
-	private String model;
-	private String operation;
-	private String qualifier;
-	private String fields;
+	
+	public String model;
+	public String operation;
+	public String qualifier;
+	public String fields;
+	public String format;
+	
 	//private String objectname; // currently not used
 	
 	private SubmitRequestType submitRequest;
 	
 	// Output control
 	private boolean faultRaised = false;
-
-	// XML format output
-	private static String FORMAT_XML = "xml";		
-	private String format = FORMAT_XML; // XML is default unless overridden
 	
-	private static String SMS_NS = "http://xml.avaya.com/sms";
-
+  
+	
 	// Input Delimiter
-	private String delimiter = "\\|";
+		private String delimiter = "\\|";
 	
-	// Property File Values
-    private static final String ROOT = "sms.root";
-    private static final String LOGIN = "cm.login";
-    private static final String PASSWORD = "cm.password";
-    private static final String FIELDS ="fields";
-
-    private static final String QUALIFIER ="qualifier";
-    private static final String OBJECTNAME ="objectname";
-    private static final String OUTPUT_FORMAT ="output.format";
-	    
 	// **************************************************************************
 	// isValid()
 	// **************************************************************************
 	/**
-	 * Validates the SMSTest object's parameters.
+	 * Validates the SMS object's parameters.
+	 * SMS objet 유효성 검사
 	 */
 	public boolean isValid() {
 
 		boolean ok = true;
+		log.info("========= isValid:" + root + ":" + login);
+		
 		if (!(root.startsWith("http://") || root.startsWith("https://"))) {
-			System.out.println("Parameter invalid sms.root " + root
-					+ " [must begin with http:// or https://]");
+			log.error("Parameter invalid sms.root " + root + " [must begin with http:// or https://]");
 			ok = false;
 		}
 		if ((login.length() <= 0) || (login.indexOf("@") <= 0)) {
-			System.out.println("Parameter invalid cm.login " + login
-					+ "[must be of the form 'loginid@cmaddress[:port]']");
+			log.error("Parameter invalid cm.login " + login + "[must be of the form 'loginid@cmaddress[:port]']");
 			ok = false;
 		}
 		if (pw.length() <= 0) {
-			System.out.println("Parameter invalid cm.password <cmpassword>");
+			log.error("Parameter invalid cm.password <cmpassword>");
 			ok = false;
 		}
 		
@@ -157,18 +153,20 @@ public class SMSReq {
 	 *  4. Releasing SMS session resources, when finished.
 	 *  
 	 */
-	public ModelAndView execRequest(String model, String sFIELDS, String sObjectName, String sOperation, String sQUALIFIER) {
-		// Step 1: Initial SOAP setup, done once (typically) per session.
+	public ModelAndView execRequest(String model, 
+													String sFIELDS, 
+													String sObjectName, 
+													String sOperation, 
+													String sQUALIFIER) {
 		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
 		if (!setup()) {
 			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			return models; 
 		}
-			// we failed and we're done
+		
 		Result submitResult = this.submitRequest(model, sFIELDS, sObjectName, sOperation, sQUALIFIER);
-
+		
 		this.manageSession();
-
 		this.releaseSession();
 		
 		if (submitResult != null) {
@@ -180,6 +178,7 @@ public class SMSReq {
 		
 		return models;
 	}
+	
 		
 	public ModelAndView execRequestTrank(String model, String sFIELDS, String sObjectName, String sOperation, String sQUALIFIER) {
 		// Step 1: Initial SOAP setup, done once (typically) per session.
@@ -195,20 +194,18 @@ public class SMSReq {
 		List<TrunkGroupType> list = submitResult.getResultData().getTrunkGroup();
 		
 		List<TrankGroupInfo> trGruops = list.stream().filter( t -> Integer.parseInt(t.getTotalAdministeredMembers()) > 0)
-									   .map(entry -> new TrankGroupInfo (
-											   entry.getGroupNumber(),
-											   entry.getTotalAdministeredMembers(),
-											   entry.getGroupType(),
-											   entry.getGroupName(),
-											   entry.getTN(),
-											   entry.getCOR(),
-											   entry.getCOR(),
-											   null
-											   )
-										   ).collect(Collectors.toList());
+										.map(entry -> new TrankGroupInfo (
+											entry.getGroupNumber(),
+											entry.getTotalAdministeredMembers(),
+											entry.getGroupType(),
+											entry.getGroupName(),
+											entry.getTN(),
+											entry.getCOR(),
+											entry.getCOR(),
+											null
+											)
+										).collect(Collectors.toList());
 		for (TrankGroupInfo trank : trGruops) {
-			
-			
 			Result trankStats = this.submitRequest("TrunkStatus", "member|port|connectedPorts|mtceBusy|serviceState", "", "status", trank.getGroupNumber());
 			List<TrunkStatusType> lists =  trankStats.getResultData().getTrunkStatus();
 			List<com.system.ipcc.pbx.avaya.models.TrankStatus> listStatus =  lists.stream().map(entry -> new com.system.ipcc.pbx.avaya.models.TrankStatus(
@@ -232,16 +229,16 @@ public class SMSReq {
 		}
 		return models;
 	}
-	//내선번호 조회
+	
 	public List<StationInfo> execRequestStationInfo (List<String> extensions){
 		//값 먼저 조회
 		
-		SMSReq client = new SMSReq();
+		//SMSReq client = new SMSReq();
 		String qualifier = "count 1";
 		List<StationInfo> stations = null;
 		Result submitResult;
-		boolean loaded = client.loadProps("Station", "extension", "display", qualifier);
-		if ( (client.isValid()) && loaded) // any args invalid
+		boolean loaded = this.loadProps("Station", "extension", "display", qualifier);
+		if ( (this.isValid()) && loaded) // any args invalid
 		{
 			//접속이 되면 
 			for (String extension : extensions) {
@@ -258,7 +255,6 @@ public class SMSReq {
 									.name(submitResult.getResultData().getStation().get(0).getName())
 									.tn(submitResult.getResultData().getStation().get(0).getTN())
 									.displayLangage(submitResult.getResultData().getStation().get(0).getDisplayLanguage())
-									/*
 									.button01(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData1()))
 									.button02(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData2()))
 									.button03(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData3()))
@@ -266,7 +262,6 @@ public class SMSReq {
 									.button05(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData5()))
 									.button06(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData6()))
 									.button07(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData7()))
-									*/
 									.build();
 					
 					stations.add(station);
@@ -280,13 +275,11 @@ public class SMSReq {
 	public List<AgentInfo> execRequestAgentInfo (List<String> loginIds){
 		//값 먼저 조회
 		
-		SMSReq client = new SMSReq();
 		String qualifier = "count 1";
 		List<AgentInfo> stations = null;
 		Result submitResult;
-		boolean loaded = client.loadProps("Agent", "extension", "display", qualifier);
-		if ( (client.isValid()) && loaded) // any args invalid
-		{
+		boolean loaded = this.loadProps("Agent", "extension", "display", qualifier);
+		if ( (this.isValid()) && loaded) {// any args invalid
 			//접속이 되면 
 			for (String loginId : loginIds) {
 				submitResult = this.submitRequest("Agent", "Login_ID", "", "display", loginId);
@@ -297,10 +290,8 @@ public class SMSReq {
 					agent.builder().loginId(loginId)
 									.name(submitResult.getResultData().getAgent().get(0).getName())
 									.extension(submitResult.getResultData().getAgent().get(0).getExtension())
-									/*
 									.sn(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSN()))
 									.sr(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSL()))
-									*/
 									.build();
 					stations.add(agent);
 				}
@@ -310,7 +301,6 @@ public class SMSReq {
 		this.releaseSession();
 		return stations;
 	}
-	
 	//pbx check
 	public int execRequestMemberCheck(PbxMemberInfo info, String _ckGubun) {
 		
@@ -491,33 +481,38 @@ public class SMSReq {
 		// **************************************************************************
 		/**
 		 * Performs initial setup of SOAP port/binding
-		 * 
+		 *  SOAP setup 및  port 바인
 		 */
 		boolean setup() {
+			
 			try {
-				modelContext = JAXBContext.newInstance(WEB_REFERENCE_PACKAGE);
-				System.out.println("WEB_REFERENCE_PACKAGE:" + WEB_REFERENCE_PACKAGE + "===============");
+				modelContext = JAXBContext.newInstance(Globals.PBX_WEB_REFERENCE_PACKAGE);
 				// Specify End-Point URL 
 				String endpoint = new URL(root + "/smsxml/SystemManagementService.php").toString();
-
+				
 				// Create a static Service instance -- Avoid network overhead by using a local 
+				//정적 서비스 인스턴스 생성 - 로컬을 사용하여 네트워크 오버헤드 방지
 				// copy of the WSDL
 				URL localWSDL;
-				
-				if (cl != null){
+				//ClassLoader cl = null;
+			
+				if (cl != null)
 					localWSDL = cl.getResource("wsdl_xml/SystemManagementService.wsdl");
-				}
-				 else {
-					 localWSDL = ClassLoader.getSystemResource("wsdl_xml/SystemManagementService.wsdl");
-				}
+				 else 
+					localWSDL = ClassLoader.getSystemResource("wsdl_xml/SystemManagementService.wsdl");
+				 
 			
 				// Service QName for Static Service instance
-				QName serviceName = new QName(WS_DEFAULT_NAMESPACE,"SystemManagementService");
+				QName serviceName = new QName(Globals.PBX_WS_DEFAULT_NAMESPACE,"SystemManagementService");
+
+				// Create new service
+				System.out.println("Creating Static SMS Service Instance...");
 				sms = new SystemManagementService(localWSDL, serviceName);
+
+				// Create a Dynamic Proxy client
+				System.out.println("Binding to SMS Port...\n");
 				port = sms.getSystemManagementPort();
 				bp = (WSBindingProvider) port;
-				
-			
 
 				// Configure RequestContext with endpoint's URL and
 				// set the login and credentials in the HTTP authorization header
@@ -526,7 +521,7 @@ public class SMSReq {
 				requestContext.put(WSBindingProvider.PASSWORD_PROPERTY, pw);
 				requestContext.put(WSBindingProvider.ENDPOINT_ADDRESS_PROPERTY, endpoint);
 				requestContext.put("com.sun.xml.ws.request.timeout", responseTimeout);
-
+				
 				// Add the SOAP header handler.
 				Binding binding = bp.getBinding();
 				List<Handler> handlerList = binding.getHandlerChain();
@@ -545,18 +540,15 @@ public class SMSReq {
 				// to the Session ID Handler to set in SOAP Header.
 				requestSID = "";
 				SIDHandler.setSID(requestSID);
-
+				log.info("=============requestSID" + requestSID);
 			} catch (WebServiceException e) {
-				System.out.println("WebServiceException occured durring port creation. \r\n"
-								+ e.getMessage());
+				log.error("WebServiceException occured durring port creation. \r\n" + e.getMessage());
 				return false;
 			} catch (MalformedURLException e) {
-				
-				
-				System.out.println("Bad URL (" + root + "/sms/SystemManagementService.php); cannot access SMS: " + e);
+				log.error("Bad URL (" + root + "/sms/SystemManagementService.php); cannot access SMS: " + e);
 				return false;
 			} catch (Exception e) {
-				System.out.println("An error occured during initial setup; cannot access SMS: " + e);
+				log.error("An error occured during initial setup; cannot access SMS: " + e);
 				return false;
 			}
 
@@ -568,14 +560,20 @@ public class SMSReq {
 		// **************************************************************************
 		/**
 		 * Submits the SOAP request defined in the SMSTest object to the SMS web
+		 * SMSTest 개체에 정의된 SOAP 요청을 SMS 웹에 제출합니다.
 		 * service for processing.
+		 * station 추가
 		 * 
 		 */
-		private Result submitStationRequest(String model, String sFIELDS, String sObjectName, String sOperation, PbxMemberInfo info) {
+		private Result submitStationRequest(String model, 
+															String sFIELDS, 
+															String sObjectName, 
+															String sOperation, 
+															PbxMemberInfo info) {
 			
 			// Initialize Types
 			Result result = null;
-			String mType = WEB_REFERENCE_PACKAGE + "." + model + "Type";			
+			String mType = Globals.PBX_WEB_REFERENCE_PACKAGE + "." + model + "Type";			
 			faultRaised = false;
 			try {
 
@@ -590,58 +588,58 @@ public class SMSReq {
 				modelList.add(modelClass.newInstance());
 				objectFactory = new ObjectFactory();
 				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();
-		        StationType st_submit = objectFactory.createStationType();
-		        
-		        int a = 1;
-		        if (!info.getPbxButton01().equals("")  ) {
-		        	String[] button01s = info.getPbxButton01().split(",");
-		        	if (button01s.length > 0) {
-		        		ArrayType button01 = objectFactory.createArrayType();
-		        		for (String button : button01s) {
-			        		if (!button.replace(" ", "").equals("")) {
-			        			button01.setPosition(a);
-				        		button01.setValue(button);	
-			        		}
-			        		a++;
-			        	}
-			        	st_submit.getButtonData1().add(button01);
-		        	}
-		        	
-		        }
-		        a = 1;
-		        if (!info.getPbxButton02().equals("")  ) {
-		        	String[] button02s = info.getPbxButton02().split(",");
-		        	if (button02s.length > 0) {
-		        		ArrayType button02 = objectFactory.createArrayType();
-			        	for (String button : button02s) {
-			        		if (!button.replace(" ", "").equals("")) {
-			        			button02.setPosition(a);
-				        		button02.setValue(button);	
-			        		}
-			        		
-			        		a++;
-			        	}
-			        	st_submit.getButtonData2().add(button02);
-		        	}
-		        	
-		        }
-		        a = 1;
-		        if (!info.getPbxButton03().equals("")  ) {
-		        	String[] button03s = info.getPbxButton03().split(",");
-		        	if (button03s.length > 0) {
-		        		ArrayType button03 = objectFactory.createArrayType();
-			        	for (String button : button03s) {
-			        		if (!button.replace(" ", "").equals("")) {
-			        			button03.setPosition(a);
-				        		button03.setValue(button);	
-			        		}
-			        		
-			        		a++;
-			        	}
-			        	st_submit.getButtonData3().add(button03);
-		        	}
-		        	
-		        }
+				StationType st_submit = objectFactory.createStationType();
+				//여기 구문 정리 하기 
+				int a = 1;
+				if (!info.getPbxButton01().equals("")  ) {
+					String[] button01s = info.getPbxButton01().split(",");
+					if (button01s.length > 0) {
+						ArrayType button01 = objectFactory.createArrayType();
+						for (String button : button01s) {
+							if (!button.replace(" ", "").equals("")) {
+								button01.setPosition(a);
+								button01.setValue(button);	
+							}
+							a++;
+						}
+						st_submit.getButtonData1().add(button01);
+					}
+					
+				}
+				a = 1;
+				if (!info.getPbxButton02().equals("")  ) {
+					String[] button02s = info.getPbxButton02().split(",");
+					if (button02s.length > 0) {
+						ArrayType button02 = objectFactory.createArrayType();
+						for (String button : button02s) {
+							if (!button.replace(" ", "").equals("")) {
+								button02.setPosition(a);
+								button02.setValue(button);	
+							}
+							
+							a++;
+						}
+						st_submit.getButtonData2().add(button02);
+					}
+					
+				}
+				a = 1;
+				if (!info.getPbxButton03().equals("")  ) {
+					String[] button03s = info.getPbxButton03().split(",");
+					if (button03s.length > 0) {
+						ArrayType button03 = objectFactory.createArrayType();
+						for (String button : button03s) {
+							if (!button.replace(" ", "").equals("")) {
+								button03.setPosition(a);
+								button03.setValue(button);	
+							}
+							
+							a++;
+						}
+						st_submit.getButtonData3().add(button03);
+					}
+					
+				}
 		        a = 1;
 		        if (!info.getPbxButton04().equals("")  ) {
 		        	String[] button04s = info.getPbxButton04().split(",");
@@ -703,20 +701,20 @@ public class SMSReq {
 			        		a++;
 			        	}
 			        	st_submit.getButtonData7().add(button07);
-		        	}
-		        	
-		        }
-		        
-		        st_submit.setExtension(info.getExtension());
-		        st_submit.setType(info.getType());
-		        st_submit.setCOR(info.getCor());
-		        st_submit.setCOS(info.getCos());
-		        st_submit.setName(info.getName());
-		        st_submit.setSecurityCode(info.getSecurityCode());
-		        st_submit.setDisplayLanguage(info.getPbxDisplayLangage());
-		        mf_add.getStation().add(st_submit);
-		        modelList.set(0, st_submit);
-		       
+					}
+					
+				}
+				
+				st_submit.setExtension(info.getExtension());
+				st_submit.setType(info.getType());
+				st_submit.setCOR(info.getCor());
+				st_submit.setCOS(info.getCos());
+				st_submit.setName(info.getName());
+				st_submit.setSecurityCode(info.getSecurityCode());
+				st_submit.setDisplayLanguage(info.getPbxDisplayLangage());
+				mf_add.getStation().add(st_submit);
+				modelList.set(0, st_submit);
+				
 				
 				submitRequest = new SubmitRequestType();
 				submitRequest.setModelFields(modelChoices);
@@ -728,14 +726,13 @@ public class SMSReq {
 						                    submitRequest.getObjectname(), submitRequest.getQualifier());
 
 			} catch (ClassNotFoundException cnf) { 
-				  System.out.println("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
-				  System.out.println(cnf.getMessage()); 
-				  faultRaised = true; 
-			 } catch (Exception soapE) {
-				System.out.println("A SOAP fault was raised: ");
-
-				System.out.println("Cause: " + soapE.getCause());
-				System.out.println("Message: " + soapE );
+				log.error("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
+				log.error(cnf.getMessage()); 
+				faultRaised = true; 
+			} catch (Exception soapE) {
+				log.error("A SOAP fault was raised: ");
+				log.error("Cause: " + soapE.getCause());
+				log.error("Message: " + soapE );
 
 				faultRaised = true;
 			 }
@@ -749,22 +746,24 @@ public class SMSReq {
 						printResult(mc, model); 
 					} 
 				}else { 
-					
 					faultRaised = true; 
-					System.out.println("The request returned an error (result_code == "+ result.getResultCode() + ")"); 
-					System.out.println("result_data == " + '"' + result.getResultData() + '"');
-					System.out.println("message_text == " + result.getMessageText() ); }
-				 
+					log.error("The request returned an error (result_code == "+ result.getResultCode() + ")"); 
+					log.error("result_data == " + '"' + result.getResultData() + '"');
+					log.error("message_text == " + result.getMessageText() ); }
 			}
 			
 			return result;
 
 		}
-		private Result submitAgentRequest(String model, String sFIELDS, String sObjectName, String sOperation, PbxMemberInfo info) {
+		private Result submitAgentRequest(String model, 
+															String sFIELDS, 
+															String sObjectName, 
+															String sOperation, 
+															PbxMemberInfo info) {
 			
 			// Initialize Types
 			Result result = null;
-			String mType = WEB_REFERENCE_PACKAGE + "." + model + "Type";			
+			String mType = Globals.PBX_WEB_REFERENCE_PACKAGE + "." + model + "Type";			
 			faultRaised = false;
 			try {
 
@@ -782,31 +781,31 @@ public class SMSReq {
 				
 				objectFactory = new ObjectFactory();
 				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();//
-		        AgentType ag_submit =objectFactory.createAgentType();
-		        
-		        
-		        
-		        for (pbxType sn :   info.getSn()) {
-		        	ArrayType sn_list = objectFactory.createArrayType();
-		            
-		            sn_list.setPosition(sn.getIndex());
-		            sn_list.setValue(sn.getValue());
-		            ag_submit.getSN().add(sn_list);
-		            
-		        }
-		        for (pbxType sr :   info.getSr()) {
-		        	ArrayType sr_list = objectFactory.createArrayType();
-		        	sr_list.setPosition(sr.getIndex());
-			        sr_list.setValue(sr.getValue());
-			        ag_submit.getSL().add(sr_list);
-		        }
-	            
-	            
-	            
-	            ag_submit.setLoginID(info.getLoginId());
-		        mf_add.getAgent().add(ag_submit);
-		        modelList.set(0, ag_submit);
-		       
+				AgentType ag_submit =objectFactory.createAgentType();
+				
+				
+				
+				for (pbxType sn :   info.getSn()) {
+					ArrayType sn_list = objectFactory.createArrayType();
+					
+					sn_list.setPosition(sn.getIndex());
+					sn_list.setValue(sn.getValue());
+					ag_submit.getSN().add(sn_list);
+					
+				}
+				for (pbxType sr :   info.getSr()) {
+					ArrayType sr_list = objectFactory.createArrayType();
+					sr_list.setPosition(sr.getIndex());
+					sr_list.setValue(sr.getValue());
+					ag_submit.getSL().add(sr_list);
+				}
+				
+				
+				
+				ag_submit.setLoginID(info.getLoginId());
+				mf_add.getAgent().add(ag_submit);
+				modelList.set(0, ag_submit);
+				
 				
 				submitRequest = new SubmitRequestType();
 				
@@ -817,7 +816,7 @@ public class SMSReq {
 				submitRequest.setQualifier(info.getLoginId());
 				
 				result = port.submitRequest(submitRequest.getModelFields(), submitRequest.getOperation(),
-						                    submitRequest.getObjectname(), submitRequest.getQualifier());
+						 								submitRequest.getObjectname(), submitRequest.getQualifier());
 
 			} catch (ClassNotFoundException cnf) { 
 				  System.out.println("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
@@ -863,7 +862,7 @@ public class SMSReq {
 	
 			// Initialize Types
 			Result result = null;
-			String mType = WEB_REFERENCE_PACKAGE + "." + model + "Type";			
+			String mType = Globals.PBX_WEB_REFERENCE_PACKAGE + "." + model + "Type";			
 			faultRaised = false;
 			try {
 
@@ -935,6 +934,7 @@ public class SMSReq {
 		// **************************************************************************
 		/**
 		 * Obtains the sessionID from a valid response and copies into the request
+		 * 유효한 응답에서 sessionID를 얻고 요청에 복사합니다.
 		 * header sessionID for the next request
 		 * 
 		 */
@@ -1109,16 +1109,12 @@ public class SMSReq {
 							System.out.println(e1.getMessage());
 							
 						}
-						
-						
-						
 					}
 				}
 				
 			} catch (Exception e) {
-				System.out.println("Exception ===================");
-				System.out.println(e.getMessage());
-				
+				log.error("Exception ===================");
+				log.error(e.getMessage());
 			}
 
 			return Obj;
@@ -1147,145 +1143,106 @@ public class SMSReq {
 		private void printResult(ModelChoices mc, String sModel) { 
 			  // Output result_data values.
 			try{
-			 String getModel = "get" + sModel;
-		  	 Method getModelMethod = modelChoicesClass.getMethod(getModel, new Class[] {});
-		  	 List<Object> resultObjectArray = (List<Object>) getModelMethod.invoke(mc, new Object[] {});
-			 	  
-			  if (resultObjectArray != null) { 
-				  int resultLength = resultObjectArray.size();
-		  
-				  if (format.equals(FORMAT_XML)) { 
-				      
-					  // Serialize Resulting modelChoice
-					  Marshaller marshaller = modelContext.createMarshaller();
-					  marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-					  
-					  System.out.println("-----------------XML-----------------\r\n");
-					  marshaller.marshal( new JAXBElement(new QName(SMS_NS,"ModelChoices"),modelChoicesClass,mc), 
-							  				System.out);
-					 
-					  System.out.println();
-					  System.out.println("-------------------------------------\r\n"); 
-				  } 
-				  else { 
-					  // Find the returnTypes getter methods and invoke
-					  System.out.println("\r\n---------------------------------------\r\n");
-					  for (int i = 0; i < resultLength; i++) { 
-						  Class<?> resultType = resultObjectArray.get(i).getClass();
-						  Method[] mi = resultType.getMethods();
-		 
-						  System.out.println("ResultObject = " + resultType.getName() + "[" + i + "]");
-						  for (int j=0; j < mi.length; j++) { 
-							  String mName = mi[j].getName(); 
-							  String mStartsWith = ("get"); 
-							  
-							  // Only interested in the getter methods
-							  if(mName.startsWith(mStartsWith)) { 
-								  String vName = mName.substring(mStartsWith.length());
-								  
-								  // Handle different return types
-								  Class<?> vType = mi[j].getReturnType();
-								  Object value = mi[j].invoke( resultObjectArray.get(i), new Object[] {} );
-		  
-								  if (value != null) {
-									  if( vType.getName().equals("java.lang.String") )
-										  System.out.println(vName + " = " + '"' + value +'"');
-									  else if( vType.getName().equals("java.util.List") )
-									  {
-										  ArrayList<ArrayType> valueAL = (ArrayList<ArrayType>) value;
-										  for(int k=0; k < valueAL.size(); k++)
-										  {
-											  ArrayType v = valueAL.get(k);
-											  if(v != null)
-											  {
-												  System.out.println(vName + "[" + v.getPosition() +"] = " + '"' 
-														  + v.getValue() +'"');
-											  }
-										  }
-										  
-									  }
-									  else {	
-										 // Skip unknown type
-									  }
-									  
-								   } 
-							  	} 
-							}// End Foreach
-		  
-						  	 System.out.println("---------------------------------------\r\n");
-		  
-					  	}// End For-loop
-					  } 
-				  } // End if null
-			  else { System.out.println("There were no Items to display!"); 
-			  }
+					String getModel = "get" + sModel;
+					Method getModelMethod = modelChoicesClass.getMethod(getModel, new Class[] {});
+					List<Object> resultObjectArray = (List<Object>) getModelMethod.invoke(mc, new Object[] {});
+					
+					if (resultObjectArray != null) { 
+						int resultLength = resultObjectArray.size();
+						if (format.equals(Globals.PBX_FORMART)) { 
+							// Serialize Resulting modelChoice
+							Marshaller marshaller = modelContext.createMarshaller();
+							marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+							
+							log.info("-----------------XML-----------------\r\n");
+							marshaller.marshal( new JAXBElement(new QName(Globals.PBX_SMS_NS,"ModelChoices"),modelChoicesClass,mc), 
+								  				System.out);
+							log.info("-------------------------------------\r\n"); 
+						}else { 
+							// Find the returnTypes getter methods and invoke
+							log.info("\r\n---------------------------------------\r\n");
+							for (int i = 0; i < resultLength; i++) { 
+								Class<?> resultType = resultObjectArray.get(i).getClass();
+								Method[] mi = resultType.getMethods();
+								log.info("ResultObject = " + resultType.getName() + "[" + i + "]");
+								for (int j=0; j < mi.length; j++) { 
+									String mName = mi[j].getName(); 
+									String mStartsWith = ("get"); 
+									// Only interested in the getter methods
+									if(mName.startsWith(mStartsWith)) { 
+											String vName = mName.substring(mStartsWith.length());
+											// Handle different return types
+											Class<?> vType = mi[j].getReturnType();
+											Object value = mi[j].invoke( resultObjectArray.get(i), new Object[] {} );
+											if (value != null) {
+												if( vType.getName().equals("java.lang.String") )
+													log.info(vName + " = " + '"' + value +'"');
+												else if( vType.getName().equals("java.util.List") ){
+													ArrayList<ArrayType> valueAL = (ArrayList<ArrayType>) value;
+													for(int k=0; k < valueAL.size(); k++){
+														ArrayType v = valueAL.get(k);
+														if(v != null){
+															log.info(vName + "[" + v.getPosition() +"] = " + '"' + v.getValue() +'"');
+													}
+												}
+											}else {	
+													 // Skip unknown type
+											}		
+									}
+								} 
+								}// End Foreach
+		
+							}// End For-loop
+						} 
+					} else { 
+						log.info("There were no Items to display!"); 
+					}
 			} catch (JAXBException je){
-				System.out.println("An error occured while marshalling the result object ");
+				log.error("An error occured while marshalling the result object ");
 				je.printStackTrace();
 				faultRaised = true;
 			} catch (Exception e){
+				log.error("printResult result error: " + e.toString());
 				e.printStackTrace();
 			}
-	    }
+		}
 		
-		// Load Properties
-		public boolean loadProps(String models, String sFIELDS, String sOPERATION, String sQUALIFIER ) {
-			URL appURL = null;
-			System.out.println("===================");
-			System.out.println("sFIELDS:" + sFIELDS);
-			System.out.println("===================");
+		//속성 Properties
+		public boolean loadProps(String models,  String sFIELDS, String sOPERATION, String sQUALIFIER ) {
 			try {
-				this.cl = this.getClass().getClassLoader();
-				if (cl != null){
-					appURL = cl.getResource("stringnotation.properties");
-				 }
-				 else {
-					appURL = ClassLoader.getSystemResource("stringnotation.properties");
-				 }
 				
-				// Get common properties
-		        Properties appProp = new Properties();
-		        appProp.load(appURL.openStream());
-		        String tmp = "";
-		        
-		        tmp = appProp.getProperty(ROOT);
-		        if(tmp != null)
-		        {this.root = tmp.trim();}
-		        tmp = appProp.getProperty(LOGIN);
-		        if(tmp != null)
-		        {this.login = tmp.trim();}
-		        tmp = appProp.getProperty(PASSWORD);
-		        if(tmp != null)
-		        {this.pw = tmp.trim();}
-		        tmp = appProp.getProperty(OUTPUT_FORMAT);
-		        if(tmp != null)
-		        {this.format = tmp.trim();}
-	        	tmp = appProp.getProperty(models);
-		  	    if(tmp != null)
-		  	    {this.model = tmp.trim();}
-		  	    tmp = appProp.getProperty(sFIELDS);
-		  	    if(tmp != null)
-		  	    {this.fields = tmp.trim();}
-		  	    tmp = appProp.getProperty(sOPERATION);
-	  	        if(tmp != null)
-	  	        {this.operation = tmp.trim();}
-	 	        tmp = appProp.getProperty(sQUALIFIER);
-	  	        if(tmp != null)
-	  	        {this.qualifier = tmp.trim();}
-	  	        tmp = appProp.getProperty(OBJECTNAME);
-	  	        if(tmp != null)
-	  	        {
-	  	        	// Not currently using objectname
-	  	        }
-	  	        
-			 } catch (IllegalArgumentException arge) { 
-				  // A fault was raised. The fault message will contain the explanation
-				  System.out.println(arge.getMessage());
-				  System.out.println("Please verify that stringnotation.properties file exists " +
-						  			 "in the resources directory and has the proper read permission!");
-				  return false; 
-			 } catch (Exception e) {
-				System.out.println(e.getMessage());
+				String tmp = "";
+				
+				tmp =   pbxinfo.getSms_root() ;
+				if(tmp != null){this.root = tmp.trim();}
+				log.info("this.root:" + this.root);
+				
+				tmp =  pbxinfo.getCm_id() ;
+				if(tmp != null){this.login = tmp.trim();}
+				log.info("this.login:" + this.login);
+				
+				tmp =  pbxinfo.getCm_password() ;
+				if(tmp != null){this.pw = tmp.trim();}
+				
+				tmp =  pbxinfo.getOutput_format() ;
+				if(tmp != null){this.format = tmp.trim();}
+				
+				tmp = models;
+				if(tmp != null){this.model = tmp.trim();}
+				
+				tmp = sFIELDS;
+				if(tmp != null){this.fields = tmp.trim();}
+				
+				tmp = sOPERATION;
+				if(tmp != null){this.operation = tmp.trim();}
+				
+				tmp =  sQUALIFIER;
+				if(tmp != null){this.qualifier = tmp.trim();}
+				
+				tmp =  "objectname";
+				if(tmp != null){}
+			} catch (Exception e) {
+				log.error("loadProps:" + e.getMessage());
 				return false;
 			}
 			return true;

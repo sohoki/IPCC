@@ -31,7 +31,6 @@ import com.system.backoffice.uat.uia.models.ConsultantAgentInfo;
 import com.system.backoffice.uat.uia.models.ConsultantInfo;
 import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
 import com.system.backoffice.uat.uia.service.ConsultantManageService;
-import com.system.backoffice.uat.uia.web.AdminInfoManageController;
 import com.system.backoffice.util.service.UtilInfoService;
 import com.system.ipcc.cti.nexus.models.NexusAgentInfo;
 import com.system.ipcc.cti.nexus.models.dto.NexusAgentInfoResponseDto;
@@ -66,9 +65,8 @@ public class SmsManageController {
 	
 	@Autowired 
 	private NexusEmployeeManageService ctiService;
-	
-	
-	
+	@Autowired
+	private  SMSReq client ;
 	
 	
     /** EgovMessageSource */
@@ -102,8 +100,6 @@ public class SmsManageController {
 				}
 				
 				
-				
-				SMSReq client = new SMSReq();
 				String notiSeq = "101";
 				String status = "list";
 				String qualifier = "count 1";
@@ -155,7 +151,6 @@ public class SmsManageController {
 				pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
 			}
 			
-			SMSReq client = new SMSReq();
 			String notiSeq = "101";
 			String status = "list";
 			String qualifier = "count 1";
@@ -416,7 +411,7 @@ public class SmsManageController {
 														.mode("PBX")
 														.SecurityCode(pbxInfo.getPbxSecurityCode())
 														.build();
-				SMSReq client = new SMSReq();
+				
 				String addType = "Extension="+pbxinfoR.getExtension()+"|Type="+pbxinfoR.getType() +"|COR="+pbxinfoR.getCor()+"|COS="+pbxinfoR.getCos()+"|Name="+pbxinfoR.getName()+"|SecurityCode="+pbxinfoR.getSecurityCode()+"";
 				
 				boolean loaded = client.loadProps("Station",addType, "change", pbxInfo.getPbxExtension());
@@ -456,7 +451,7 @@ public class SmsManageController {
 				pbxinfoR.setSn(sn);
 				pbxinfoR.setSr(sr);
 				
-				SMSReq client = new SMSReq();
+				
 				
 				boolean loaded = client.loadProps("Agent","Login_ID|Name|Extension", "display", pbxinfoR.getLoginId());
 				if ( (!client.isValid()) || !loaded) // any args invalid
@@ -495,7 +490,7 @@ public class SmsManageController {
 			   		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.user.notexits"));
 			   	}
 				//사용자 삭제 
-				SMSReq client = new SMSReq();
+				
 				String notiSeq = "101";
 				String status = "list";
 				String qualifier = "count 1";
@@ -572,7 +567,7 @@ public class SmsManageController {
 		   		model.addObject(Globals.STATUS_MESSAGE,  egovMessageSource.getMessage("fail.value.notexits") );
 		   	}
 			//사용자 삭제 
-			SMSReq client = new SMSReq();
+			
 			String notiSeq = "101";
 			String status = "list";
 			String qualifier = "count 10";
@@ -619,10 +614,6 @@ public class SmsManageController {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 			//SMSXMLTest client = new SMSXMLTest();
-			SMSReq client = new SMSReq();
-			
-			String message = "";
-			
 			String notiSeq = "115";
 			String status = "list";
 			String qualifier = "count 10000";

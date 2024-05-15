@@ -61,6 +61,9 @@ public class StationInfoManageController {
 	@Autowired
 	private StationInfoManageService stationService;
 	
+	@Autowired
+	private SMSReq client;
+	
 	@ApiOperation(value="삭제", notes = "성공시 공통 분류 코드를 삭제 합니다.")
 	@ApiImplicitParam(name = "extension", value = "내선번호")
 	@DeleteMapping("{extension}.do")
@@ -145,7 +148,7 @@ public class StationInfoManageController {
 			
 			//값 가지고 오기 
 			List<String> list = Arrays.asList(extensionlist.split(","));
-			SMSReq client = new SMSReq();
+			//SMSReq client = new SMSReq();
 			String status = stationService.insertStationInfoList(client.execRequestStationInfo(list)) > 0 ?
 			Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = status.equals( Globals.STATUS_SUCCESS) ?

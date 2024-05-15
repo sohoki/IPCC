@@ -11,7 +11,7 @@
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
 					 A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID,
-					 A.NOTI_SEQ, A.SMS_MODEL, A.SMS_FIELDS, A.SMS_OBJECT_NAME,  A.SMS_NAME, A.SMS_FIELDS_DC, A.SMS_USEYN
+					 A.NOTI_SEQ, A.SMS_MODEL, A.SMS_FIELDS, A.SMS_OPERATION,  A.SMS_NAME, A.SMS_FIELDS_DC, A.SMS_USEYN
 				FROM TB_CONN_SERVERINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -25,45 +25,44 @@
 			) TB 
 		) TA
 		ORDER BY TA.RNUM DESC 
-		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
-		
-   	</select>
-   	<select id="selectSmsInfoDetail" resultType="SmsModelInfo">
-		SELECT   A.NOTI_SEQ, A.SMS_MODEL, A.SMS_FIELDS, A.SMS_OBJECT_NAME,  A.SMS_NAME, A.SMS_FIELDS_DC, A.SMS_USEYN,
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 		
+	</select>
+	<select id="selectSmsInfoDetail" resultType="SmsModelInfo">
+		SELECT   A.NOTI_SEQ, A.SMS_MODEL, A.SMS_FIELDS, A.SMS_OPERATION,  A.SMS_NAME, A.SMS_FIELDS_DC, A.SMS_USEYN,
 		    	 A.FRST_REGIST_PNTTM, A.FRST_REGISTER_ID, A.LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID
 		FROM TB_SMSMODELINFO A
 		WHERE A.NOTI_SEQ = #{notiSeq}
-   	</select>
-   	<insert id="insertSmsInfo">
+	</select>
+	<insert id="insertSmsInfo">
 		INSERT INTO TB_SMSMODELINFO	
 		(
-		    SMS_MODEL, SMS_FIELDS, SMS_OBJECT_NAME,  SMS_NAME, SMS_FIELDS_DC, SMS_USEYN
+		    SMS_MODEL, SMS_FIELDS, SMS_OPERATION,  SMS_NAME, SMS_FIELDS_DC, SMS_USEYN
 		    FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID
 		)
 		VALUES 
 		(
-			#{smsModel}, #{smsFields}, #{smsObjectName,jdbcType=VARCHAR},
+			#{smsModel}, #{smsFields}, #{smsOperation,jdbcType=VARCHAR},
 			#{smsName,jdbcType=VARCHAR}, #{smsFieldsDc,jdbcType=VARCHAR}, #{smsUseyn,jdbcType=VARCHAR},
 			NOW(), #{userId}, NOW(), #{userId}
 		)
-   	</insert>
+	</insert>
 	<update id="updateSmsInfo">
 		UPDATE TB_SMSMODELINFO SET  SMS_MODEL = #{smsModel}, 
-									   SMS_FIELDS = #{smsFields}, 
-									   SMS_OBJECT_NAME = #{smsObjectName}, 
-									   SMS_NAME = #{smsName,jdbcType=VARCHAR},
-									   SMS_FIELDS_DC = #{smsFieldsDc,jdbcType=VARCHAR},
-									   SMS_USEYN = #{smsUseyn,jdbcType=VARCHAR},
-			                           LAST_UPDT_PNTTM = NOW(), 
-			                           LAST_UPDUSR_ID = #{userId, jdbcType=VARCHAR}          
-       	WHERE NOTI_SEQ = #{notiSeq}
-   	</update>
-   	
-   	<delete id="deleteSmsInfo">
-   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
-   		DELETE FROM TB_SMSMODELINFO
-   		WHERE NOTI_SEQ = #{notiSeq}
-   	</delete>
+									SMS_FIELDS = #{smsFields}, 
+									SMS_OPERATION = #{smsOperation,jdbcType=VARCHAR}, 
+									SMS_NAME = #{smsName,jdbcType=VARCHAR},
+									SMS_FIELDS_DC = #{smsFieldsDc,jdbcType=VARCHAR},
+									SMS_USEYN = #{smsUseyn,jdbcType=VARCHAR},
+									LAST_UPDT_PNTTM = NOW(), 
+									LAST_UPDUSR_ID = #{userId, jdbcType=VARCHAR}          
+	   	WHERE NOTI_SEQ = #{notiSeq}
+	</update>
+	
+	<delete id="deleteSmsInfo">
+		<!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+		DELETE FROM TB_SMSMODELINFO
+		WHERE NOTI_SEQ = #{notiSeq}
+	</delete>
 
 
 </mapper>

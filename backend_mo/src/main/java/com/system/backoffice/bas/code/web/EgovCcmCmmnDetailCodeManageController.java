@@ -25,6 +25,7 @@ import com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto;
 import com.system.backoffice.bas.code.service.EgovCcmCmmnDetailCodeManageService;
 import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
 import com.system.backoffice.sys.rabbitmq.service.MessageService;
+import com.system.backoffice.util.service.UtilInfoService;
 
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
@@ -164,9 +165,10 @@ public class EgovCcmCmmnDetailCodeManageController {
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
 				ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}
-			model.addObject(Globals.JSON_RETURN_RESULT, cmmnDetailCodeManageService.selectCmmnDetailComboLamp(codeId, systemCode));
+			model.addObject(Globals.JSON_RETURN_RESULT, cmmnDetailCodeManageService.selectCmmnDetailComboLamp(codeId, 
+																											UtilInfoService.NVL(systemCode,"IPCC")));
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			log.error("selectCmmnDetailComboList error:" + e.toString());
@@ -185,7 +187,7 @@ public class EgovCcmCmmnDetailCodeManageController {
 	@ApiOperation(value="공통 상세 코드 조회", notes = "성공시 공통 상세 코드 조회 합니다.")
 	@PostMapping(value="detailList.do")
 	public ModelAndView selectCmmnDetailCodeList ( @RequestBody Map<String, Object> searchMap, 
-			                                       HttpServletRequest request)  {
+																			HttpServletRequest request)  {
 		//나중에 권한 설정 값 넣기 
 		
 		
@@ -216,7 +218,7 @@ public class EgovCcmCmmnDetailCodeManageController {
 	@ApiOperation(value="시스템 에서 공통 상세 코드 조회", notes = "성공시 시스템 에서 공통 상세 코드 조회 합니다.")
 	@PostMapping(value="system/detailList.do")
 	public ModelAndView selectCmmnDetailCodeListSystem ( @RequestBody Map<String, Object> searchMap, 
-			                                       HttpServletRequest request)  {
+																					HttpServletRequest request)  {
 		//나중에 권한 설정 값 넣기 
 		
 		

@@ -120,7 +120,17 @@ spring.rabbitmq:
     username: admin
     password: Rowa230927!@
 
-
+pbx-info:
+    root : http://192.168.90.43
+    id : smsuser@192.168.90.11:5022
+    password: Arisys123$
+    output-format : xml
+    output-objectname: objectname
+    output-fields : fields
+    #output-fields : key-value
+    soap-ws_default_namespace : http://xml.avaya.com/ws/SystemManagementService/2008/07/01
+    soap-format_xml : xml
+    soap-sms_ns : http://xml.avaya.com/sms
 #################### 실계 prod 영역 ####################
 ---
 spring:
@@ -158,7 +168,16 @@ spring.rabbitmq:
     username: admin
     password: Rowa230927!@
 
-
+pbx-info:
+    sms_root : http://192.168.90.43
+    cm_id : smsuser@192.168.90.11:5022
+    cm_password: Arisys123$
+    output_format : xml
+    output_fields : fields
+    #output-fields : key-value
+    soap_ws_default_namespace : http://xml.avaya.com/ws/SystemManagementService/2008/07/01
+    soap_format_xml : xml
+    soap_sms_ns : http://xml.avaya.com/sms
 #################### 본인 local 영역 ####################
 ---
 spring:
@@ -195,4 +214,15 @@ spring.rabbitmq:
     port: 25672
     username: admin
     password: Rowa230927!@
-
+    
+pbx-info:
+    cm-root : http://192.168.90.43
+    sms-id : smsuser@192.168.90.11:5022
+    sms-password: Arisys123$
+    output-format : xml
+    output-objectname: objectname
+    output-fields : fields
+    #output-fields : key-value
+    soap-ws_default_namespace : http://xml.avaya.com/ws/SystemManagementService/2008/07/01
+    soap-format_xml : xml
+    soap-sms_ns : http://xml.avaya.com/sms

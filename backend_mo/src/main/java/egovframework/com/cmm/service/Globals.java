@@ -35,6 +35,12 @@ public class Globals {
 	public static final String STATUS_FAIL = "FAIL";
 	
 	public static final String SYSTEM_IPCC = "IPCC";
+	
+	public static final String PBX_FORMART = "xml";
+	public static final String PBX_WS_DEFAULT_NAMESPACE = "http://xml.avaya.com/ws/SystemManagementService/2008/07/01";
+	public static final String PBX_SMS_NS = "http://xml.avaya.com/ws/SystemManagementService/2008/07/01";
+	public static final String PBX_WEB_REFERENCE_PACKAGE = "com.avaya.smsxml";
+	
 	//token 
 	public static final String TOKEN = "jToken";
 	public static final String REFRESH_TOKEN = "refreshToken";

@@ -1,4 +1,4 @@
-p<?xml version="1.0"?>
+<?xml version="1.0"?>
 <definitions
 	name="SystemManagement"
 	targetNamespace="http://xml.avaya.com/ws/SystemManagementService/2008/07/01" 
@@ -11,7 +11,7 @@ p<?xml version="1.0"?>
 	
 	<wsdl:types xmlns="http://schemas.xmlsoap.org/wsdl/">
 		<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:sms="http://xml.avaya.com/sms" targetNamespace="http://xml.avaya.com/ws/SystemManagementService/2008/07/01">
-			<import namespace="http://xml.avaya.com/sms" schemaLocation="../xsd/ModelChoices.xsd"/>
+			<import namespace="http://xml.avaya.com/sms" schemaLocation="/work/mvcs-ws/localbuild/10.1-SP_AESBuild/aesvcs/sms/build/sdkstaging/smssvc/example/resources/xsd/ModelChoices.xsd"/>
 			<element name="submitRequest" type="tns:submitRequestType"/>
 			<complexType name="submitRequestType">
 				<sequence>

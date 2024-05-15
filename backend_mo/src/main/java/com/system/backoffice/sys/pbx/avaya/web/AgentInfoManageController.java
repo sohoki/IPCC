@@ -65,6 +65,9 @@ public class AgentInfoManageController {
 	@Autowired
 	private AgentInfoManageService agentService;
 	
+	@Autowired
+	private SMSReq client;
+	
 	
 	@ApiOperation(value="삭제", notes = "성공시 avaya agent 삭제 합니다.")
 	@ApiImplicitParam(name = "loginId", value = "agent loginId")
@@ -132,38 +135,38 @@ public class AgentInfoManageController {
     }
 	
 	@ApiOperation(value="조회된 agent list 업데이트", notes = "성공시 조회된  agent list를 업데이트 합니다.")
-    @GetMapping("updateAgentList.do")
+	@GetMapping("updateAgentList.do")
 	public ModelAndView insertAgentListInfo(@PathVariable String agentlist, 
 			  							 	HttpServletRequest request) throws Exception {
-    	
-    	
-    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-    	try {
-    		
-    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-        	if (!jwtVerification.isVerificationAdmin(request)) {
-        		ResultVO resultVO = new ResultVO();
-    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-        	}
-        	
-        	//값 가지고 오기 
-        	List<String> list = Arrays.asList(agentlist.split(","));
-        	SMSReq client = new SMSReq();
-    		String status = agentService.insertAgentInfoList(client.execRequestAgentInfo(list)) > 0 ?
+		
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+			
+			// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}
+			
+			//값 가지고 오기 
+			List<String> list = Arrays.asList(agentlist.split(","));
+			
+			String status = agentService.insertAgentInfoList(client.execRequestAgentInfo(list)) > 0 ?
 			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = status.equals( Globals.STATUS_SUCCESS) ?
 					 	 egovMessageSource.getMessage("success.request.msg") :
 						 egovMessageSource.getMessage("fail.request.msg") ;
-			 model.addObject(Globals.STATUS, status);
-	   		 model.addObject(Globals.STATUS_MESSAGE, message);
-    	}catch(Exception e) {
-	   		 model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	   		 model.addObject(Globals.STATUS_MESSAGE, e.toString());
-	   	 }
-	   	 return model;
-    	
-    	
-    }
+			model.addObject(Globals.STATUS, status);
+			model.addObject(Globals.STATUS_MESSAGE, message);
+		}catch(Exception e) {
+			 model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			 model.addObject(Globals.STATUS_MESSAGE, e.toString());
+		}
+		return model;
+		
+		
+	}
 
 	
 	@ApiOperation(value="상세 조회", notes = "내선번호 상세조회 한다.")

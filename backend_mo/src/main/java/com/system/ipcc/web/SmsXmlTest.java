@@ -8,6 +8,9 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +30,7 @@ import com.system.backoffice.uat.uia.service.ConsultantManageService;
 import com.system.ipcc.cti.nexus.models.dto.NexusAgentRequestInfoDto;
 import com.system.ipcc.cti.nexus.service.NexusEmployeeManageService;
 import com.system.ipcc.pbx.avaya.models.PbxMemberInfo;
+import com.system.ipcc.pbx.avaya.models.PbxPropertieinfo;
 import com.system.ipcc.pbx.avaya.models.pbxType;
 import com.system.ipcc.pbx.avaya.service.smsxml.SMSReq;
 import com.system.ipcc.pbx.avaya.service.smsxml.StringNotation;
@@ -42,9 +46,9 @@ import lombok.extern.slf4j.Slf4j;
 @SuppressWarnings("unchecked")
 public class SmsXmlTest {
 	
-	
+	// Property File Values		
+	private  String sms_root;
 
-	
 	@Autowired
 	private SmsModelInfoManageService smsService;
 	
@@ -54,41 +58,11 @@ public class SmsXmlTest {
 
 	@Autowired 
 	private NexusEmployeeManageService ctiService;
+
+	@Autowired
+	private  SMSReq client;
 	
-	@GetMapping("/SmsTest")
-	public ModelAndView smsT() throws Exception {
-		
-		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-		try {
-			//SMSXMLTest client = new SMSXMLTest();
-			StringNotation client = new StringNotation();
-			
-			String message = "";
-			
-			boolean loaded = client.loadProps();
-			if ( (!client.isValid()) || !loaded) // any args invalid
-			{
-				
-				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):  sms.root=<http(s)://smshostaddr> cm.login=<cmlogin@cmhostaddr[:port]> cm.password=<cmpassword>");
-			} else {
-					try {
-						client.execRequest();
-						model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-					} catch (Exception e) {
-						log.error("SMSXMLTest failed with an unexpected exception:");
-						model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-						model.addObject(Globals.STATUS_MESSAGE, "SMSXMLTest failed with an unexpected exception:");
-						
-					}
-			}
-		
-		}catch(Exception e) {
-			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		model.addObject(Globals.STATUS_MESSAGE, e.toString());
-		}
-		return model;
-	}
+
 
 	@PostMapping("/SmsTrank/notiSeq.do")
 	public ModelAndView SmsTrank(@RequestBody Map<String, Object> searchMap 
@@ -97,31 +71,34 @@ public class SmsXmlTest {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 			//SMSXMLTest client = new SMSXMLTest();
-			SMSReq client = new SMSReq();
-			
-			String message = "";
-			
-			
+			//SMSReq client = new SMSReq();
 			
 			Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail(searchMap.get("notiSeq").toString());
 			
 			if (models.isPresent()) {
 				
-				
-				
-				boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), searchMap.get("status").toString(), searchMap.get("qualifier").toString());
-				if ( (!client.isValid()) || !loaded) // any args invalid
-				{
-					
+				boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), 
+																models.get().getSmsFields(), 
+																searchMap.get("status").toString(), 
+																searchMap.get("qualifier").toString());
+				log.info("loaded:" + loaded + client.root + ":" + client.login + ":" + client.pw);
+				if ( (!client.isValid()) || !loaded){ // any args invalid
 					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+					log.info("Usage (smsxml.properties):  sms.root=<http(s)://smshostaddr> cm.login=<cmlogin@cmhostaddr[:port]> cm.password=<cmpassword>");
 					model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):  sms.root=<http(s)://smshostaddr> cm.login=<cmlogin@cmhostaddr[:port]> cm.password=<cmpassword>");
 				} else {
 					try {
-						model = client.execRequest(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), searchMap.get("objectName").toString(), searchMap.get("status").toString(), searchMap.get("qualifier").toString());
+						
+						model = client.execRequest(models.get().getSmsModel().replace("Type", ""), 
+																models.get().getSmsFields(), 
+																searchMap.get("objectName").toString(), 
+																searchMap.get("status").toString(), 
+																searchMap.get("qualifier").toString());
+						
 					} catch (Exception e) {
-							System.out.println("SMSXMLTest failed with an unexpected exception:");
+							log.error("SMSXMLTest failed with an unexpected exception:");
 							model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-						model.addObject(Globals.STATUS_MESSAGE, "SMSXMLTest failed with an unexpected exception:");
+							model.addObject(Globals.STATUS_MESSAGE, "SMSXMLTest failed with an unexpected exception:");
 					}
 				}
 			}else {
@@ -142,7 +119,7 @@ public class SmsXmlTest {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
-			SMSReq client = new SMSReq();
+			//SMSReq client = new SMSReq();
 			String notiSeq = "101";
 			String status = "list";
 			String qualifier = "count 1";
@@ -275,7 +252,7 @@ public class SmsXmlTest {
 				model.addObject(Globals.STATUS_MESSAGE, "사용자 내역이 없습니다.");
 			}
 			//사용자 삭제 
-			SMSReq client = new SMSReq();
+			//SMSReq client = new SMSReq();
 			String notiSeq = "101";
 			String status = "list";
 			String qualifier = "count 10";
@@ -331,10 +308,9 @@ public class SmsXmlTest {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 			//SMSXMLTest client = new SMSXMLTest();
-			SMSReq client = new SMSReq();
+			//SMSReq client = new SMSReq();
 			
 			String message = "";
-			
 			String notiSeq = "115";
 			String status = "list";
 			String qualifier = "count 1000";
@@ -342,10 +318,7 @@ public class SmsXmlTest {
 			
 			if (models.isPresent()) {
 				
-				
-				
 				//나중에 학인 하기 
-				System.out.println("===========  loadProps 값 하기");
 				boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), status, qualifier);
 				if ( (!client.isValid()) || !loaded) // any args invalid
 				{
@@ -369,14 +342,11 @@ public class SmsXmlTest {
 				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
 			}
-			
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, e.toString());
 		}
 		return model;
-		
-		
 	}
 	
 }
