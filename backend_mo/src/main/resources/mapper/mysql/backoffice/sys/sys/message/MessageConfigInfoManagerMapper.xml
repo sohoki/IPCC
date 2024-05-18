@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sys.rabbitmq.mapper.MessageConfigInfoManageMapper">
+   <select id="selectMessageConfigInfoManageListByPagination" resultType="MessageConfigInfoVO">
+	  SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+	        TB.* FROM ( 
+		    SELECT  a.MSG_SEQ, a.MSG_SECTION, a.MSG_EXPLATATION, a.MSG_GUBUN, a.MSG_URL,
+                    a.MSG_ID_EXISTS_GUBUN, a.MSG_RETURN_TYPE, a.MSG_SEND_GUBUN, a.MSG_ETC1, a.MSG_ETC2,
+                    a.FRST_REGIST_PNTTM , a.FRST_REGISTER_ID, a.LAST_UPDT_PNTTM, a.LAST_UPDUSR_ID, a.MSG_RETURN_EXAMPLE
+		    FROM    TB_MESSAGE_CONFIG_INFO a     	     
+		        ORDER BY a.MSG_SEQ  DESC
+	        ) TB  
+	         ORDER BY TB.MSG_SEQ  DESC
+	        limit   #{params.firstIndex},   #{params.recordCountPerPage}  		 	    
+     </select>
+
+    <insert id="insertMessageConfigInfoManage">
+        <![CDATA[
+             INSERT INTO TB_MESSAGE_CONFIG_INFO (MSG_SECTION, MSG_EXPLATATION, MSG_GUBUN, MSG_URL,
+		             					MSG_ID_EXISTS_GUBUN, MSG_RETURN_TYPE, MSG_SEND_GUBUN, MSG_ETC1, MSG_ETC2,
+										FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID, MSG_RETURN_EXAMPLE
+										)
+             VALUES ( #{msgSection,jdbcType=VARCHAR}, #{msgExplatation ,jdbcType=VARCHAR}, #{msgGubun ,jdbcType=VARCHAR}, #{msgUrl ,jdbcType=VARCHAR}, 
+		             #{msgIdExistsGubun,jdbcType=VARCHAR}, #{msgReturnType,jdbcType=VARCHAR}, #{msgSendGubun,jdbcType=VARCHAR}, #{msgEtc1,jdbcType=VARCHAR}, #{msgEtc2,jdbcType=VARCHAR},
+		              NOW(), #{userId,jdbcType=VARCHAR}, NOW(),  #{userId,jdbcType=VARCHAR}, #{msgReturnExample,jdbcType=VARCHAR}
+		             
+             )
+         ]]>
+     </insert>
+     <update id="updateMessageConfigInfoManage">
+		UPDATE  TB_MESSAGE_CONFIG_INFO SET MSG_SECTION = #{msgSection ,jdbcType=VARCHAR} ,
+									MSG_EXPLATATION = #{msgExplatation ,jdbcType=VARCHAR} ,
+									MSG_GUBUN = #{msgGubun ,jdbcType=VARCHAR} ,
+									MSG_URL = #{msgUrl ,jdbcType=VARCHAR} ,
+									MSG_ID_EXISTS_GUBUN = #{msgIdExistsGubun,jdbcType=VARCHAR} ,
+									MSG_RETURN_TYPE = #{msgReturnType ,jdbcType=VARCHAR} ,
+									MSG_SEND_GUBUN = #{msgSendGubun ,jdbcType=VARCHAR} ,
+									MSG_ETC1 = #{msgEtc1 ,jdbcType=VARCHAR} ,
+									MSG_ETC2 = #{msgEtc2 ,jdbcType=VARCHAR} ,
+									LAST_UPDT_PNTTM = NOW(),
+									LAST_UPDUSR_ID = #{userId ,jdbcType=VARCHAR},
+									MSG_RETURN_EXAMPLE = #{msgReturnExample,jdbcType=VARCHAR}
+		WHERE MSG_SEQ = #{msgSeq}
+     </update>
+
+     
+	<delete id="deleteMessageConfigInfoManage">
+		DELETE FROM TB_MESSAGE_CONFIG_INFO
+		WHERE  MSG_SEQ = #{msgSeq}
+	</delete>
+</mapper>

@@ -22,21 +22,21 @@
         <!--  많은 양의 로그가 생성되므로 특별히 JDBC 문제를 추적해야 할 필요가 있는 경우를 제외하고는 사용을 권장하지 않는다. -->
         <Logger name="jdbc.audit" additivity="false">
             <level value="OFF" />
-            <AppenderRef ref="console" />
+            <AppenderRef ref="console" level="off" />
         </Logger>
         <!--  열려있는 모든 번호와 연결 수립 및 해제 이벤트를 기록. 이는 연결 문제를 찾아내는데 매우 유용 (Connection Pool 설정) -->
         <Logger name="jdbc.connection" additivity="false">
         	<level value="OFF" />
-            <AppenderRef ref="console" />
+            <AppenderRef ref="console" level="off"/>
         </Logger>
         <logger name="java.sql.Connection" additivity="false">
         	<level value="OFF" />
-			<appender-ref ref="console" />
+			<appender-ref ref="console" level="off"/>
 		</logger>
 		<!--  ResultSet을 포함한 모든 JDBC 호출 정보를 로그로 남기므로 매우 방대한 양의 로그가 생성된다. -->
         <logger name="jdbc.resultset" additivity="false"> 
         	<level value="OFF" />
-            <appender-ref ref="console"/> 
+            <appender-ref ref="console" level="off"/> 
         </logger>
         <!--  SQL 결과 조회된 데이터의 table을 로그로 남긴다. -->
         <logger name="jdbc.resultsettable" level="info" additivity="false"> 

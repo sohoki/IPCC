@@ -93,6 +93,9 @@
 		<typeAlias alias="CompanyInfo"		type="com.system.backoffice.infra.cor.com.models.CompanyInfo" />
 		<typeAlias alias="CompanyInfoVO"	type="com.system.backoffice.infra.cor.com.models.CompanyInfoVO" />
 		
+		<typeAlias alias="MessageConfigInfo"	type="com.system.backoffice.sys.rabbitmq.models.MessageConfigInfo" />
+		<typeAlias alias="MessageConfigInfoVO"	type="com.system.backoffice.sys.rabbitmq.models.MessageConfigInfoVO" />
+		
 		<typeAlias alias="AmqpConfigInfo"		type="com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo" />
 		
 		

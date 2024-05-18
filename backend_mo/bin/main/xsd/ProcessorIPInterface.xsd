@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<xsd:schema targetNamespace="http://xml.avaya.com/sms" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://xml.avaya.com/sms" >
-<xsd:include schemaLocation="./ArrayType.xsd"/>
-	<xsd:complexType name="ProcessorIPInterfaceType">
-		<xsd:sequence>
-		</xsd:sequence>
-	</xsd:complexType>
-</xsd:schema>
