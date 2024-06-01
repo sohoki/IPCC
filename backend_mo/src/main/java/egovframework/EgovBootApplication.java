@@ -19,10 +19,8 @@ import egovframework.com.config.EgovWebApplicationInitializer;
 @SpringBootApplication
 @EnableConfigurationProperties({PbxPropertieinfo.class})
 @Import({EgovWebApplicationInitializer.class})
-//@EnableAspectJAutoProxy
 public class EgovBootApplication {
 	
-
 	public static void main(String[] args) {
 		
 		SpringApplication springApplication = new SpringApplication(EgovBootApplication.class);

@@ -23,22 +23,24 @@ public class AgentInfoManageService {
 	}
 	
 	public Optional<AgentInfo> selectAgentInfoDetail(String loginId){
-		return agentMapper.selectAgentInfoDetail(loginId);
+		Optional<AgentInfo> agent = agentMapper.selectAgentInfoDetail(loginId);
+		if (agent.isPresent())
+			agent.get().setScenInfos(agentMapper.selectAgentInfoScenList(loginId));
+		return agent;
 	}
-	
+	@Transactional(readOnly = false)
 	public int insertAgentInfoList(List<AgentInfo> list) {
 		return agentMapper.insertAgentInfoList(list);
 	}
+	@Transactional(readOnly = false)
+	public int updateAgentInfo(AgentInfoReqDto vo) {
+		return vo.getMode().equals("Ins") ? agentMapper.insertAgentInfo(vo) : agentMapper.updateAgentInfo(vo);
+	}
 	
-    
-    public int updateAgentInfo(AgentInfoReqDto vo) {
-    	return vo.getMode().equals("Ins") ? agentMapper.insertAgentInfo(vo) : agentMapper.updateAgentInfo(vo);
-    }
-    
-    //public int updateStationConsultInfo(AgentInfo vo);
-    
-    public int deleteAgentInfo(String loginId) {
-    	return agentMapper.deleteAgentInfo(loginId);
-    }
+	//public int updateStationConsultInfo(AgentInfo vo);
+	@Transactional(readOnly = false)
+	public int deleteAgentInfo(String loginId) {
+		return agentMapper.deleteAgentInfo(loginId);
+	}
 	
 }

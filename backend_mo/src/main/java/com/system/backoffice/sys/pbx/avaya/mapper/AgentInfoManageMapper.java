@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.egovframe.rte.psl.dataaccess.mapper.Mapper;
 
 import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
+import com.system.backoffice.sys.pbx.avaya.models.AgentScenInfo;
 import com.system.backoffice.sys.pbx.avaya.models.dto.AgentInfoReqDto;
 
 
@@ -17,6 +18,8 @@ public interface AgentInfoManageMapper {
 	public List<Map<String, Object>> selectAgentInfoPageList(@Param("params") Map<String, Object> params);
 	
 	public Optional<AgentInfo> selectAgentInfoDetail(String loginId);
+	
+	public List<AgentScenInfo> selectAgentInfoScenList(String loginId);
 	
 	public int insertAgentInfoList(List<AgentInfo> list);
 	

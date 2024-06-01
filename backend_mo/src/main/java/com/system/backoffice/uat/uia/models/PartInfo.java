@@ -2,6 +2,7 @@ package com.system.backoffice.uat.uia.models;
 
 import java.io.Serializable;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor	
+@Schema(title="PartInfo : 부서 정보 " )
 public class PartInfo implements Serializable{
 
 	private String partId;

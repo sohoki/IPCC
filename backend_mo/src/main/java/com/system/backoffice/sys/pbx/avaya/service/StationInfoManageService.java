@@ -25,22 +25,25 @@ public class StationInfoManageService {
 	}
 	
 	public Optional<StationInfo> selectStationInfoDetail(String extension){
-		return stationMapper.selectStationInfoDetail(extension);
+		Optional<StationInfo> stationInfo = stationMapper.selectStationInfoDetail(extension);
+		if (stationInfo.isPresent())
+			stationInfo.get().setStationButton(stationMapper.selectStationButtonList(extension));
+		return stationInfo;
 	}
 	@Transactional(readOnly = false)
-    public int insertStationInfoList(List<StationInfo> extensionList) {
+	public int insertStationInfoList(List<StationInfo> extensionList) {
 		return stationMapper.insertStationInfoList(extensionList);
-    }
+	}
 	@Transactional(readOnly = false)
-    public int updateStationInfo(StationInfoReqDto vo) {
-    	return vo.getMode().equals("Ins") ? stationMapper.insertStationInfo(vo) : stationMapper.updateStationInfo(vo);
-    }
+	public int updateStationInfo(StationInfoReqDto vo) {
+		return vo.getMode().equals("Ins") ? stationMapper.insertStationInfo(vo) : stationMapper.updateStationInfo(vo);
+	}
 	@Transactional(readOnly = false)
-    public int updateStationConsultInfo(StationInfo vo) {
-    	return stationMapper.updateStationConsultInfo(vo);
-    }
+	public int updateStationConsultInfo(StationInfo vo) {
+		return stationMapper.updateStationConsultInfo(vo);
+	}
 	@Transactional(readOnly = false)
-    public int deleteStationInfo(String extension) {
-    	return stationMapper.deleteStationInfo(extension);
-    }
+	public int deleteStationInfo(String extension) {
+		return stationMapper.deleteStationInfo(extension);
+	}
 }

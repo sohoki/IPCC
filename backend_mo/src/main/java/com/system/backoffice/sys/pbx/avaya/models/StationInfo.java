@@ -1,6 +1,9 @@
 package com.system.backoffice.sys.pbx.avaya.models;
 
 
+import java.util.List;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -12,23 +15,21 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(title="StationInfo : pbx 내선번호 정보 " )
 public class StationInfo {
 
+	
 	private String extension;
 	private String type;
 	private String cor;
 	private String cos;
 	private String tn;
 	private String name;
-	private String security_code;
-	private String button01;
-	private String button02;
-	private String button03;
-	private String button04;
-	private String button05;
-	private String button06;
-	private String button07;
+	private String securityCode;
 	private String displayLangage;
 	private String consultUseyn;
 	private String updateDate;
+	private String ipSoftphone;
+	
+	private List<StationButtonInfo> stationButton;
 }

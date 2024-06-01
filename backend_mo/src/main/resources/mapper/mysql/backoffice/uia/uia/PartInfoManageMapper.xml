@@ -190,8 +190,10 @@
 		WHERE PART_ID = #{partId}
 	</update>
 	<delete id="deletePartInfoManage">
+		DELETE FROM TB_PART_INFRAINFO 
+		WHERE PART_ID = #{partId};
 		DELETE FROM  TB_PARTINFO
-		WHERE PART_ID = #{partId}
+		WHERE PART_ID = #{partId};
 	</delete>
 
 </mapper>

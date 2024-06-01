@@ -10,11 +10,14 @@ import com.system.ipcc.cti.nexus.models.NexusAgentInfo;
 import com.system.ipcc.cti.nexus.models.dto.NexusAgentComboInfo;
 import com.system.ipcc.cti.nexus.models.dto.NexusAgentInfoResponseDto;
 import com.system.ipcc.cti.nexus.models.dto.NexusAgentRequestInfoDto;
+import com.system.ipcc.pbx.avaya.service.smsxml.SMSReq;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class NexusEmployeeManageService {
 
 	
@@ -66,32 +69,32 @@ public class NexusEmployeeManageService {
 	public Optional<NexusAgentInfoResponseDto> selectEmployeesExistInfoDetail(NexusAgentInfo vo){
 		return employMapper.selectEmployeesExistInfoDetail(vo);
 	}
-    public int updateNexusEmployeesInfo(NexusAgentRequestInfoDto vo) {
-    	int ret = 0;
-    	if (vo.getMode().equals("Ins")) {
-    		if (employMapper.selectNexusEmployeesExistsInfo(vo) > 0) {
-    			System.out.println("존재 확인 끝");
-    			return -1;
-    		}
-    			
-    		if (employMapper.selectParentNexusEmployeesInfo(vo) < 1) {
-    			System.out.println("상위 확인 끝");
-    			return -1;
-    		}
-    			
-    		if (employMapper.selectPermitExistsInfo(vo) < 1) {
-    			System.out.println("권한 확인 끝");
-    			return -1;
-    		}
-    			
-    		ret = employMapper.insertNexusEmployeesInfo(vo);
-    	}else {
-    		ret = employMapper.updateNexusEmployeesInfo(vo);
-    	}
-    	return ret;
-    }
-    public int checkNexusEmployeesInfo(NexusAgentRequestInfoDto vo) {
-    	int ret = 0;   	
+	public int updateNexusEmployeesInfo(NexusAgentRequestInfoDto vo) {
+			int ret = 0;
+			if (vo.getMode().equals("Ins")) {
+				if (employMapper.selectNexusEmployeesExistsInfo(vo) > 0) {
+					log.error("존재 확인 끝");
+					return -1;
+				}
+					
+				if (employMapper.selectParentNexusEmployeesInfo(vo) < 1) {
+					log.error("상위 확인 끝");
+					return -1;
+				}
+					
+				if (employMapper.selectPermitExistsInfo(vo) < 1) {
+					log.error("권한 확인 끝");
+					return -1;
+				}
+					
+				ret = employMapper.insertNexusEmployeesInfo(vo);
+			}else {
+				ret = employMapper.updateNexusEmployeesInfo(vo);
+			}
+			return ret;
+	}
+	public int checkNexusEmployeesInfo(NexusAgentRequestInfoDto vo) {
+		int ret = 0;   	
 		if (employMapper.selectNexusEmployeesExistsInfo(vo) > 0) {
 			return -1;
 		}
@@ -101,20 +104,20 @@ public class NexusEmployeeManageService {
 		if (employMapper.selectPermitExistsInfo(vo) < 1) {
 			return -3;
 		}
-    	
-    	return ret;
-    }
-    public List<NexusAgentComboInfo> selectEmployeesInfoComboList(String centerId){
-    	return employMapper.selectEmployeesInfoComboList(centerId);
-    }
-    public int deleteNexusEmployeesInfo(NexusAgentInfo vo) {
-    	int ret = employMapper.selectEmployeesExistInfoDetailCnt(vo);
-    	if (ret > 0) {
-    		return employMapper.deleteNexusEmployeesInfo(vo);
-    	}else {
-    		return 1;
-    	}
-    	
-    }
+		
+		return ret;
+	}
+	public List<NexusAgentComboInfo> selectEmployeesInfoComboList(String centerId){
+		return employMapper.selectEmployeesInfoComboList(centerId);
+	}
+	public int deleteNexusEmployeesInfo(NexusAgentInfo vo) {
+		int ret = employMapper.selectEmployeesExistInfoDetailCnt(vo);
+		if (ret > 0) {
+			return employMapper.deleteNexusEmployeesInfo(vo);
+		}else {
+			return 1;
+		}
+		
+	}
 	
 }

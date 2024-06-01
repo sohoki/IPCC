@@ -125,6 +125,7 @@
 		
 		<package name="com.system.backoffice.uat.role.models"/>	
 		<package name="com.system.backoffice.uat.uia.models"/>		
+		<package name="com.system.backoffice.uat.uia.models.dto"/>		
 		<package name="com.system.backoffice.sym.error.models"/>		
 		
 		<package name="com.system.backoffice.sys.rabbitmq.models"/>

@@ -124,12 +124,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 			model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
 			model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			/*
-			List<PartInfoVO> partCombo = partService.selectPartInfoCombo(searchVO);
-			model.addObject("selectGroup", partCombo);
-			*/
 			
-		
 		   
 		}catch (Exception e){
 			LOGGER.debug("selectUserConsultantrList  error:" + e.toString());
@@ -189,8 +184,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			
 			if (!jwtVerification.isVerificationAdmin(request)) {
-			ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}
 			
 			

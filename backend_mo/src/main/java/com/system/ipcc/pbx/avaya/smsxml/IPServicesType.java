@@ -30,97 +30,97 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "IPServicesType", propOrder = {
-    "serviceType",
-    "enabled",
-    "localNode",
-    "localPort",
-    "remoteNote",
-    "remotePort",
-    "aeServicesServer",
-    "aeServicesPassword",
-    "aeServicesEnabled",
-    "aeServicesStatus"
+	"serviceType",
+	"enabled",
+	"localNode",
+	"localPort",
+	"remoteNote",
+	"remotePort",
+	"aeServicesServer",
+	"aeServicesPassword",
+	"aeServicesEnabled",
+	"aeServicesStatus"
 })
 public class IPServicesType {
 
-    @XmlElement(name = "Service_Type")
-    protected List<ArrayType> serviceType;
-    @XmlElement(name = "Enabled")
-    protected List<ArrayType> enabled;
-    @XmlElement(name = "Local_Node")
-    protected List<ArrayType> localNode;
-    @XmlElement(name = "Local_Port")
-    protected List<ArrayType> localPort;
-    @XmlElement(name = "Remote_Note")
-    protected List<ArrayType> remoteNote;
-    @XmlElement(name = "Remote_Port")
-    protected List<ArrayType> remotePort;
-    @XmlElement(name = "AE_Services_Server")
-    protected List<ArrayType> aeServicesServer;
-    @XmlElement(name = "AE_Services_Password")
-    protected List<ArrayType> aeServicesPassword;
-    @XmlElement(name = "AE_Services_Enabled")
-    protected List<ArrayType> aeServicesEnabled;
-    @XmlElement(name = "AE_Services_Status")
-    protected List<ArrayType> aeServicesStatus;
+	@XmlElement(name = "Service_Type")
+	protected List<ArrayType> serviceType;
+	@XmlElement(name = "Enabled")
+	protected List<ArrayType> enabled;
+	@XmlElement(name = "Local_Node")
+	protected List<ArrayType> localNode;
+	@XmlElement(name = "Local_Port")
+	protected List<ArrayType> localPort;
+	@XmlElement(name = "Remote_Note")
+	protected List<ArrayType> remoteNote;
+	@XmlElement(name = "Remote_Port")
+	protected List<ArrayType> remotePort;
+	@XmlElement(name = "AE_Services_Server")
+	protected List<ArrayType> aeServicesServer;
+	@XmlElement(name = "AE_Services_Password")
+	protected List<ArrayType> aeServicesPassword;
+	@XmlElement(name = "AE_Services_Enabled")
+	protected List<ArrayType> aeServicesEnabled;
+	@XmlElement(name = "AE_Services_Status")
+	protected List<ArrayType> aeServicesStatus;
 
-    /**
-     * Gets the value of the serviceType property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the serviceType property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getServiceType().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ArrayType }
-     * 
-     * 
-     */
-    public List<ArrayType> getServiceType() {
-        if (serviceType == null) {
-            serviceType = new ArrayList<ArrayType>();
-        }
-        return this.serviceType;
-    }
+	/**
+	* Gets the value of the serviceType property.
+	* 
+	* <p>
+	* This accessor method returns a reference to the live list,
+	* not a snapshot. Therefore any modification you make to the
+	* returned list will be present inside the JAXB object.
+	* This is why there is not a <CODE>set</CODE> method for the serviceType property.
+	* 
+	* <p>
+	* For example, to add a new item, do as follows:
+	* <pre>
+	*    getServiceType().add(newItem);
+	* </pre>
+	* 
+	* 
+	* <p>
+	* Objects of the following type(s) are allowed in the list
+	* {@link ArrayType }
+	* 
+	* 
+	*/
+	public List<ArrayType> getServiceType() {
+		if (serviceType == null) {
+			serviceType = new ArrayList<ArrayType>();
+		}
+		return this.serviceType;
+	}
 
-    /**
-     * Gets the value of the enabled property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the enabled property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getEnabled().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ArrayType }
-     * 
-     * 
-     */
-    public List<ArrayType> getEnabled() {
-        if (enabled == null) {
-            enabled = new ArrayList<ArrayType>();
-        }
-        return this.enabled;
-    }
+	/**
+	 * Gets the value of the enabled property.
+	 * 
+	 * <p>
+	 * This accessor method returns a reference to the live list,
+	 * not a snapshot. Therefore any modification you make to the
+	 * returned list will be present inside the JAXB object.
+	 * This is why there is not a <CODE>set</CODE> method for the enabled property.
+	 * 
+	 * <p>
+	 * For example, to add a new item, do as follows:
+	 * <pre>
+	 *    getEnabled().add(newItem);
+	 * </pre>
+	 * 
+	 * 
+	 * <p>
+	 * Objects of the following type(s) are allowed in the list
+	 * {@link ArrayType }
+	 * 
+	 * 
+	 */
+	public List<ArrayType> getEnabled() {
+		if (enabled == null) {
+		    enabled = new ArrayList<ArrayType>();
+		}
+		return this.enabled;
+	}
 
     /**
      * Gets the value of the localNode property.
@@ -144,12 +144,12 @@ public class IPServicesType {
      * 
      * 
      */
-    public List<ArrayType> getLocalNode() {
-        if (localNode == null) {
-            localNode = new ArrayList<ArrayType>();
-        }
-        return this.localNode;
-    }
+	public List<ArrayType> getLocalNode() {
+	    if (localNode == null) {
+	        localNode = new ArrayList<ArrayType>();
+	    }
+	    return this.localNode;
+	}
 
     /**
      * Gets the value of the localPort property.
@@ -173,12 +173,12 @@ public class IPServicesType {
      * 
      * 
      */
-    public List<ArrayType> getLocalPort() {
-        if (localPort == null) {
-            localPort = new ArrayList<ArrayType>();
-        }
-        return this.localPort;
-    }
+	public List<ArrayType> getLocalPort() {
+	    if (localPort == null) {
+	        localPort = new ArrayList<ArrayType>();
+	    }
+	    return this.localPort;
+	}
 
     /**
      * Gets the value of the remoteNote property.
@@ -202,12 +202,12 @@ public class IPServicesType {
      * 
      * 
      */
-    public List<ArrayType> getRemoteNote() {
-        if (remoteNote == null) {
-            remoteNote = new ArrayList<ArrayType>();
-        }
-        return this.remoteNote;
-    }
+	public List<ArrayType> getRemoteNote() {
+	    if (remoteNote == null) {
+	        remoteNote = new ArrayList<ArrayType>();
+	    }
+	    return this.remoteNote;
+	}
 
     /**
      * Gets the value of the remotePort property.
@@ -231,12 +231,12 @@ public class IPServicesType {
      * 
      * 
      */
-    public List<ArrayType> getRemotePort() {
-        if (remotePort == null) {
-            remotePort = new ArrayList<ArrayType>();
-        }
-        return this.remotePort;
-    }
+	public List<ArrayType> getRemotePort() {
+	    if (remotePort == null) {
+	        remotePort = new ArrayList<ArrayType>();
+	    }
+	    return this.remotePort;
+	}
 
     /**
      * Gets the value of the aeServicesServer property.
@@ -260,12 +260,12 @@ public class IPServicesType {
      * 
      * 
      */
-    public List<ArrayType> getAEServicesServer() {
-        if (aeServicesServer == null) {
-            aeServicesServer = new ArrayList<ArrayType>();
-        }
-        return this.aeServicesServer;
-    }
+	public List<ArrayType> getAEServicesServer() {
+	    if (aeServicesServer == null) {
+	        aeServicesServer = new ArrayList<ArrayType>();
+	    }
+	    return this.aeServicesServer;
+	}
 
     /**
      * Gets the value of the aeServicesPassword property.
@@ -289,69 +289,69 @@ public class IPServicesType {
      * 
      * 
      */
-    public List<ArrayType> getAEServicesPassword() {
-        if (aeServicesPassword == null) {
-            aeServicesPassword = new ArrayList<ArrayType>();
-        }
-        return this.aeServicesPassword;
-    }
+	public List<ArrayType> getAEServicesPassword() {
+	    if (aeServicesPassword == null) {
+	        aeServicesPassword = new ArrayList<ArrayType>();
+	    }
+	    return this.aeServicesPassword;
+	}
 
-    /**
-     * Gets the value of the aeServicesEnabled property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the aeServicesEnabled property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAEServicesEnabled().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ArrayType }
-     * 
-     * 
-     */
-    public List<ArrayType> getAEServicesEnabled() {
-        if (aeServicesEnabled == null) {
-            aeServicesEnabled = new ArrayList<ArrayType>();
-        }
-        return this.aeServicesEnabled;
-    }
+	/**
+	* Gets the value of the aeServicesEnabled property.
+	* 
+	* <p>
+	* This accessor method returns a reference to the live list,
+	* not a snapshot. Therefore any modification you make to the
+	* returned list will be present inside the JAXB object.
+	* This is why there is not a <CODE>set</CODE> method for the aeServicesEnabled property.
+	* 
+	* <p>
+	* For example, to add a new item, do as follows:
+	* <pre>
+	*    getAEServicesEnabled().add(newItem);
+	* </pre>
+	* 
+	* 
+	* <p>
+	* Objects of the following type(s) are allowed in the list
+	* {@link ArrayType }
+	* 
+	* 
+	*/
+	public List<ArrayType> getAEServicesEnabled() {
+		if (aeServicesEnabled == null) {
+			aeServicesEnabled = new ArrayList<ArrayType>();
+		}
+		return this.aeServicesEnabled;
+	}
 
-    /**
-     * Gets the value of the aeServicesStatus property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the aeServicesStatus property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAEServicesStatus().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link ArrayType }
-     * 
-     * 
-     */
-    public List<ArrayType> getAEServicesStatus() {
-        if (aeServicesStatus == null) {
-            aeServicesStatus = new ArrayList<ArrayType>();
-        }
-        return this.aeServicesStatus;
-    }
+	/**
+	* Gets the value of the aeServicesStatus property.
+	* 
+	* <p>
+	* This accessor method returns a reference to the live list,
+	* not a snapshot. Therefore any modification you make to the
+	* returned list will be present inside the JAXB object.
+	* This is why there is not a <CODE>set</CODE> method for the aeServicesStatus property.
+	* 
+	* <p>
+	* For example, to add a new item, do as follows:
+	* <pre>
+	*    getAEServicesStatus().add(newItem);
+	* </pre>
+	* 
+	* 
+	* <p>
+	* Objects of the following type(s) are allowed in the list
+	* {@link ArrayType }
+	* 
+	* 
+	*/
+	public List<ArrayType> getAEServicesStatus() {
+	    if (aeServicesStatus == null) {
+	        aeServicesStatus = new ArrayList<ArrayType>();
+	    }
+	    return this.aeServicesStatus;
+	}
 
 }

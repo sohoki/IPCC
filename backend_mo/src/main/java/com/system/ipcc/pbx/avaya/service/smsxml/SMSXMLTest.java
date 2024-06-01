@@ -39,6 +39,8 @@ import com.avaya.smsxml.SystemManagementPort;
 import com.avaya.smsxml.SystemManagementService;
 import com.sun.xml.ws.developer.WSBindingProvider;
 
+import egovframework.com.cmm.service.Globals;
+
 // ******************************************************************************
 // smsTestApp
 // ******************************************************************************
@@ -180,10 +182,10 @@ public class SMSXMLTest {
 			URL localWSDL;
 
 			if (cl != null){
-				localWSDL = cl.getResource("wsdl_xml/SystemManagementService.wsdl");
+				localWSDL = cl.getResource(Globals.PBX_WSDL);
 			 }
 			 else {
-				 localWSDL = ClassLoader.getSystemResource("wsdl_xml/SystemManagementService.wsdl");
+				 localWSDL = ClassLoader.getSystemResource(Globals.PBX_WSDL);
 			 }
 		
 			// Service QName for Static Service instance

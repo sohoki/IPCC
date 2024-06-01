@@ -141,8 +141,8 @@ public class NexusEmployeeInfoController {
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			
 			if (!jwtVerification.isVerificationAdmin(request)) {
-			ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}
 			
 			model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectCenterInfoCombo());

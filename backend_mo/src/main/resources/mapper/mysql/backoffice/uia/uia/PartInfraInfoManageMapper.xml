@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.uat.uia.mapper.PartInfraInfoManageMapper">
+	<select id="selectPartInfraInfoPageInfoManageListByPagination"  resultType="camelmap">	
+		SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+				TB.* FROM (
+				SELECT
+						a.PART_INFRA_CODE, a.INSTT_CODE, a.PART_ID, a.STATION_START_NUMBER, a.STATION_END_NUMBER,
+						a.STATION_MENO, a.AGENT_START_NUMBER, a.AGENT_END_NUMBER, a.CTI_START_NUMBER, a.CTI_END_NUMBER,
+						a.FRST_REGISTER_ID, a.FRST_REGIST_PNTTM, a.LAST_UPDUSR_ID, a.LAST_UPDT_PNTTM
+				FROM TB_PART_INFRAINFO a, TB_PARTINFO b , COMTNINSTTCODE c
+				WHERE  1=1  
+						AND a.PART_ID = b.PART_ID
+						AND a.INSTT_CODE = c.INSTT_CODE
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+						AND a.STATION_MENO LIKE CONCAT('%',#{params.searchKeyword},'%') 
+				</if>	
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchInsttCode)">
+					AND a.INSTT_CODE = #{params.searchInsttCode} 
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchPartId)">
+					AND a.PART_ID = #{params.searchPartId}
+				</if>
+				ORDER BY a.PART_INFRA_CODE  DESC
+			) TB 
+		
+	</select>
+	<select id="selectPartfraInfoDetail"  resultType="PartInfraInfo">
+		SELECT  PART_INFRA_CODE, INSTT_CODE, PART_ID, STATION_START_NUMBER, STATION_END_NUMBER,
+						STATION_MENO, AGENT_START_NUMBER, AGENT_END_NUMBER, CTI_START_NUMBER, CTI_END_NUMBER,
+						FRST_REGISTER_ID, FRST_REGIST_PNTTM, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+		FROM TB_PART_INFRAINFO
+		WHERE PART_INFRA_CODE = #{partInfraCode};	  
+	</select>
+	
+		
+		<insert id="insertPartfraInfoManage">
+		INSERT INTO TB_PART_INFRAINFO (PART_INFRA_CODE, INSTT_CODE, PART_ID, STATION_START_NUMBER, STATION_END_NUMBER,
+																		STATION_MENO, AGENT_START_NUMBER, AGENT_END_NUMBER, CTI_START_NUMBER, CTI_END_NUMBER,
+																		FRST_REGISTER_ID, FRST_REGIST_PNTTM, LAST_UPDUSR_ID, LAST_UPDT_PNTTM)
+		VALUES ( FN_PARTINFRA_CODE(#{insttCode} , #{partId})  , #{insttCode} , #{partId} ,  #{stationStartNumber,jdbcType=VARCHAR}, #{stationEndNumber,jdbcType=VARCHAR},
+				#{stationMeno,jdbcType=VARCHAR},#{agentStartNumber,jdbcType=VARCHAR}, #{agentEndNumber,jdbcType=VARCHAR}, 
+				#{ctiStartNumber, jdbcType=VARCHAR},  #{ctiEndNumber, jdbcType=VARCHAR}, 
+				#{userId , jdbcType=VARCHAR}, NOW(), #{userId , jdbcType=VARCHAR}, NOW()
+		)
+	</insert>
+	<update id="updatePartfraInfoManage">
+		UPDATE  TB_PART_INFRAINFO SET INSTT_CODE = #{insttCode} 
+								,PART_ID = #{partId,jdbcType=VARCHAR} 
+								,STATION_START_NUMBER = #{stationStartNumber,jdbcType=VARCHAR} 
+								,STATION_END_NUMBER = #{stationEndNumber ,jdbcType=VARCHAR}  
+								,STATION_MENO =  #{stationMeno, jdbcType=VARCHAR}
+								,AGENT_START_NUMBER =  #{agentStartNumber, jdbcType=VARCHAR}
+								,AGENT_END_NUMBER = #{agentEndNumber, jdbcType=VARCHAR}
+								,CTI_START_NUMBER = #{ctiStartNumber, jdbcType=VARCHAR}
+								,CTI_END_NUMBER = #{ctiEndNumber, jdbcType=VARCHAR}
+								,LAST_UPDUSR_ID = #{userId, jdbcType=VARCHAR}
+								, LAST_UPDT_PNTTM = NOW()
+		WHERE PART_INFRA_CODE = #{partInfraCode};	
+	</update>
+
+	<delete id="deletePartfraInfoManage">
+		DELETE FROM  TB_PART_INFRAINFO
+		WHERE PART_INFRA_CODE = #{partId}
+	</delete>
+
+
+</mapper>

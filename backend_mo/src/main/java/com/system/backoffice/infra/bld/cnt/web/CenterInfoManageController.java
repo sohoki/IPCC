@@ -88,50 +88,49 @@ public class CenterInfoManageController {
 		try {
 			
 			if (!jwtVerification.isVerificationAdmin(request)) {
-        		ResultVO resultVO = new ResultVO();
-    			return jwtVerification.handleAuthError(resultVO); // 토큰 확
-        	}else {
-        		//여기 부분 수정 
-        		String[] userInfo = jwtVerification.getTokenUserInfo(request);
-        		searchMap.put("roleId", userInfo[2]);
-        		searchMap.put("partId", userInfo[3]);
-        	}
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
+			}else {
+				//여기 부분 수정 
+				String[] userInfo = jwtVerification.getTokenUserInfo(request);
+				searchMap.put("roleId", userInfo[2]);
+				searchMap.put("partId", userInfo[3]);
+			}
 			
 			int pageUnit = searchMap.get(Globals.PAGE_UNIT) == null ?   pageUnitSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_UNIT));
-    		int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
-    	   
-    		
-    	    
-        	/** pageing */
-    		PaginationInfo paginationInfo = new PaginationInfo();
-    		paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX) == null  ?
-    														  "1" : searchMap.get(Globals.PAGE_INDEX).toString() ));
-    		paginationInfo.setRecordCountPerPage(pageUnit);
-    		paginationInfo.setPageSize(pageSize);
-
-    		searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
-    		searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
-    		searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
-    	    
-    	    List<CenterInfoVO> codeList = centerService.selectCenterInfoPageInfoManageListByPagination(searchMap);
-    	    int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).getTotalRecordCount().toString()) :0;
-            
-
-    		paginationInfo.setTotalRecordCount(totCnt);
-    		
-    		model.addObject(Globals.STATUS_REGINFO, searchMap);
-    		model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
-    		model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
-    		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
-    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		
+			int pageSize = searchMap.get(Globals.PAGE_SIZE) == null ?   pageSizeSetting : Integer.valueOf((String) searchMap.get(Globals.PAGE_SIZE));  
+		
+	
+		
+	    	/** pageing */
+			PaginationInfo paginationInfo = new PaginationInfo();
+			paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX) == null  ?
+															  "1" : searchMap.get(Globals.PAGE_INDEX).toString() ));
+			paginationInfo.setRecordCountPerPage(pageUnit);
+			paginationInfo.setPageSize(pageSize);
+	
+			searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+			searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+			searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+		
+			List<CenterInfoVO> codeList = centerService.selectCenterInfoPageInfoManageListByPagination(searchMap);
+			int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).getTotalRecordCount().toString()) :0;
+	
+			paginationInfo.setTotalRecordCount(totCnt);
+			
+			model.addObject(Globals.STATUS_REGINFO, searchMap);
+			model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
+			model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
+			model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			
 			
 		}catch (NullPointerException e) {
 			log.error("ERROR:" + e.toString());
 		} catch (Exception e) {
 			log.error("ERROR:" + e.toString());
 		}
-	    return model;
+		return model;
 	}
 	@ApiOperation(value="지점  상세 조회", notes = "성공시 지점 정보를 상세 조회 합니다.")
 	@GetMapping(value="detail/{centerId}.do")
@@ -141,9 +140,9 @@ public class CenterInfoManageController {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 			if (!jwtVerification.isVerificationAdmin(request)) {
-	    		ResultVO resultVO = new ResultVO();
+				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확
-	    	}
+			}
 			Optional<CenterInfoVO> info = centerService.selectCenterInfoDetail(centerId);
 			if (info.isPresent()){
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);

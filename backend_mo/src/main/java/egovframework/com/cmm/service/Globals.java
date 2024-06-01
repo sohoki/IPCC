@@ -40,6 +40,9 @@ public class Globals {
 	public static final String PBX_WS_DEFAULT_NAMESPACE = "http://xml.avaya.com/ws/SystemManagementService/2008/07/01";
 	public static final String PBX_SMS_NS = "http://xml.avaya.com/ws/SystemManagementService/2008/07/01";
 	public static final String PBX_WEB_REFERENCE_PACKAGE = "com.avaya.smsxml";
+	public static final String PBX_WSDL = "wsdl_xml/SystemManagementService.wsdl";
+	public static final String PBX_SYSETM_SERVICE = "/smsxml/SystemManagementService.php";
+	
 	
 	//token 
 	public static final String TOKEN = "jToken";

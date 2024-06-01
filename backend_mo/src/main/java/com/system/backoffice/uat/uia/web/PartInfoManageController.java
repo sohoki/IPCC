@@ -117,7 +117,6 @@ public class PartInfoManageController {
 				paginationInfo.setRecordCountPerPage(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT)));
 				paginationInfo.setPageSize(UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_SIZE), propertiesService.getInt(Globals.PAGE_SIZE)) );
 				
-			   
 				searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
 				searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
 				searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
@@ -180,14 +179,13 @@ public class PartInfoManageController {
 		
 		try{ 
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.JSON_RETURN_RESULT_LIST, partService.selectPartInfoCombo(commandMap));
-    		
-		 }catch(Exception e){
+			model.addObject(Globals.JSON_RETURN_RESULT_LIST, partService.selectPartInfoCombo(commandMap));
+		}catch(Exception e){
 			log.error("partComboInfo : error" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg"));	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		 }
-		 return model;
+		}
+		return model;
 	}
 	@ApiOperation(value="상위 부서 combobox 정보 조회", notes = "성공시 상위 부서 combobox 정보 조회 합니다.")
 	@GetMapping("parentPartCombo.do")
@@ -242,13 +240,13 @@ public class PartInfoManageController {
 										, BindingResult bindingResult) throws Exception {  
 		
 		
-	    	// 기존 세션 체크 인증에서 토큰 방식으로 변경
-    	if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+		if (!jwtVerification.isVerificationAdmin(request)) {
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}else {
-    		partInfo.setUserId(jwtVerification.getTokenUserName(request));
-    	}
+		}else {
+			partInfo.setUserId(jwtVerification.getTokenUserName(request));
+		}
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		String meesage = "";
@@ -280,9 +278,8 @@ public class PartInfoManageController {
 			model.addObject(Globals.STATUS, status);
 			model.addObject(Globals.STATUS_MESSAGE , egovMessageSource.getMessage(meesage));
 		}catch(Exception e){
-			
-		    model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		    model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg") + e.toString());	
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg") + e.toString());	
 		}
 		return model;
 	}
@@ -313,10 +310,9 @@ public class PartInfoManageController {
 								exchangeName,
 								routingKey);
 						log.info("=========== send message");
-		    }
-		    model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));	
+			}
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));	
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS); 
-		    
 		}catch (Exception e){
 			//result = "F";
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg"));	

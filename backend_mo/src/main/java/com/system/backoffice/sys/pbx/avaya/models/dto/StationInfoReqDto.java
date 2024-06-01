@@ -1,5 +1,9 @@
 package com.system.backoffice.sys.pbx.avaya.models.dto;
 
+import java.util.List;
+
+import com.system.backoffice.sys.pbx.avaya.models.StationButtonInfo;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,15 +18,10 @@ public class StationInfoReqDto {
 	private String cor;
 	private String cos;
 	private String name;
-	private String security_code;
-	private String button01;
-	private String button02;
-	private String button03;
-	private String button04;
-	private String button05;
-	private String button06;
-	private String button07;
+	private String securityCode;
 	private String displayLangage;
 	private String consultUseyn;
 	private String updateDate;
+	private String ipSoftphone;
+	private List<StationButtonInfo> stationButton;
 }

@@ -11,6 +11,7 @@ import org.egovframe.rte.fdl.idgnr.EgovIdGnrService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.system.backoffice.uat.uia.mapper.PartInfoManageMapper;
 import com.system.backoffice.uat.uia.models.PartInfo;
@@ -18,8 +19,8 @@ import com.system.backoffice.uat.uia.models.PartInfoVO;
 import com.system.backoffice.uat.uia.service.PartInfoManageService;
 
 
-
-@Service("PartInfoManageService")
+@Transactional(readOnly = true)
+@Service
 public class PartInfoManageServiceImpl extends EgovAbstractServiceImpl implements PartInfoManageService {
 	
     //@Resource(name = "prop")
@@ -52,7 +53,7 @@ public class PartInfoManageServiceImpl extends EgovAbstractServiceImpl implement
 		// TODO Auto-generated method stub
 		return partMapper.selectPartInfoDetail(partId);
 	}
-
+	@Transactional(readOnly = false)
 	@Override
 	public int updatePartInfoManage(PartInfo vo) throws Exception {
 		// TODO Auto-generated method stub

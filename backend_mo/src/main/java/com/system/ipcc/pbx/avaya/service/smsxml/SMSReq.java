@@ -4,9 +4,11 @@ import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
@@ -18,6 +20,8 @@ import javax.xml.namespace.QName;
 import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
+
+import org.apache.ibatis.javassist.bytecode.annotation.IntegerMemberValue;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -35,7 +39,12 @@ import com.avaya.smsxml.TrunkGroupType;
 import com.avaya.smsxml.TrunkStatusType;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
+import com.system.backoffice.sys.pbx.avaya.models.AgentScenInfo;
+import com.system.backoffice.sys.pbx.avaya.models.StationButtonInfo;
 import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
+import com.system.backoffice.sys.pbx.avaya.models.dto.AgentInfoReqDto;
+import com.system.backoffice.sys.pbx.avaya.models.dto.PbxDelReqDto;
+import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
 import com.system.ipcc.pbx.avaya.models.PbxMemberInfo;
 import com.system.ipcc.pbx.avaya.models.PbxPropertieinfo;
 import com.system.ipcc.pbx.avaya.models.TrankGroupInfo;
@@ -124,7 +133,6 @@ public class SMSReq {
 	public boolean isValid() {
 
 		boolean ok = true;
-		log.info("========= isValid:" + root + ":" + login);
 		
 		if (!(root.startsWith("http://") || root.startsWith("https://"))) {
 			log.error("Parameter invalid sms.root " + root + " [must begin with http:// or https://]");
@@ -159,23 +167,24 @@ public class SMSReq {
 													String sOperation, 
 													String sQUALIFIER) {
 		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		
+		log.info("model:" + model + " sFIELDS:" + sFIELDS + " sObjectName:" + sObjectName + " sOperation:" + sOperation + " sQUALIFIER:" + sQUALIFIER);
+		
 		if (!setup()) {
 			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			return models; 
 		}
 		
 		Result submitResult = this.submitRequest(model, sFIELDS, sObjectName, sOperation, sQUALIFIER);
-		
-		this.manageSession();
-		this.releaseSession();
-		
-		if (submitResult != null) {
+		if (submitResult!= null && submitResult.getResultCode() == 0 ) {
 			models.addObject(Globals.JSON_RETURN_RESULT, submitResult);
 			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}else {
 			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			models.addObject(Globals.STATUS_MESSAGE, submitResult.getResultCode());
 		}
-		
+		this.manageSession();
+		this.releaseSession();
 		return models;
 	}
 	
@@ -229,45 +238,172 @@ public class SMSReq {
 		}
 		return models;
 	}
-	
+	//내선번호 또는 에이전트 삭제  -- 추후 필요 없음 
+	public ModelAndView execRequestMemberDelete(PbxMemberInfo info) {
+			// Step 1: Initial SOAP setup, done once (typically) per session.
+			ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+			if (!setup()) {
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				return models; 
+			}
+			String resutMessage = "";
+			Result submitResult = this.submitRequest("Station", "extension", "", "remove", info.getExtension());
+			
+			if (submitResult.getResultCode() != 0) {
+				resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
+				
+				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 삭제시 문제가 발생 하였습니다." + resutMessage);
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				return models; 
+			}
+			
+			// Agent 값 체크 하기 
+			submitResult = this.submitRequest("Agent", "Login_ID", "", "remove", info.getLoginId());
+			if (submitResult.getResultCode() != 0) {
+				resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
+				models.addObject(Globals.STATUS_MESSAGE, "Agent가 삭제시 문제가 있습니다." + resutMessage);
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				return models; 
+			}
+			
+			
+			this.manageSession();
+
+			this.releaseSession();
+			
+			if (submitResult != null) {
+				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+				models.setStatus(HttpStatus.OK);
+			}
+			
+			return models;
+	}
+	public ModelAndView execRequestCmDelete(PbxDelReqDto info) {
+		// Step 1: Initial SOAP setup, done once (typically) per session.
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		boolean loaded = this.loadProps("Station", "extension", "display", "count 1");
+		
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		Result submitResult;
+		String resutMessage = "";
+		if (info.getMode().equals("Station")) 
+			
+			submitResult = this.submitRequest("Station", "extension", "", "remove", info.getNumberInfo());
+		else 
+			submitResult = this.submitRequest("Agent", "Login_ID", "", "remove", info.getNumberInfo());
+		
+		if (submitResult.getResultCode() != 0) {
+			resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
+			
+			models.addObject(Globals.STATUS_MESSAGE, "삭제시 문제가 발생 하였습니다." + resutMessage);
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}else {
+			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}
+		
+		this.manageSession();
+		this.releaseSession();
+		
+		return models;
+}
+	//내선번호 조회
 	public List<StationInfo> execRequestStationInfo (List<String> extensions){
 		//값 먼저 조회
 		
-		//SMSReq client = new SMSReq();
-		String qualifier = "count 1";
-		List<StationInfo> stations = null;
+		List<StationInfo> stations = new ArrayList<StationInfo>();
 		Result submitResult;
-		boolean loaded = this.loadProps("Station", "extension", "display", qualifier);
-		if ( (this.isValid()) && loaded) // any args invalid
-		{
+		
+
+		boolean loaded = this.loadProps("Station", "extension", "display", "count 1");
+		
+		if (!setup()) {
+			return null; 
+		}
+		
+		if ( (this.isValid()) && loaded) { // any args invalid
 			//접속이 되면 
 			for (String extension : extensions) {
-				submitResult = this.submitRequest("Station", "extension", "", "display", extension);
-				
-				if (submitResult.getResultCode() == 0) {
-					StationInfo station = new StationInfo();
 					
-					station.builder().extension(extension)
-									.security_code(submitResult.getResultData().getStation().get(0).getSecurityCode())
-									.type(submitResult.getResultData().getStation().get(0).getType())
-									.cor(submitResult.getResultData().getStation().get(0).getCOR())
-									.cos(submitResult.getResultData().getStation().get(0).getCOS())
-									.name(submitResult.getResultData().getStation().get(0).getName())
-									.tn(submitResult.getResultData().getStation().get(0).getTN())
-									.displayLangage(submitResult.getResultData().getStation().get(0).getDisplayLanguage())
-									.button01(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData1()))
-									.button02(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData2()))
-									.button03(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData3()))
-									.button04(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData4()))
-									.button05(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData5()))
-									.button06(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData6()))
-									.button07(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getStation().get(0).getButtonData7()))
-									.build();
-					
-					stations.add(station);
-				}
+					submitResult = this.submitRequest("Station", "extension", "Station", "display", extension);
+					//submitResult = this.submitRequest(model, sFIELDS, sObjectName, sOperation, sQUALIFIER);
+					log.info("========submitResult" + submitResult.getResultCode());
+					if (submitResult.getResultCode() == 0) {
+						try {
+							StationInfo station = new StationInfo();
+							station.setExtension(extension);
+							station.setSecurityCode(submitResult.getResultData().getStation().get(0).getSecurityCode());
+							station.setType(submitResult.getResultData().getStation().get(0).getType());
+							station.setCor(submitResult.getResultData().getStation().get(0).getCOR());
+							station.setCos(submitResult.getResultData().getStation().get(0).getCOS());
+							station.setName(submitResult.getResultData().getStation().get(0).getName());
+							station.setTn(submitResult.getResultData().getStation().get(0).getTN());
+							station.setDisplayLangage(submitResult.getResultData().getStation().get(0).getDisplayLanguage());
+							station.setIpSoftphone(submitResult.getResultData().getStation().get(0).getIPSoftphone());
+							
+							List<StationButtonInfo> buttons = new ArrayList<StationButtonInfo>();
+							buttons = submitResult.getResultData().getStation().get(0).getButtonData1()
+																	.stream()
+																	.map(item -> new StationButtonInfo (Integer.parseInt( extension), 
+																														item.getValue(),  
+																														"ButtonData1",
+																														Long.valueOf(item.getPosition()).intValue()
+																														)).collect(Collectors.toList());
+							buttons.addAll(submitResult.getResultData().getStation().get(0).getButtonData2()
+														.stream()
+														.map(item -> new StationButtonInfo (Integer.parseInt( extension), 
+																											item.getValue(),  
+																											"ButtonData2",
+																											Long.valueOf(item.getPosition()).intValue()
+																											)).collect(Collectors.toList()));
+							buttons.addAll(submitResult.getResultData().getStation().get(0).getButtonData3()
+									.stream()
+									.map(item -> new StationButtonInfo (Integer.parseInt( extension), 
+																						item.getValue(),  
+																						"ButtonData3",
+																						Long.valueOf(item.getPosition()).intValue()
+																						)).collect(Collectors.toList()));
+							buttons.addAll(submitResult.getResultData().getStation().get(0).getButtonData4()
+									.stream()
+									.map(item -> new StationButtonInfo (Integer.parseInt( extension), 
+																						item.getValue(),  
+																						"ButtonData4",
+																						Long.valueOf(item.getPosition()).intValue()
+																						)).collect(Collectors.toList()));
+							buttons.addAll(submitResult.getResultData().getStation().get(0).getButtonData5()
+									.stream()
+									.map(item -> new StationButtonInfo (Integer.parseInt( extension), 
+																						item.getValue(),  
+																						"ButtonData5",
+																						Long.valueOf(item.getPosition()).intValue()
+																						)).collect(Collectors.toList()));
+							buttons.addAll(submitResult.getResultData().getStation().get(0).getButtonData6()
+									.stream()
+									.map(item -> new StationButtonInfo (Integer.parseInt( extension), 
+																						item.getValue(),  
+																						"ButtonData6",
+																						Long.valueOf(item.getPosition()).intValue()
+																						)).collect(Collectors.toList()));
+							buttons.addAll(submitResult.getResultData().getStation().get(0).getButtonData7()
+									.stream()
+									.map(item -> new StationButtonInfo (Integer.parseInt( extension), 
+																						item.getValue(),  
+																						"ButtonData7",
+																						Long.valueOf(item.getPosition()).intValue()
+																						)).collect(Collectors.toList()));
+							station.setStationButton(buttons);
+							stations.add(station);
+						}catch(Exception e1) {
+							log.error("station error:" + e1.toString());
+						}
+					}
 			}
-		} 
+		} else {
+			log.info("========execRequestStationInfo unloaded");
+		}
 		this.manageSession();
 		this.releaseSession();
 		return stations;
@@ -276,23 +412,44 @@ public class SMSReq {
 		//값 먼저 조회
 		
 		String qualifier = "count 1";
-		List<AgentInfo> stations = null;
+		List<AgentInfo> stations = new ArrayList<AgentInfo>();
 		Result submitResult;
-		boolean loaded = this.loadProps("Agent", "extension", "display", qualifier);
+		boolean loaded = this.loadProps("Station", "extension", "display", "count 1");
+		
+		if (!setup()) {
+			return null; 
+		}
 		if ( (this.isValid()) && loaded) {// any args invalid
 			//접속이 되면 
 			for (String loginId : loginIds) {
 				submitResult = this.submitRequest("Agent", "Login_ID", "", "display", loginId);
 				
 				if (submitResult.getResultCode() == 0) {
-					AgentInfo agent = new AgentInfo();
-					
-					agent.builder().loginId(loginId)
-									.name(submitResult.getResultData().getAgent().get(0).getName())
-									.extension(submitResult.getResultData().getAgent().get(0).getExtension())
-									.sn(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSN()))
-									.sr(String.join(",", (Iterable<? extends CharSequence>) submitResult.getResultData().getAgent().get(0).getSL()))
-									.build();
+					AgentInfo agent = AgentInfo.builder().loginId(loginId)
+												.name(submitResult.getResultData().getAgent().get(0).getName())
+												.extension(submitResult.getResultData().getAgent().get(0).getExtension())
+												.build();
+												//여기 부부 수정 하기 
+												List<AgentScenInfo> snsr = new ArrayList<AgentScenInfo>();
+												snsr = submitResult.getResultData().getAgent().get(0).getSN()
+														.stream()
+														.map(item -> new AgentScenInfo ( loginId, 
+																											"SN",
+																											Long.valueOf(item.getPosition()).intValue(),
+																											item.getValue()
+																											)).collect(Collectors.toList());
+												
+												snsr.addAll(submitResult.getResultData().getAgent().get(0).getSL()
+																				.stream()
+																				.map(item -> new AgentScenInfo ( loginId, 
+																																	"SL",
+																																	Long.valueOf(item.getPosition()).intValue(),
+																																	item.getValue()
+																																	)).collect(Collectors.toList())
+												
+												);
+												agent.setScenInfos(snsr);
+												
 					stations.add(agent);
 				}
 			}
@@ -302,9 +459,12 @@ public class SMSReq {
 		return stations;
 	}
 	//pbx check
-	public int execRequestMemberCheck(PbxMemberInfo info, String _ckGubun) {
+	public int execRequestMemberCheck(String number, String _ckGubun) {
 		
 		int result = 0;
+		
+		boolean loaded = this.loadProps("Station", "extension", "display", "count 1");
+		
 		if (!setup()) {
 			result = -1;
 		}
@@ -312,10 +472,10 @@ public class SMSReq {
 		// we failed and we're done
 		// status 값 체크 하기 
 		if (_ckGubun.equals("Extension")) {
-			submitResult = this.submitRequest("Station", "extension", "", "display", info.getExtension());
+			submitResult = this.submitRequest("Station", "extension", "", "display", number);
 			result = submitResult.getResultCode();
 		}else {
-			submitResult = this.submitRequest("Agent", "Login_ID|Name|Extension", "", "display", info.getLoginId());
+			submitResult = this.submitRequest("Agent", "Login_ID", "", "display", number);
 			result = submitResult.getResultCode();
 			
 		}
@@ -325,9 +485,76 @@ public class SMSReq {
 	
 		return result;
 	}
+	public ModelAndView execRequestStationUpdate(StationInfoReqDto info) {	
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		
+		boolean loaded = this.loadProps("Agent", "extension", "display", info.getExtension());
 		
 		
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
 		
+		Result submitResult;
+		if (info.getMode().equals("Ins")) {
+			submitResult = this.submitRequest("Station", "extension", "", "display", info.getExtension());
+			if (submitResult.getResultCode() == 0) {
+				models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록되 있습니다.");
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				return models; 
+			}
+		}
+		String stationOperration = info.getMode().equals("Ins") ? "add" : "change";
+		
+		submitResult = submitStationRequest("Station", "Extension", "", stationOperration, info);
+		
+		if (submitResult.getResultCode() != 0) {
+			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+		}else {
+			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록.");
+			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}
+		this.manageSession();
+		this.releaseSession();
+		return models;
+	}
+	//agenet
+	public ModelAndView execRequestAgentUpdate(AgentInfoReqDto info) {	
+		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
+		
+	
+		boolean loaded = this.loadProps("Agent", "extension", "display", info.getExtension());
+		if (!setup()) {
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			return models; 
+		}
+		
+		Result submitResult;
+		if (info.getMode().equals("Ins")) {
+			submitResult = this.submitRequest("Agent", "Login_ID|Name|Extension", "", "display", info.getLoginId());
+			if (submitResult.getResultCode() == 0) {
+				models.addObject(Globals.STATUS_MESSAGE, "Agent가 등록되 있습니다.");
+				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				return models; 
+			}
+		}
+		String stationOperration = info.getMode().equals("Ins") ? "add" : "change";
+		
+		submitResult = submitAgentRequest("Agent", "Extension", "", stationOperration, info);
+		
+		if (submitResult.getResultCode() != 0) {
+			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
+			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+		}else {
+			models.addObject(Globals.STATUS_MESSAGE, "에이전트가 정상적으로 처리 되었습니다." + submitResult.getResultCode());
+			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}
+		this.manageSession();
+		this.releaseSession();
+		return models;
+	}
 	public ModelAndView execRequestMemberUpdate(PbxMemberInfo info) {
 		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
 		if (!setup()) {
@@ -336,7 +563,9 @@ public class SMSReq {
 		}
 		if (info.getMode().equals("PBX")) {
 			String addType = "Extension="+info.getExtension()+"|Type="+info.getType() +"|COR="+info.getCor()+"|COS="+info.getCos()+"|Name="+info.getName()+"|SecurityCode="+info.getSecurityCode()+"";
+			/*
 			Result submitResult = submitStationRequest("Station", "Extension","", "change", info);
+			
 			if (submitResult.getResultCode() == 0) {
 				models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				try {
@@ -353,7 +582,9 @@ public class SMSReq {
 					models.addObject(Globals.STATUS_MESSAGE, "내선번호 처리중 문제가 발생하였습니다.");
 				}
 			}
+			*/
 		}else {
+			/*
 			Result submitResult = submitAgentRequest("Agent", "Extension", "", "change", info);
 			if (submitResult.getResultCode() != 0) {
 				models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
@@ -368,6 +599,7 @@ public class SMSReq {
 				}
 				models.setStatus(HttpStatus.OK);
 			}
+			*/
 		}
 		
 		return models; 
@@ -404,15 +636,14 @@ public class SMSReq {
 		
 		
 		if (submitResult.getResultCode() == 0) {
-			
-			System.out.println("===== Agent 등록 ");
-			
+			/*
 			submitResult = submitAgentRequest("Agent", "Extension", "", "add", info);
 			if (submitResult.getResultCode() != 0) {
 				models.addObject(Globals.STATUS_MESSAGE, "agent가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
 				models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 				return models;
 			}
+			*/
 		}else {
 			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 등록중 문제가 발생 하였습니다." + submitResult.getMessageText());
 			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -435,46 +666,7 @@ public class SMSReq {
 		
 		return models;
 	}
-	//에이전트 삭제 
-	public ModelAndView execRequestMemberDelete(PbxMemberInfo info) {
-		// Step 1: Initial SOAP setup, done once (typically) per session.
-		ModelAndView models = new ModelAndView(Globals.JSON_VIEW);
-		if (!setup()) {
-			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			return models; 
-		}
-		String resutMessage = "";
-		Result submitResult = this.submitRequest("Station", "extension", "", "remove", info.getExtension());
-		
-		if (submitResult.getResultCode() != 0) {
-			resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
-			
-			models.addObject(Globals.STATUS_MESSAGE, "내선번호가 삭제시 문제가 발생 하였습니다." + resutMessage);
-			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			return models; 
-		}
-		
-		// Agent 값 체크 하기 
-		submitResult = this.submitRequest("Agent", "Login_ID", "", "remove", info.getLoginId());
-		if (submitResult.getResultCode() != 0) {
-			resutMessage = submitResult.getMessageText().contains("Identifier not assigned") ? "적용 번호가 없습니다." : submitResult.getMessageText();
-			models.addObject(Globals.STATUS_MESSAGE, "Agent가 삭제시 문제가 있습니다." + resutMessage);
-			models.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			return models; 
-		}
-		
-		
-		this.manageSession();
-
-		this.releaseSession();
-		
-		if (submitResult != null) {
-			models.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			models.setStatus(HttpStatus.OK);
-		}
-		
-		return models;
-	}
+	
 
 		// **************************************************************************
 		// Step 1: setup()
@@ -488,7 +680,7 @@ public class SMSReq {
 			try {
 				modelContext = JAXBContext.newInstance(Globals.PBX_WEB_REFERENCE_PACKAGE);
 				// Specify End-Point URL 
-				String endpoint = new URL(root + "/smsxml/SystemManagementService.php").toString();
+				String endpoint = new URL(root + Globals.PBX_SYSETM_SERVICE ).toString();
 				
 				// Create a static Service instance -- Avoid network overhead by using a local 
 				//정적 서비스 인스턴스 생성 - 로컬을 사용하여 네트워크 오버헤드 방지
@@ -497,9 +689,9 @@ public class SMSReq {
 				//ClassLoader cl = null;
 			
 				if (cl != null)
-					localWSDL = cl.getResource("wsdl_xml/SystemManagementService.wsdl");
+					localWSDL = cl.getResource(Globals.PBX_WSDL);
 				 else 
-					localWSDL = ClassLoader.getSystemResource("wsdl_xml/SystemManagementService.wsdl");
+					localWSDL = ClassLoader.getSystemResource(Globals.PBX_WSDL);
 				 
 			
 				// Service QName for Static Service instance
@@ -545,7 +737,7 @@ public class SMSReq {
 				log.error("WebServiceException occured durring port creation. \r\n" + e.getMessage());
 				return false;
 			} catch (MalformedURLException e) {
-				log.error("Bad URL (" + root + "/sms/SystemManagementService.php); cannot access SMS: " + e);
+				log.error("Bad URL (" + root + Globals.PBX_SYSETM_SERVICE+"); cannot access SMS: " + e);
 				return false;
 			} catch (Exception e) {
 				log.error("An error occured during initial setup; cannot access SMS: " + e);
@@ -569,7 +761,7 @@ public class SMSReq {
 															String sFIELDS, 
 															String sObjectName, 
 															String sOperation, 
-															PbxMemberInfo info) {
+															StationInfoReqDto info) {
 			
 			// Initialize Types
 			Result result = null;
@@ -590,120 +782,62 @@ public class SMSReq {
 				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();
 				StationType st_submit = objectFactory.createStationType();
 				//여기 구문 정리 하기 
-				int a = 1;
-				if (!info.getPbxButton01().equals("")  ) {
-					String[] button01s = info.getPbxButton01().split(",");
-					if (button01s.length > 0) {
-						ArrayType button01 = objectFactory.createArrayType();
-						for (String button : button01s) {
-							if (!button.replace(" ", "").equals("")) {
-								button01.setPosition(a);
-								button01.setValue(button);	
-							}
-							a++;
-						}
-						st_submit.getButtonData1().add(button01);
+				
+				
+				//추후 리펙토링 필요함 
+				List<String> buttonInfos = info.getStationButton().stream().map(x -> x.getButtonName()).distinct().collect(Collectors.toList());
+				List<StationButtonInfo> buttonList;
+				
+				for(String button : buttonInfos) {
+					
+					buttonList = info.getStationButton().stream().filter( t -> t.getButtonName().equals(button))
+												.map(emtry -> new StationButtonInfo(
+														Integer.valueOf(info.getExtension()) ,
+														emtry.getButtonData(), 
+														button,
+														emtry.getButtonPosition()  ))
+												.collect(Collectors.toList());
+					for (StationButtonInfo buttonInfo : buttonList) {
+						ArrayType pbxButton = objectFactory.createArrayType();
+						log.info("update StationButtonInfo: " + buttonInfo.getButtonData() + ":" + buttonInfo.getButtonPosition());
+						pbxButton.setPosition(buttonInfo.getButtonPosition());
+						pbxButton.setValue(buttonInfo.getButtonData());
+						if (button.equals("ButtonData1") && !buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData1().add(pbxButton);
+						else if (button.equals("ButtonData1") && buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData1().remove(buttonInfo.getButtonPosition());
+						else if (button.equals("ButtonData2") && !buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData2().add(pbxButton);
+						else if (button.equals("ButtonData2") && buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData2().remove(buttonInfo.getButtonPosition());
+						else if (button.equals("ButtonData3") && !buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData3().add(pbxButton);
+						else if (button.equals("ButtonData3") && buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData3().remove(buttonInfo.getButtonPosition());
+						else if (button.equals("ButtonData4") && !buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData4().add(pbxButton);
+						else if (button.equals("ButtonData4") && buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData4().remove(buttonInfo.getButtonPosition());
+						else if (button.equals("ButtonData5") && !buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData5().add(pbxButton);
+						else if (button.equals("ButtonData5") && buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData5().remove(buttonInfo.getButtonPosition());
+						else if (button.equals("ButtonData6") && !buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData6().add(pbxButton);
+						else if (button.equals("ButtonData6") && buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData6().remove(buttonInfo.getButtonPosition());
+						else  if (button.equals("ButtonData") && !buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData7().add(pbxButton);
+						else  if (button.equals("ButtonData") && buttonInfo.getButtonData().equals(""))
+							st_submit.getButtonData7().remove(buttonInfo.getButtonPosition());
 					}
 					
-				}
-				a = 1;
-				if (!info.getPbxButton02().equals("")  ) {
-					String[] button02s = info.getPbxButton02().split(",");
-					if (button02s.length > 0) {
-						ArrayType button02 = objectFactory.createArrayType();
-						for (String button : button02s) {
-							if (!button.replace(" ", "").equals("")) {
-								button02.setPosition(a);
-								button02.setValue(button);	
-							}
-							
-							a++;
-						}
-						st_submit.getButtonData2().add(button02);
-					}
 					
 				}
-				a = 1;
-				if (!info.getPbxButton03().equals("")  ) {
-					String[] button03s = info.getPbxButton03().split(",");
-					if (button03s.length > 0) {
-						ArrayType button03 = objectFactory.createArrayType();
-						for (String button : button03s) {
-							if (!button.replace(" ", "").equals("")) {
-								button03.setPosition(a);
-								button03.setValue(button);	
-							}
-							
-							a++;
-						}
-						st_submit.getButtonData3().add(button03);
-					}
-					
-				}
-		        a = 1;
-		        if (!info.getPbxButton04().equals("")  ) {
-		        	String[] button04s = info.getPbxButton04().split(",");
-		        	if (button04s.length > 0) {
-		        		ArrayType button04 = objectFactory.createArrayType();
-			        	for (String button : button04s) {
-			        		if (!button.replace(" ", "").equals("")) {
-			        			button04.setPosition(a);
-				        		button04.setValue(button);	
-			        		}
-			        		a++;
-			        	}
-			        	st_submit.getButtonData4().add(button04);
-		        	}
-		        	
-		        }
-		        a = 1;
-		        if (!info.getPbxButton05().equals("")  ) {
-		        	String[] button05s = info.getPbxButton05().split(",");
-		        	if (button05s.length > 0) {
-		        		ArrayType button05 = objectFactory.createArrayType();
-			        	for (String button : button05s) {
-			        		if (!button.replace(" ", "").equals("")) {
-			        			button05.setPosition(a);
-				        		button05.setValue(button);	
-			        		}
-			        		a++;
-			        	}
-			        	st_submit.getButtonData5().add(button05);
-		        	}
-		        	
-		        }
-		        a = 1;
-		        if (!info.getPbxButton06().equals("")  ) {
-		        	String[] button06s = info.getPbxButton06().split(",");
-		        	if (button06s.length > 0) {
-		        		ArrayType button06 = objectFactory.createArrayType();
-			        	for (String button : button06s) {
-			        		if (!button.replace(" ", "").equals("")) {
-			        			button06.setPosition(a);
-				        		button06.setValue(button);	
-			        		}
-			        		a++;
-			        	}
-			        	st_submit.getButtonData6().add(button06);
-		        	}
-		        	
-		        }
-		        a = 1;
-		        if (!info.getPbxButton07().equals("")  ) {
-		        	String[] button07s = info.getPbxButton07().split(",");
-		        	if (button07s.length > 0) {
-		        		ArrayType button07 = objectFactory.createArrayType();
-			        	for (String button : button07s) {
-			        		if (!button.replace(" ", "").equals("")) {
-			        			button07.setPosition(a);
-				        		button07.setValue(button);	
-			        		}
-			        		a++;
-			        	}
-			        	st_submit.getButtonData7().add(button07);
-					}
-					
-				}
+				//추후 리펙토링 필요함 
+				// 추후 버튼 삭제시 추가 작업 필요하
+				//
+				st_submit.getButtonData1().forEach(x -> System.out.println( x.getPosition() + "" + x.getValue()) );
 				
 				st_submit.setExtension(info.getExtension());
 				st_submit.setType(info.getType());
@@ -711,7 +845,9 @@ public class SMSReq {
 				st_submit.setCOS(info.getCos());
 				st_submit.setName(info.getName());
 				st_submit.setSecurityCode(info.getSecurityCode());
-				st_submit.setDisplayLanguage(info.getPbxDisplayLangage());
+				st_submit.setDisplayLanguage(info.getDisplayLangage());
+				st_submit.setIPSoftphone(info.getIpSoftphone());
+				st_submit.setTN(info.getTn());
 				mf_add.getStation().add(st_submit);
 				modelList.set(0, st_submit);
 				
@@ -723,8 +859,8 @@ public class SMSReq {
 				submitRequest.setQualifier(info.getExtension());
 				
 				result = port.submitRequest(submitRequest.getModelFields(), submitRequest.getOperation(),
-						                    submitRequest.getObjectname(), submitRequest.getQualifier());
-
+														submitRequest.getObjectname(), submitRequest.getQualifier());
+				
 			} catch (ClassNotFoundException cnf) { 
 				log.error("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
 				log.error(cnf.getMessage()); 
@@ -759,7 +895,7 @@ public class SMSReq {
 															String sFIELDS, 
 															String sObjectName, 
 															String sOperation, 
-															PbxMemberInfo info) {
+															AgentInfoReqDto info) {
 			
 			// Initialize Types
 			Result result = null;
@@ -783,26 +919,26 @@ public class SMSReq {
 				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();//
 				AgentType ag_submit =objectFactory.createAgentType();
 				
-				
-				
-				for (pbxType sn :   info.getSn()) {
-					ArrayType sn_list = objectFactory.createArrayType();
+				ArrayType sn_list = objectFactory.createArrayType();
+				List<AgentScenInfo> snLists = info.getScenInfos().stream().filter( t -> t.getScenGubun().equals("SN"))
+															.collect(Collectors.toList());
+				for (AgentScenInfo buttonInfo : snLists) {
 					
-					sn_list.setPosition(sn.getIndex());
-					sn_list.setValue(sn.getValue());
-					ag_submit.getSN().add(sn_list);
+					sn_list.setPosition(buttonInfo.getScenPosition());
+					sn_list.setValue(buttonInfo.getScenValue());
+				}
+				ag_submit.getSN().add(sn_list);
+				ArrayType sr_list = objectFactory.createArrayType();
+				List<AgentScenInfo> srLists = info.getScenInfos().stream().filter( t -> t.getScenGubun().equals("SR"))
+															.collect(Collectors.toList());
+				for (AgentScenInfo buttonInfo : srLists) {
 					
+					sr_list.setPosition(buttonInfo.getScenPosition());
+					sr_list.setValue(buttonInfo.getScenValue());
 				}
-				for (pbxType sr :   info.getSr()) {
-					ArrayType sr_list = objectFactory.createArrayType();
-					sr_list.setPosition(sr.getIndex());
-					sr_list.setValue(sr.getValue());
-					ag_submit.getSL().add(sr_list);
-				}
-				
-				
-				
+				ag_submit.getSL().add(sr_list);
 				ag_submit.setLoginID(info.getLoginId());
+				
 				mf_add.getAgent().add(ag_submit);
 				modelList.set(0, ag_submit);
 				
@@ -817,28 +953,28 @@ public class SMSReq {
 				
 				result = port.submitRequest(submitRequest.getModelFields(), submitRequest.getOperation(),
 						 								submitRequest.getObjectname(), submitRequest.getQualifier());
-
+				
 			} catch (ClassNotFoundException cnf) { 
-				  System.out.println("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
-				  System.out.println(cnf.getMessage()); 
-				  faultRaised = true; 
-			 } catch (Exception soapE) {
+				log.error("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
+				log.error(cnf.getMessage()); 
+				faultRaised = true; 
+			} catch (Exception soapE) {
 				// A fault was raised. The fault message will contain the
 				// explanation
-				System.out.println("A SOAP fault was raised: ");
+				log.error("A SOAP fault was raised: ");
 
-				System.out.println("Cause: " + soapE.getCause());
-				System.out.println("Message: " + soapE );
+				log.error("Cause: " + soapE.getCause());
+				log.error("Message: " + soapE );
 
 				faultRaised = true;
-			 }
+			}
 			
 			// If we got a result (not a fault) then we'll show it
 			if (!faultRaised) {
 				
 				  // The result code indicates success or failure (CM rejected the request) 
 				if (result.getResultCode() == 0) { 
-					System.out.println("The request was successful (result_code == 0)");
+					log.error("The request was successful (result_code == 0)");
 					ModelChoices mc = result.getResultData(); 
 					
 					// Is result null 
@@ -848,17 +984,19 @@ public class SMSReq {
 				}else { 
 					
 					faultRaised = true; 
-					// In case CM rejected the request, the message text will contain CM's explanation
-					System.out.println("The request returned an error (result_code == "+ result.getResultCode() + ")"); 
-					System.out.println("result_data == " + '"' + result.getResultData() + '"');
-					System.out.println("message_text == " + result.getMessageText() ); }
+					log.info("The request returned an error (result_code == "+ result.getResultCode() + ")"); 
+					log.info("result_data == " + '"' + result.getResultData() + '"');
+					log.info("message_text == " + result.getMessageText() ); }
 				 
 			}
 			
 			return result;
 
 		}
-		private Result submitRequest(String model, String sFIELDS, String sObjectName, String sOperation, String sQUALIFIER) {
+		/// SOAP 통신으로 결과 받아오기
+		private Result submitRequest(String model, 
+												String sFIELDS, String sObjectName, 
+												String sOperation, String sQUALIFIER) {
 	
 			// Initialize Types
 			Result result = null;
@@ -887,18 +1025,16 @@ public class SMSReq {
 						                    submitRequest.getObjectname(), submitRequest.getQualifier());
 
 			} catch (ClassNotFoundException cnf) { 
-				  System.out.println("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
-				  System.out.println(cnf.getMessage()); 
-				  faultRaised = true; 
+					log.error("ModelType: " + mType + " could not be loaded! Please verify this is a valid model.");
+					log.error(cnf.getMessage()); 
+					faultRaised = true; 
 			 } catch (Exception soapE) {
-				// A fault was raised. The fault message will contain the
-				// explanation
-				System.out.println("A SOAP fault was raised: ");
-
-				System.out.println("Cause: " + soapE.getCause());
-				System.out.println("Message: " + soapE );
-
-				faultRaised = true;
+					// A fault was raised. The fault message will contain the
+					// explanation
+					log.error("A SOAP fault was raised: ");
+					log.error("Cause: " + soapE.getCause());
+					log.error("Message: " + soapE );
+					faultRaised = true;
 			 }
 			
 			// If we got a result (not a fault) then we'll show it
@@ -906,7 +1042,7 @@ public class SMSReq {
 				
 				  // The result code indicates success or failure (CM rejected the request) 
 				if (result.getResultCode() == 0) { 
-					System.out.println("The request was successful (result_code == 0)");
+					log.info("The request was successful (result_code == 0)");
 					ModelChoices mc = result.getResultData(); 
 					
 					// Is result null 
@@ -918,9 +1054,9 @@ public class SMSReq {
 					
 					faultRaised = true; 
 					// In case CM rejected the request, the message text will contain CM's explanation
-				System.out.println("The request returned an error (result_code == "+ result.getResultCode() + ")"); 
-				System.out.println("result_data == " + '"' + result.getResultData() + '"');
-				System.out.println("message_text == " + result.getMessageText() ); }
+					log.error("The request returned an error (result_code == "+ result.getResultCode() + ")"); 
+					log.error("result_data == " + '"' + result.getResultData() + '"');
+					log.error("message_text == " + result.getMessageText() ); }
 				 
 			}
 			
@@ -978,7 +1114,7 @@ public class SMSReq {
 			ReturnType result = null; // release also returns a result structure
 
 			// Display resulting Session ID
-			System.out.println("\nReleasing SessionID[" + requestSID + "]...");
+			log.info("\nReleasing SessionID[" + requestSID + "]...");
 
 			try {
 				
@@ -995,11 +1131,9 @@ public class SMSReq {
 			} catch (Exception re) {
 				// A fault was raised. The fault message will contain the
 				// explanation
-				System.out.println("A SOAP fault was raised during the release call: " + re);
+				log.info("A SOAP fault was raised during the release call: " + re);
 				return;
 			}
-
-			System.out.println("The SMS session was released.  result_code=" + result.getReturn().getResultCode());
 		}
 
 		// The rest of the SMSTest class consists of helper methods for

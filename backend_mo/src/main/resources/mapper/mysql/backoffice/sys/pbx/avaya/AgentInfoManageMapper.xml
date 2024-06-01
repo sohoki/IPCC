@@ -10,7 +10,8 @@
 			FROM 	
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
-					 A.LOGIN_ID, A.NAME, A.EXTENSION, A.SN, A.SN_INDEX, A.SR, A.SR_INDEX, A.AGENT_UPDATE
+					 			A.LOGIN_ID, A.NAME, A.EXTENSION, A.SN, A.SN_INDEX, A.SR, A.SR_INDEX, 
+					 			DATE_FORMAT( A.AGENT_UPDATE, '%Y-%m-%d') AGENT_UPDATE
 				FROM TB_AGENTINTO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -26,55 +27,97 @@
 		ORDER BY TA.RNUM DESC 
 		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
 		
-   	</select>
-   	<select id="selectAgentInfoDetail" resultType="AgentInfo">
+	</select>
+	<select id="selectAgentInfoDetail" resultType="AgentInfo">
 		SELECT  A.LOGIN_ID, A.NAME, A.EXTENSION, A.SN, A.SN_INDEX, A.SR, A.SR_INDEX, A.AGENT_UPDATE
 		FROM TB_AGENTINTO A
 		WHERE LOGIN_ID = #{loginId}
-   	</select>
-   	<insert id="insertAgentInfoList">
-   		INSERT INTO TB_AGENTINTO	
-		(
-		    LOGIN_ID, NAME, EXTENSION, SN, SN_INDEX, SR, SR_INDEX, AGENT_UPDATE
-		)
-		VALUES 
-		<foreach collection="list" item="item" separator=",">
-		(
-		 #{item.loginId}, #{item.name}, #{item.extension,jdbcType=VARCHAR}, #{item.sn,jdbcType=VARCHAR}, #{item.snIndex,jdbcType=VARCHAR}, 
-		 #{item.sr,jdbcType=VARCHAR}, #{item.srIndex,jdbcType=VARCHAR}, NOW()
-		 )
+	</select>
+<select id="selectAgentInfoScenList" resultType="AgentScenInfo">
+		SELECT  A.SCEN_GUBUN, A.SCEN_POSITION, A.SCEN_VALUE
+		FROM TB_AGENTINTO_SNSR_INFO A
+		WHERE LOGIN_ID = #{loginId}
+	</select>
+	
+	
+	
+	<insert id="insertAgentInfoList">
+		<foreach collection="list" item="item" separator="">
+			INSERT INTO TB_AGENTINTO	
+			(
+				LOGIN_ID, NAME, AGENT_UPDATE
+			)
+			VALUES 
+			(
+				#{item.loginId}, #{item.name},  NOW()
+			)
+			ON DUPLICATE KEY 
+			UPDATE LOGIN_ID = #{item.loginId}, NAME =  #{item.name}, AGENT_UPDATE = NOW();
+			DELETE FROM TB_AGENTINTO_SNSR_INFO WHERE  LOGIN_ID = #{item.loginId};
+			<foreach collection="item.scenInfos" item="subItem" separator=";">
+				INSERT INTO TB_AGENTINTO_SNSR_INFO(LOGIN_ID, SCEN_GUBUN, SCEN_POSITION, SCEN_VALUE)
+				VALUES(#{item.loginId},  #{subItem.scenGubun},  #{subItem.scenPosition},  #{subItem.scenValue} )
+			</foreach>
+			;
+			UPDATE TB_AGENTINTO SET SN = (SELECT   SCEN_VALUE 
+																			FROM TB_AGENTINTO_SNSR_INFO 
+																			WHERE   LOGIN_ID = #{item.loginId} AND SCEN_GUBUN = 'SN' 
+																			ORDER BY SCEN_POSITION ASC  LIMIT 1),
+																SN_INDEX = (SELECT  SCEN_POSITION 
+																						FROM TB_AGENTINTO_SNSR_INFO 
+																						WHERE   LOGIN_ID = #{item.loginId} AND SCEN_GUBUN = 'SN' 
+																						ORDER BY SCEN_POSITION ASC  LIMIT 1),
+																SR = (SELECT  SCEN_VALUE 
+																			FROM TB_AGENTINTO_SNSR_INFO 
+																			WHERE   LOGIN_ID = #{item.loginId} AND SCEN_GUBUN = 'SR' 
+																			ORDER BY SCEN_POSITION ASC  LIMIT 1),
+																SR_INDEX = (SELECT  SCEN_POSITION 
+																						FROM TB_AGENTINTO_SNSR_INFO 
+																						WHERE   LOGIN_ID = #{item.loginId} AND SCEN_GUBUN = 'SR' 
+																						ORDER BY SCEN_POSITION ASC  LIMIT 1)
+			WHERE  LOGIN_ID = #{item.loginId};
 		</foreach>
-   	</insert>
-   	<insert id="insertAgentInfo">
+	</insert>
+	<insert id="insertAgentInfo">
 		INSERT INTO TB_AGENTINTO	
 		(
-		    LOGIN_ID, NAME, EXTENSION, SN, SN_INDEX, SR, SR_INDEX, AGENT_UPDATE
+			LOGIN_ID, NAME, EXTENSION, AGENT_UPDATE
 		)
 		VALUES 
 		(
-			#{loginId}, #{name}, #{extension,jdbcType=VARCHAR}, #{sn,jdbcType=VARCHAR}, #{snIndex,jdbcType=VARCHAR}, 
-			#{sr,jdbcType=VARCHAR}, #{srIndex,jdbcType=VARCHAR}, NOW()
+			#{loginId}, #{name}, #{extension,jdbcType=VARCHAR}, NOW()
 		)
-   	</insert>
+		<foreach collection="scenInfos" item="subItem" separator="">
+				INSERT INTO TB_AGENTINTO_SNSR_INFO(LOGIN_ID, SCEN_GUBUN, SCEN_POSITION, SCEN_VALUE)
+				VALUES(#{loginId},  #{subItem.scenGubun},  #{subItem.scenPosition} ,  #{subItem.scenValue});
+		</foreach>
+	</insert>
 	<update id="updateAgentInfo">
 		UPDATE TB_AGENTINTO SET  NAME = #{name}, 
-							     EXTENSION = #{extension}, 
-							     SN = #{sn,jdbcType=VARCHAR}, 
-							     SN_INDEX = #{snIndex,jdbcType=VARCHAR},
-							     SR = #{sr,jdbcType=VARCHAR}, 
-							     SR_INDEX = #{srIndex,jdbcType=VARCHAR},
-							     AGENT_UPDATE = NOW()       
-       	WHERE LOGIN_ID = #{loginId}
-   	</update>
-   	<update id="updateStationConsultInfo">
+																EXTENSION = #{extension}, 
+																AGENT_UPDATE = NOW()       
+		WHERE LOGIN_ID = #{loginId};
+		DELETE FROM TB_AGENTINTO_SNSR_INFO WHERE  LOGIN_ID = #{loginId};
+		<foreach collection="scenInfos" item="subItem" separator="">
+				INSERT INTO TB_AGENTINTO_SNSR_INFO(LOGIN_ID, SCEN_GUBUN, SCEN_POSITION, SCEN_VALUE)
+				VALUES(#{loginId},  #{subItem.scenGubun},  #{subItem.scenPosition} ,  #{subItem.scenValue});
+		</foreach>
+		
+		UPDATE TB_AGENTINTO SET SN = (SELECT  SCEN_VALUE FROM TB_AGENTINTO_SNSR_INFO WHERE   LOGIN_ID = #{loginId} AND SCEN_GUBUN = 'SN' ORDER BY SCEN_POSITION ASC LIMIT 1),
+						SN_INDEX = (SELECT   SCEN_POSITION FROM TB_AGENTINTO_SNSR_INFO WHERE   LOGIN_ID = #{loginId} AND SCEN_GUBUN = 'SN' ORDER BY SCEN_POSITION ASC LIMIT 1),
+						SR = (SELECT SCEN_VALUE FROM TB_AGENTINTO_SNSR_INFO WHERE   LOGIN_ID = #{loginId} AND SCEN_GUBUN = 'SR' ORDER BY SCEN_POSITION ASC LIMIT 1),
+						SR_INDEX = (SELECT  SCEN_POSITION FROM TB_AGENTINTO_SNSR_INFO WHERE   LOGIN_ID = #{loginId} AND SCEN_GUBUN = 'SR' ORDER BY SCEN_POSITION ASC LIMIT 1)
+		WHERE  LOGIN_ID = #{loginId};
+	</update>
+	<update id="updateStationConsultInfo">
 		UPDATE TB_AGENTINTO SET CONSULT_USEYN = #{consultUseyn}
 								AGENT_UPDATE = NOW()       
-       	WHERE LOGIN_ID = #{loginId}
-   	</update>
-   	
-   	<delete id="deleteAgentInfo">
-   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
-   		DELETE FROM TB_AGENTINTO
-   		WHERE LOGIN_ID = #{loginId}
-   	</delete>
+		WHERE LOGIN_ID = #{loginId}
+	</update>
+	
+	<delete id="deleteAgentInfo">
+	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+		DELETE FROM TB_AGENTINTO
+		WHERE LOGIN_ID = #{loginId}
+	</delete>
 </mapper>

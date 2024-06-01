@@ -1,7 +1,7 @@
 package com.system.backoffice.sys.pbx.avaya.models;
 
-import java.util.List;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,16 +13,11 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AgentInfo {
+@Schema(title="AgentScenInfo : 에이전트 시나리오 정보 " )
+public class AgentScenInfo {
 
 	private String loginId;
-	private String name;
-	private String extension;
-	private String sn;
-	private String snIndex;
-	private String sr;
-	private String srIndex;
-	private String agentUpdate;
-	
-	private List<AgentScenInfo> scenInfos;
+	private String scenGubun;
+	private int scenPosition;
+	private String scenValue;
 }

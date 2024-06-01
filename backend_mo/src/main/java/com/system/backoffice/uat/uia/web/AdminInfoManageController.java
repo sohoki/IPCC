@@ -154,7 +154,7 @@ public class AdminInfoManageController {
 			
 			if (!jwtVerification.isVerificationAdmin(request)) {
 				ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
 			}
 			
 			searchVO.put("adminId", jwtVerification.getTokenUserName(request));

@@ -11,7 +11,7 @@
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
 					 A.EXTENSION, A.TYPE, A.COR, A.COS, A.NAME, A.SECURITY_CODE, A.DISPLAY_LANGAGE, A.CONSULT_USEYN, A.TN,
-					 A.BUTTON01, A.BUTTON02, A.BUTTON03, A.BUTTON04, A.BUTTON05, A.BUTTON06, A.BUTTON07, A.UPDATE_DATE
+					 DATE_FORMAT(A.UPDATE_DATE, '%Y-%m-%d' ) UPDATE_DATE, A.IP_SOFTPHONE
 				FROM TB_STATIONINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -27,71 +27,95 @@
 		ORDER BY TA.RNUM DESC 
 		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
 		
-   	</select>
-   	<select id="selectStationInfoDetail" resultType="StationInfo">
-		SELECT  A.EXTENSION, A.TYPE, A.COR, A.COS, A.NAME, A.SECURITY_CODE, A.DISPLAY_LANGAGE, A.CONSULT_USEYN, A.TN
-				A.BUTTON01, A.BUTTON02, A.BUTTON03, A.BUTTON04, A.BUTTON05, A.BUTTON06, A.BUTTON07, A.UPDATE_DATE
+	</select>
+	<select id="selectStationButtonList" resultType="StationButtonInfo">
+		SELECT  A.EXTENSION, A.BUTTON_DATA, A.BUTTON_POSITION, A.BUTTON_NAME
+		FROM TB_STATION_BUTTIN_INFO A
+		WHERE EXTENSION = #{extension}
+	</select>
+	<select id="selectStationInfoDetail" resultType="StationInfo">
+		SELECT  A.EXTENSION, A.TYPE, A.COR, A.COS, A.NAME, A.SECURITY_CODE, A.DISPLAY_LANGAGE, A.CONSULT_USEYN, A.TN,
+						 A.UPDATE_DATE, A.IP_SOFTPHONE
 		FROM TB_STATIONINFO A
 		WHERE EXTENSION = #{extension}
-   	</select>
-   	<insert id="insertStationInfoList">
-   		INSERT INTO TB_STATIONINFO	
-		(
-		    EXTENSION, TYPE, COR, COS, NAME, TN, SECURITY_CODE, DISPLAY_LANGAGE, CONSULT_USEYN
-			BUTTON01, BUTTON02, BUTTON03, BUTTON04, BUTTON05, BUTTON06, BUTTON07, UPDATE_DATE
-		)
-		VALUES 
-		<foreach collection="list" item="item" separator=",">
-		(
-		 #{item.extension}, #{item.type}, #{item.cor,jdbcType=VARCHAR}, #{item.cos,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR}, #{item.tn,jdbcType=VARCHAR},
-		 #{item.securityCode}, #{item.item.displayLangage,jdbcType=VARCHAR}, 'N',
-		 #{item.button01,jdbcType=VARCHAR}, #{item.button02,jdbcType=VARCHAR}, #{item.button03,jdbcType=VARCHAR}, #{item.button04,jdbcType=VARCHAR},
-		 #{item.button05,jdbcType=VARCHAR}, #{item.button06,jdbcType=VARCHAR}, #{item.button07,jdbcType=VARCHAR},  NOW()
-		 )
+	</select>
+	<insert id="insertStationInfoList">
+		<foreach collection="list" item="item" separator=" ">
+			INSERT INTO TB_STATIONINFO	
+			(
+				EXTENSION, TYPE, COR, COS, NAME, TN, SECURITY_CODE, DISPLAY_LANGAGE, CONSULT_USEYN,
+				UPDATE_DATE, IP_SOFTPHONE 
+			)
+			VALUES 
+			(
+			#{item.extension}, #{item.type}, #{item.cor,jdbcType=VARCHAR}, #{item.cos,jdbcType=VARCHAR}, #{item.name,jdbcType=VARCHAR}, #{item.tn,jdbcType=VARCHAR},
+			#{item.securityCode}, #{item.displayLangage,jdbcType=VARCHAR}, 'N', NOW(), #{item.ipSoftphone,jdbcType=VARCHAR}
+			)
+			ON DUPLICATE KEY 
+			UPDATE EXTENSION =#{item.extension}, TYPE = #{item.type}, COR = #{item.cor,jdbcType=VARCHAR}, COS =  #{item.cos,jdbcType=VARCHAR},
+							NAME = #{item.name,jdbcType=VARCHAR},  TN =  #{item.tn,jdbcType=VARCHAR},
+							SECURITY_CODE =#{item.securityCode},  DISPLAY_LANGAGE =  #{item.displayLangage,jdbcType=VARCHAR}, 
+							IP_SOFTPHONE =   #{item.ipSoftphone,jdbcType=VARCHAR}, UPDATE_DATE = NOW();
+			DELETE FROM TB_STATION_BUTTIN_INFO WHERE  EXTENSION = #{item.extension};
+			<foreach collection="item.stationButton" item="subItem" separator=";">
+				INSERT INTO TB_STATION_BUTTIN_INFO(EXTENSION, BUTTON_DATA, BUTTON_POSITION, BUTTON_NAME)
+				VALUES ( #{item.extension}, #{subItem.buttonData}, #{subItem.buttonPosition} , #{subItem.buttonName})
+			</foreach>
+			;
 		</foreach>
-   	</insert>
-   	<insert id="insertStationInfo">
+	</insert>
+	<insert id="insertStationInfo">
 		INSERT INTO TB_STATIONINFO	
 		(
-		    EXTENSION, TYPE, COR, COS, NAME, TN, SECURITY_CODE, DISPLAY_LANGAGE, CONSULT_USEYN
-			BUTTON01, BUTTON02, BUTTON03, BUTTON04, BUTTON05, BUTTON06, BUTTON07, UPDATE_DATE
+		    EXTENSION, TYPE, COR, COS, NAME, TN, SECURITY_CODE, DISPLAY_LANGAGE, CONSULT_USEYN,
+			UPDATE_DATE, IP_SOFTPHONE
 		)
 		VALUES 
 		(
 			#{extension}, #{type}, #{cor,jdbcType=VARCHAR}, #{cos,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{tn,jdbcType=VARCHAR},
-			#{securityCode}, #{displayLangage,jdbcType=VARCHAR}, 'N',
-			#{button01,jdbcType=VARCHAR}, #{button02,jdbcType=VARCHAR}, #{button03,jdbcType=VARCHAR}, #{button04,jdbcType=VARCHAR},
-			#{button05,jdbcType=VARCHAR}, #{button06,jdbcType=VARCHAR}, #{button07,jdbcType=VARCHAR},  NOW()
+			#{securityCode}, #{displayLangage,jdbcType=VARCHAR}, 'N',  NOW(), #{ipSoftphone,jdbcType=VARCHAR}
 		)
+		ON DUPLICATE KEY 
+		UPDATE EXTENSION =#{extension}, TYPE = #{type}, COR = #{cor,jdbcType=VARCHAR}, COS =  #{cos,jdbcType=VARCHAR},
+							NAME = #{name,jdbcType=VARCHAR},  TN =  #{tn,jdbcType=VARCHAR},
+							SECURITY_CODE =#{securityCode},  DISPLAY_LANGAGE =  #{displayLangage,jdbcType=VARCHAR}, 
+							IP_SOFTPHONE =   #{ipSoftphone,jdbcType=VARCHAR}, UPDATE_DATE = NOW();
+							
+		DELETE FROM TB_STATION_BUTTIN_INFO WHERE  EXTENSION = #{extension};
+		<foreach collection="stationButton" item="subItem" separator=";">
+		 		INSERT INTO TB_STATION_BUTTIN_INFO(EXTENSION, BUTTON_DATA, BUTTON_POSITION, BUTTON_NAME)
+		 		VALUES ( #{extension}, #{subItem.buttonData}, #{subItem.buttonPosition}, #{subItem.buttonName})
+		 </foreach>
+		 
    	</insert>
 	<update id="updateStationInfo">
 		UPDATE TB_STATIONINFO SET  TYPE = #{type}, 
-								   COR = #{cor}, 
-								   COS = #{cos}, 
-								   NAME = #{name,jdbcType=VARCHAR},
-								   TN = #{tn, jdbcType=VARCHAR}, 
-								   SECURITY_CODE = #{securityCode}, 
-								   DISPLAY_LANGAGE = #{displayLangage,jdbcType=VARCHAR},
-								   BUTTON01 = #{button01,jdbcType=VARCHAR},
-								   BUTTON02 = #{button02,jdbcType=VARCHAR},
-								   BUTTON03 = #{button03,jdbcType=VARCHAR},
-								   BUTTON04 = #{button04,jdbcType=VARCHAR},
-								   BUTTON05 = #{button05,jdbcType=VARCHAR},
-								   BUTTON06 = #{button06,jdbcType=VARCHAR},
-								   BUTTON07 = #{button07,jdbcType=VARCHAR},
-		                           UPDATE_DATE = NOW()       
-       	WHERE EXTENSION = #{extension}
-   	</update>
-   	<update id="updateStationConsultInfo">
+									COR = #{cor}, 
+									COS = #{cos}, 
+									NAME = #{name,jdbcType=VARCHAR},
+									TN = #{tn, jdbcType=VARCHAR}, 
+									SECURITY_CODE = #{securityCode}, 
+									DISPLAY_LANGAGE = #{displayLangage,jdbcType=VARCHAR},
+									IP_SOFTPHONE = #{ipSoftphone,jdbcType=VARCHAR},
+									UPDATE_DATE = NOW()       
+		WHERE EXTENSION = #{extension};
+		DELETE FROM TB_STATION_BUTTIN_INFO WHERE EXTENSION = #{extension};
+		<foreach collection="stationButton" item="subItem" separator=";">
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(subItem.buttonData)">
+					INSERT INTO TB_STATION_BUTTIN_INFO(EXTENSION, BUTTON_DATA, BUTTON_POSITION, BUTTON_NAME)
+		 			VALUES ( #{extension}, #{subItem.buttonData}, #{subItem.buttonPosition}, #{subItem.buttonName})
+				</if>
+		 </foreach>
+	</update>
+	<update id="updateStationConsultInfo">
 		UPDATE TB_STATIONINFO SET  CONSULT_USEYN = #{consultUseyn}
-		                           UPDATE_DATE = NOW()       
-       	WHERE EXTENSION = #{extension}
-   	</update>
-   	
-   	<delete id="deleteStationInfo">
-   	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
-   		DELETE FROM TB_STATIONINFO
-   		WHERE EXTENSION = #{extension}
-   	</delete>
+																	UPDATE_DATE = NOW()       
+		WHERE EXTENSION = #{extension}
+	</update>
+	<delete id="deleteStationInfo">
+	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
+		DELETE FROM TB_STATIONINFO WHERE EXTENSION = #{extension};
+		DELETE FROM TB_STATION_BUTTIN_INFO WHERE EXTENSION = #{extension};
+	</delete>
 
 </mapper>

@@ -120,7 +120,7 @@ public class SmsManageController {
 																.build();
 						
 							//pbx 체크 
-							int ret = client.execRequestMemberCheck(pbxinfoR, UtilInfoService.NVL(searchVO.get("gubun"),"Extension"));
+							int ret = client.execRequestMemberCheck(pbxinfoR.getExtension(), UtilInfoService.NVL(searchVO.get("gubun"),"Extension"));
 							String sStatus = (ret > 0) ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 							String sMessage = (ret > 0) ? "common.idcheck.success" : "common.idcheck.fail";
 							model.addObject(Globals.STATUS,sStatus);
@@ -151,140 +151,70 @@ public class SmsManageController {
 				pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
 			}
 			
-			String notiSeq = "101";
-			String status = "list";
-			String qualifier = "count 1";
-			Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail(notiSeq);
-			
-			if (models.isPresent()) {
-				
-				
-				boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), status, qualifier);
-				if ( (!client.isValid()) || !loaded) // any args invalid
-				{
+				if (model.getStatus().equals(HttpStatus.OK) ) {
+					consoltService.insertConsultantrManage(pbxInfo) ;
+					consoltService.updateConsultantrPbxAgentManage(pbxInfo);
+					//cti 저장 
 					
-					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-					model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):  sms.root=<http(s)://smshostaddr> cm.login=<cmlogin@cmhostaddr[:port]> cm.password=<cmpassword>");
-				} else {
-					try {
-						if (!pbxInfo.getMode().equals("PBXEXIST")) {
-							PbxMemberInfo pbxinfoR = PbxMemberInfo.builder().extension(pbxInfo.getPbxExtension())
-																	.type(pbxInfo.getPbxType())
-																	.cor(pbxInfo.getPbxCor())
-																	.cos(pbxInfo.getPbxCos())
-																	.name(pbxInfo.getPbxName())
-																	.pbxDisplayLangage(pbxInfo.getPbxDisplayLangage())
-																	.pbxButton01(pbxInfo.getPbxButton01())
-																	.pbxButton02(pbxInfo.getPbxButton02())
-																	.pbxButton03(pbxInfo.getPbxButton03())
-																	.pbxButton04(pbxInfo.getPbxButton04())
-																	.pbxButton05(pbxInfo.getPbxButton05())
-																	.pbxButton06(pbxInfo.getPbxButton06())
-																	.pbxButton07(pbxInfo.getPbxButton07())
-																	.SecurityCode(pbxInfo.getPbxSecurityCode())
-																	.loginId(pbxInfo.getPbxLoginId())
-																	.build();
-			
-							List<pbxType> sn = new ArrayList<pbxType>();
-							List<pbxType> sr = new ArrayList<pbxType>();
-							
-							
-							for(ConsultantAgentInfo agent : pbxInfo.getAgentInfo()) {
-								pbxType pbxsn = new pbxType();
-								pbxsn.setValue(agent.getPbxSnType());
-								pbxsn.setIndex(Integer.parseInt( agent.getPbxSnIndex()));
-								sn.add(pbxsn);
-								
-								pbxType pbxsr = new pbxType();
-								pbxsr.setValue(agent.getPbxSrType());
-								pbxsr.setIndex(Integer.parseInt( agent.getPbxSrIndex()));
-								sr.add(pbxsr);
-							}
-							pbxinfoR.setSn(sn);
-							pbxinfoR.setSr(sr);
-							model = client.execRequestMemberInsert(pbxinfoR);
-						}else {
-							model.setStatus(HttpStatus.OK);
+					NexusAgentRequestInfoDto cti = NexusAgentRequestInfoDto.builder().mode("Ins")
+																.centerId(pbxInfo.getCtiCenterId())
+																.tenantId(pbxInfo.getCtiTenantId())
+																.employeegrpId(pbxInfo.getCtiEmployeegrpid())
+																.employeepartId(pbxInfo.getCtiEmployeepartid())
+																.employeeId(pbxInfo.getCtiLoginid())
+																.loginId(pbxInfo.getPbxLoginId())
+																.employeeName(pbxInfo.getCtiName())
+																.employeePawd(pbxInfo.getCtiPassword())
+																.blendKind(pbxInfo.getCtiBlendKind())
+																.permitId(pbxInfo.getCtiPermitId())
+																.skillDepth1("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth2("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth3("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth4("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth5("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth6("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth7("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth8("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth9("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.skillDepth10("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																.defaultQueue(pbxInfo.getCtiDefaultQueue())
+																.userDefine1("")
+																.userDefine2("")
+																.userDefine3("")
+																.sendFilesize("30")
+																.monitorFlag(pbxInfo.getCtiMoniterFlag())
+																.workHours("0")
+																.emailAddr("")
+																.employeeAlias("")
+																.updateUser("NEX10000")
+																.userId("NEX10000")
+																.employeeDuty("")
+																.logoffReason("0")
+																.tel_home("")
+																.build();
+					
+					int ret = ctiService.updateNexusEmployeesInfo(cti);
+					if (ret > 0) {
+						NexusAgentInfo agentinfo = new NexusAgentInfo();
+						agentinfo.setCenterId(cti.getCenterId());
+						agentinfo.setEmployeeId(pbxInfo.getCtiEmployeeid());
+						agentinfo.setTenantId(pbxInfo.getCtiTenantId());
+						
+						Optional<NexusAgentInfoResponseDto> nexus =  ctiService.selectEmployeesExistInfoDetail(agentinfo);
+						if (nexus.isPresent()){
+							pbxInfo.setCtiCenterName(nexus.get().getCenterName());
+							pbxInfo.setCtiTenantName(nexus.get().getTenantName());
+							pbxInfo.setCtiEmployeegrpName(nexus.get().getEmployeegrpName());
+							pbxInfo.setCtiEmployeepartName(nexus.get().getEmployeepartName());
+							consoltService.updateConsultantrCtisManage(pbxInfo);
 						}
-						
-						
-						if (model.getStatus().equals(HttpStatus.OK) ) {
-							consoltService.insertConsultantrManage(pbxInfo) ;
-							consoltService.updateConsultantrPbxAgentManage(pbxInfo);
-							//cti 저장 
-							
-							NexusAgentRequestInfoDto cti = NexusAgentRequestInfoDto.builder().mode("Ins")
-																		.centerId(pbxInfo.getCtiCenterId())
-																		.tenantId(pbxInfo.getCtiTenantId())
-																		.employeegrpId(pbxInfo.getCtiEmployeegrpid())
-																		.employeepartId(pbxInfo.getCtiEmployeepartid())
-																		.employeeId(pbxInfo.getCtiLoginid())
-																		.loginId(pbxInfo.getPbxLoginId())
-																		.employeeName(pbxInfo.getCtiName())
-																		.employeePawd(pbxInfo.getCtiPassword())
-																		.blendKind(pbxInfo.getCtiBlendKind())
-																		.permitId(pbxInfo.getCtiPermitId())
-																		.skillDepth1("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth2("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth3("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth4("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth5("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth6("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth7("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth8("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth9("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.skillDepth10("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																		.defaultQueue(pbxInfo.getCtiDefaultQueue())
-																		.userDefine1("")
-																		.userDefine2("")
-																		.userDefine3("")
-																		.sendFilesize("30")
-																		.monitorFlag(pbxInfo.getCtiMoniterFlag())
-																		.workHours("0")
-																		.emailAddr("")
-																		.employeeAlias("")
-																		.updateUser("NEX10000")
-																		.userId("NEX10000")
-																		.employeeDuty("")
-																		.logoffReason("0")
-																		.tel_home("")
-																		.build();
-							
-							int ret = ctiService.updateNexusEmployeesInfo(cti);
-							if (ret > 0) {
-								NexusAgentInfo agentinfo = new NexusAgentInfo();
-								agentinfo.setCenterId(cti.getCenterId());
-								agentinfo.setEmployeeId(pbxInfo.getCtiEmployeeid());
-								agentinfo.setTenantId(pbxInfo.getCtiTenantId());
-								
-								Optional<NexusAgentInfoResponseDto> nexus =  ctiService.selectEmployeesExistInfoDetail(agentinfo);
-								if (nexus.isPresent()){
-									pbxInfo.setCtiCenterName(nexus.get().getCenterName());
-									pbxInfo.setCtiTenantName(nexus.get().getTenantName());
-									pbxInfo.setCtiEmployeegrpName(nexus.get().getEmployeegrpName());
-									pbxInfo.setCtiEmployeepartName(nexus.get().getEmployeepartName());
-									consoltService.updateConsultantrCtisManage(pbxInfo);
-								}
-							}
-							model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-							model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));
-						}else {
-							model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-							model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg"));
-						}
-						
-						
-						
-						
-					} catch (Exception e) {
-						model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-						model.addObject(Globals.STATUS_MESSAGE, "SMSXMLTest failed with an unexpected exception:" + e.toString());
 					}
+					model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+					model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));
+				}else {
+					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+					model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg"));
 				}
-			}else {
-				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.value.notexits"));
-			}
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, e.toString());
@@ -392,79 +322,6 @@ public class SmsManageController {
 				}
 
 				
-			}else if (pbxInfo.getMode().equals("PBX")) {
-				//내선번호 변경 
-				
-				PbxMemberInfo pbxinfoR = PbxMemberInfo.builder().extension(pbxInfo.getPbxExtension())
-														.type(pbxInfo.getPbxType())
-														.cor(pbxInfo.getPbxCor())
-														.cos(pbxInfo.getPbxCos())
-														.name(pbxInfo.getPbxName())
-														.pbxDisplayLangage(pbxInfo.getPbxDisplayLangage())
-														.pbxButton01(pbxInfo.getPbxButton01())
-														.pbxButton02(pbxInfo.getPbxButton02())
-														.pbxButton03(pbxInfo.getPbxButton03())
-														.pbxButton04(pbxInfo.getPbxButton04())
-														.pbxButton05(pbxInfo.getPbxButton05())
-														.pbxButton06(pbxInfo.getPbxButton06())
-														.pbxButton07(pbxInfo.getPbxButton07())
-														.mode("PBX")
-														.SecurityCode(pbxInfo.getPbxSecurityCode())
-														.build();
-				
-				String addType = "Extension="+pbxinfoR.getExtension()+"|Type="+pbxinfoR.getType() +"|COR="+pbxinfoR.getCor()+"|COS="+pbxinfoR.getCos()+"|Name="+pbxinfoR.getName()+"|SecurityCode="+pbxinfoR.getSecurityCode()+"";
-				
-				boolean loaded = client.loadProps("Station",addType, "change", pbxInfo.getPbxExtension());
-				if ( (!client.isValid()) || !loaded) { // any args invalid
-
-					
-					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-					model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):");
-				} else {
-					model = client.execRequestMemberUpdate(pbxinfoR);
-					LOGGER.debug("model.getStatus()");
-					if (model.getStatus() == HttpStatus.OK) {
-						consoltService.updateConsultantrPbxStatusManage(pbxInfo);
-						
-						}
-					}
-			}else {
-				PbxMemberInfo pbxinfoR = PbxMemberInfo.builder()
-						  .loginId(pbxInfo.getPbxLoginId())
-						  .mode("AGENT")
-						  .build();
-				List<pbxType> sn = new ArrayList<pbxType>();
-				List<pbxType> sr = new ArrayList<pbxType>();
-				
-				
-				for(ConsultantAgentInfo agent : pbxInfo.getAgentInfo()) {
-					pbxType pbxsn = new pbxType();
-					pbxsn.setValue(agent.getPbxSnType());
-					pbxsn.setIndex(Integer.parseInt( agent.getPbxSnIndex()));
-					sn.add(pbxsn);
-					
-					pbxType pbxsr = new pbxType();
-					pbxsr.setValue(agent.getPbxSrType());
-					pbxsr.setIndex(Integer.parseInt( agent.getPbxSrIndex()));
-					sr.add(pbxsr);
-				}
-				pbxinfoR.setSn(sn);
-				pbxinfoR.setSr(sr);
-				
-				
-				
-				boolean loaded = client.loadProps("Agent","Login_ID|Name|Extension", "display", pbxinfoR.getLoginId());
-				if ( (!client.isValid()) || !loaded) // any args invalid
-				{
-					
-					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-					model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):");
-				} else {
-					model = client.execRequestMemberUpdate(pbxinfoR);
-					if (model.getStatus() == HttpStatus.OK) {
-						consoltService.updateConsultantrPbxAgentManage(pbxInfo);
-					}
-				}
 			}
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
