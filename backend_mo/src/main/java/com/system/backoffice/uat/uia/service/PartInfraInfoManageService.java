@@ -18,4 +18,6 @@ public interface PartInfraInfoManageService {
 	int updatePartfraInfoManage(PartInfraInfoRequestDto vo);
 		
 	int deletePartfraInfoManage(String partInfraCode);
+
+	int selectAgentDoubleCheck(PartInfraInfoRequestDto vo) throws Exception;
 }

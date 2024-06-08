@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.system.backoffice.uat.uia.mapper.PartInfraInfoManageMapper;
 import com.system.backoffice.uat.uia.models.PartInfraInfo;
+import com.system.backoffice.uat.uia.models.UniUtilInfo;
 import com.system.backoffice.uat.uia.models.dto.PartInfraInfoRequestDto;
 import com.system.backoffice.uat.uia.service.PartInfraInfoManageService;
 
@@ -48,6 +49,12 @@ public class PartInfraInfoManageServiceImpl extends EgovAbstractServiceImpl impl
 	public int deletePartfraInfoManage(String partInfraCode) {
 		// TODO Auto-generated method stub
 		return partInfraMapper.deletePartfraInfoManage(partInfraCode);
+	}
+	
+	@Override
+	public int selectAgentDoubleCheck(PartInfraInfoRequestDto vo) throws Exception {
+		// TODO Auto-generated method stub
+		return partInfraMapper.selectAgentDoubleCheck(vo);
 	}
 	
 	

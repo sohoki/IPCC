@@ -63,6 +63,39 @@
 		DELETE FROM  TB_PART_INFRAINFO
 		WHERE PART_INFRA_CODE = #{partId}
 	</delete>
+	
+	<select id="selectAgentDoubleCheck" resultType="java.lang.Integer">
+		SELECT sum(T.cnt) 
+		 FROM (
+		SELECT count(*) AS cnt
+		FROM TB_PART_INFRAINFO
+		WHERE STATION_START_NUMBER BETWEEN #{stationStartNumber,jdbcType=VARCHAR} and #{stationEndNumber,jdbcType=VARCHAR}
+		<if test='mode != "Ins"'>
+		AND PART_INFRA_CODE != #{partInfraCode}
+		</if>
+		UNION ALL
+		SELECT count(*)  AS cnt
+		FROM TB_PART_INFRAINFO
+		WHERE STATION_END_NUMBER BETWEEN #{stationStartNumber,jdbcType=VARCHAR} and #{stationEndNumber,jdbcType=VARCHAR}
+		<if test='mode != "Ins"'>
+		AND PART_INFRA_CODE != #{partInfraCode}
+		</if>
+		UNION ALL
+		SELECT count(*)  AS cnt
+		FROM TB_PART_INFRAINFO
+		WHERE AGENT_START_NUMBER BETWEEN #{agentStartNumber, jdbcType=VARCHAR} and #{agentEndNumber, jdbcType=VARCHAR}
+		<if test='mode != "Ins"'>
+		AND PART_INFRA_CODE != #{partInfraCode}
+		</if>
+		UNION ALL
+		SELECT count(*)  AS cnt
+		FROM TB_PART_INFRAINFO
+		WHERE AGENT_END_NUMBER BETWEEN #{agentStartNumber, jdbcType=VARCHAR} and #{agentEndNumber, jdbcType=VARCHAR}
+		<if test='mode != "Ins"'>
+		AND PART_INFRA_CODE != #{partInfraCode}
+		</if>
+		) T;
+    </select>
 
 
 </mapper>

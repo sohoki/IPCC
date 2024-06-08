@@ -20,4 +20,6 @@ public interface PartInfraInfoManageMapper {
 	public int updatePartfraInfoManage(PartInfraInfoRequestDto vo);
 	
 	public int deletePartfraInfoManage(String partInfraCode);
+
+	public int selectAgentDoubleCheck(PartInfraInfoRequestDto vo);
 }
