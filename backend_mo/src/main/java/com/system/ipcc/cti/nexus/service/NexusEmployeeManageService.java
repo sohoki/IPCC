@@ -117,7 +117,9 @@ public class NexusEmployeeManageService {
 		}else {
 			return 1;
 		}
-		
+	}
+	public List<NexusAgentInfoResponseDto> selectEmployeesSearchList(NexusAgentInfo vo){
+		return employMapper.selectEmployeesSearchList(vo);
 	}
 	
 }

@@ -5,19 +5,18 @@
 		SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
 			   TB.* FROM (
 					   SELECT
-							    A.PBX_EXTENSION, A.PBX_TYPE, A.PBX_COR, A.PBX_COS,
-								A.PBX_NAME, A.PBX_SECURITY_CODE, A.PBX_LOGIN_ID, A.PBX_STATUS,
-								A.PBX_BUTTON01, A.PBX_BUTTON02, A.PBX_BUTTON03, A.PBX_BUTTON04, A.PBX_BUTTON05,
-								A.PBX_BUTTON06, A.PBX_BUTTON07, A.PBX_DISPLAY_LANGAGE,
+							    A.PBX_EXTENSION, A.PBX_LOGIN_ID, A.PBX_STATUS, A.INSTT_CODE, A.PART_ID,
 								A.PBX_REG_DATE, A.PBX_UPDATE_DATE, A.CTI_CENTER_ID, A.CTI_TENANT_ID,
 								A.CTI_EMPLOYEEGRPID, A.CTI_EMPLOYEEPARTID, A.CTI_EMPLOYEEID, 
 								A.CTI_NAME, A.CTI_PASSWORD, A.CTI_BLEND_KIND, A.CTI_PERMIT_ID,
 								A.CTI_MONITER_FLAG, A.CTI_DEFAULT_QUEUE, A.CTI_UPDATE_DATE,
 								A.COUN_STATUS, DATE_FORMAT(A.FRST_REGIST_PNTTM, '%Y-%m-%d %H:%i') FRST_REGIST_PNTTM , A.FRST_REGISTER_ID, A.AGENT_STATUS,
 								DATE_FORMAT(A.LAST_UPDT_PNTTM, '%Y-%m-%d %H:%i') LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.COUN_REMARK, A.COUN_USEYN,
-								A.CTI_CENTER_NAME, A.CTI_EMPLOYEEGRP_NAME, A.CTI_EMPLOYEEPART_NAME, CTI_TENANT_NAME
-						FROM   TB_CONSULTANT A
-						WHERE  1=1
+								A.CTI_CENTER_NAME, A.CTI_EMPLOYEEGRP_NAME, A.CTI_EMPLOYEEPART_NAME, CTI_TENANT_NAME,
+								B.ALL_INSTT_NM, C.PART_NM
+						FROM   TB_CONSULTANT A, COMTNINSTTCODE B, TB_PARTINFO C
+						WHERE  A.INSTT_CODE = B.INSTT_CODE
+										AND A.PART_ID = C.PART_ID
 						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
 								<choose>
 									<when test="params.searchCondition == 'params.conName'">
@@ -64,22 +63,10 @@
 	
 	<select id="selectConsultantrManageDetail" resultType="ConsultantInfo">
 		SELECT PBX_EXTENSION,
-			 PBX_TYPE,
-			 PBX_COR,
-			 PBX_COS,
-			 PBX_NAME,
-			 PBX_SECURITY_CODE,
 			 PBX_LOGIN_ID,
 			 PBX_STATUS,
 			 PBX_REG_DATE,
 			 PBX_UPDATE_DATE,
-			 PBX_BUTTON01,
-			 PBX_BUTTON02,
-			 PBX_BUTTON03,
-			 PBX_BUTTON04,
-			 PBX_BUTTON05,
-			 PBX_BUTTON06,
-			 PBX_BUTTON07,
 			 PBX_DISPLAY_LANGAGE,
 			 CTI_CENTER_ID,
 			 CTI_TENANT_ID,
@@ -99,17 +86,12 @@
 			 LAST_UPDT_PNTTM,
 			 LAST_UPDUSR_ID,
 			 COUN_REMARK
-      FROM TB_CONSULTANT
-      WHERE PBX_EXTENSION = #{pbxExtension}
-   </select>
-   <select id="selectConsultantrManageDetailConstantCode" resultType="ConsultantInfo">
-      SELECT CONSULT_CODE,
+		FROM TB_CONSULTANT
+		WHERE PBX_EXTENSION = #{pbxExtension}
+	</select>
+	<select id="selectConsultantrManageDetailConstantCode" resultType="ConsultantInfo">
+ 		SELECT CONSULT_CODE,
 					PBX_EXTENSION,
-					PBX_TYPE,
-					PBX_COR,
-					PBX_COS,
-					PBX_NAME,
-					PBX_SECURITY_CODE,
 					PBX_LOGIN_ID,
 					PBX_STATUS,
 					CTI_CENTER_ID,
@@ -140,55 +122,32 @@
 	</select>
 	
 	<insert id="insertConsultantrManage">
-		INSERT INTO TB_CONSULTANT(CONSULT_CODE, PBX_EXTENSION, PBX_TYPE, PBX_COR, PBX_COS, PBX_NAME, PBX_SECURITY_CODE,
+		<selectKey resultType="string" keyProperty="consultCode" order="BEFORE">
+			SELECT FN_CONSULTANT_ID(#{pbxExtension})
+		</selectKey>
+		INSERT INTO TB_CONSULTANT(CONSULT_CODE, PBX_EXTENSION, 
 									COUN_REMARK, PBX_STATUS, PBX_REG_DATE, PBX_UPDATE_DATE,
-									PBX_BUTTON01, PBX_BUTTON02, PBX_BUTTON03, PBX_BUTTON04, PBX_BUTTON05,
-									PBX_BUTTON06, PBX_BUTTON07, PBX_DISPLAY_LANGAGE,
 									FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID
 									)
-		VALUES (FN_CONSULTANT_ID(#{pbxExtension}), #{pbxExtension}, #{pbxType}, #{pbxCor}, #{pbxCos}, #{pbxName,jdbcType=VARCHAR },  #{pbxSecurityCode ,jdbcType=VARCHAR},
-				#{counRemark ,jdbcType=VARCHAR}, 'OK', NOW(), NOW(),
-				#{pbxButton01, jdbcType=VARCHAR },#{pbxButton02, jdbcType=VARCHAR },#{pbxButton03, jdbcType=VARCHAR },#{pbxButton04, jdbcType=VARCHAR },
-				#{pbxButton05, jdbcType=VARCHAR },
-				#{pbxButton06, jdbcType=VARCHAR }, #{pbxButton07, jdbcType=VARCHAR }, #{pbxDisplayLangage, jdbcType=VARCHAR },
-				NOW(), #{userId }, NOW(), #{userId }  )
+		VALUES (#{consultCode}, #{pbxExtension}
+							#{counRemark ,jdbcType=VARCHAR}, 'OK', NOW(), NOW(),
+							NOW(), #{userId }, NOW(), #{userId }  );
+		INSERT INTO TB_STATIONHISTORY(EXTENSION, CONSULTANT_CODE, REG_DATE, HIS_REMARK)
+		VALUES (#{extension}, #{consultCode}, NOW(), #{ctiName} +  '상담사 사용');
 	</insert>
 	<update id="updateConsultantrPbxStatusManage">
-		UPDATE TB_CONSULTANT SET PBX_TYPE = #{pbxType}
-									, PBX_COR = #{pbxCos}
-									, PBX_NAME = #{pbxName }
-									, PBX_SECURITY_CODE = #{pbxSecurityCode, jdbcType=VARCHAR }
-									, PBX_DISPLAY_LANGAGE = #{pbxDisplayLangage, jdbcType=VARCHAR }
-									, PBX_STATUS = 'OK'
-									, PBX_UPDATE_DATE =  NOW()
-									, PBX_BUTTON01 = #{pbxButton01, jdbcType=VARCHAR }
-									, PBX_BUTTON02 = #{pbxButton01, jdbcType=VARCHAR }
-									, PBX_BUTTON03 = #{pbxButton01, jdbcType=VARCHAR }
-									, PBX_BUTTON04 = #{pbxButton01, jdbcType=VARCHAR }
-									, PBX_BUTTON05 = #{pbxButton01, jdbcType=VARCHAR }
-									, PBX_BUTTON06 = #{pbxButton01, jdbcType=VARCHAR }
-									, PBX_BUTTON07 = #{pbxButton01, jdbcType=VARCHAR }
-		WHERE PBX_EXTENSION = #{pbxExtension};
-		
-				
-				
+		UPDATE TB_CONSULTANT SET  PBX_STATUS = 'OK'
+																, PBX_UPDATE_DATE =  NOW()
+		WHERE PBX_EXTENSION = #{pbxExtension};			
 	</update>
 	<update id="updateConsultantrPbxAgentManage">
 		UPDATE TB_CONSULTANT SET PBX_LOGIN_ID = #{pbxLoginId}
-								 , AGENT_STATUS = 'OK'
-								 , PBX_UPDATE_DATE =  NOW()
-								 , LAST_UPDT_PNTTM  = NOW()
-		 							, LAST_UPDUSR_ID = #{userId}
+																 , AGENT_STATUS = 'OK'
+																 , PBX_UPDATE_DATE =  NOW()
+																 , LAST_UPDT_PNTTM  = NOW()
+										 						, LAST_UPDUSR_ID = #{userId}
 		WHERE PBX_EXTENSION = #{pbxExtension};
 		
-		DELETE FROM TB_CONSULTANT_AGENTINFO WHERE PBX_LOGIN_ID = #{pbxLoginId};
-		<!-- 
-		<foreach collection="params.couponList" item="item" separator=";" open="" close="; ">  
-			INSERT INTO TB_CONSULTANT_AGENTINFO( PBX_LOGIN_ID, PBX_SN_TYPE, PBX_SN_INDEX, PBX_SR_TYPE, PBX_SR_INDEX)
-			VALUES (#{pbxLoginId}, #{item.pbxSnType, jdbcType=VARCHAR },  #{item.pbxSnIndex, jdbcType=VARCHAR }
-					, #{item.pbxSrType, jdbcType=VARCHAR },  #{item.pbxSrIndex, jdbcType=VARCHAR })
-		</foreach>
-		 -->
 	</update>
 	<update id="updateConsultantrCtisManage">
 		UPDATE TB_CONSULTANT SET CTI_CENTER_ID= #{ctiCenterId},

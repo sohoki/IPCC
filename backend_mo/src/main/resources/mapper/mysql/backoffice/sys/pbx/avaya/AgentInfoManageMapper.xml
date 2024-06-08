@@ -15,12 +15,18 @@
 				FROM TB_AGENTINTO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
-					AND 
-					( 
-						A.EXTENSION LIKE '%'|| #{params.searchKeyword} || '%' 
-						OR
-						A.NAME LIKE '%' ||  #{params.searchKeyword} || '%'
-					) 
+					<choose>
+						<when test="params.searchCondition == 'name'">
+							AND A.NAME LIKE   CONCAT('%',#{params.searchKeyword},'%')  
+						</when>
+						<otherwise>
+							AND A.LOGIN_ID  LIKE   CONCAT('%',#{params.searchKeyword},'%')  
+						</otherwise>
+					</choose>
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.Exists)">
+					AND  A.LOGIN_ID NOT IN (SELECT PBX_LOGIN_ID FROM TB_CONSULTANT WHERE COUN_STATUS = 'Y' )
+					AND A.LOGIN_ID BETWEEN #{params.searchStart} AND #{params.searchEnd}
 				</if>
 			) TB 
 		) TA

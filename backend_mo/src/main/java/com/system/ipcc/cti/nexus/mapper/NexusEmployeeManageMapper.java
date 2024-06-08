@@ -26,11 +26,13 @@ public interface NexusEmployeeManageMapper {
 	
 	public Optional<NexusAgentInfoResponseDto> selectEmployeesExistInfoDetail(NexusAgentInfo vo);
 	
+	public List<NexusAgentInfoResponseDto> selectEmployeesSearchList(NexusAgentInfo vo);
+	
 	public int selectEmployeesExistInfoDetailCnt(NexusAgentInfo vo);
 	
-    public int insertNexusEmployeesInfo(NexusAgentRequestInfoDto vo);
+	public int insertNexusEmployeesInfo(NexusAgentRequestInfoDto vo);
 	
-    public int updateNexusEmployeesInfo(NexusAgentRequestInfoDto vo);
+	public int updateNexusEmployeesInfo(NexusAgentRequestInfoDto vo);
 
-    public int deleteNexusEmployeesInfo(NexusAgentInfo vo);
+	public int deleteNexusEmployeesInfo(NexusAgentInfo vo);
 }

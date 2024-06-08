@@ -4,7 +4,11 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+import com.system.backoffice.sys.pbx.avaya.models.AgentScenInfo;
+import com.system.backoffice.sys.pbx.avaya.models.StationButtonInfo;
 import com.system.backoffice.uat.uia.models.ConsultantAgentInfo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +20,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor	
+@Schema(title="ConsultantInfo : 상담사정보 요청 정보 " )
 public class ConsultantInfoRequestDto {
 
 	@NotBlank(message="Mode를 입력해 주세요.")
@@ -25,10 +30,13 @@ public class ConsultantInfoRequestDto {
 	private String pbxType;
 	private String pbxCor;
 	private String pbxCos;
-	private String pbxName;
-
+	
+	private String pbxDisplayLangage;
 	private String pbxSecurityCode;	
+	
 	private String pbxLoginId;
+	private String pbxName; //agent Name
+	private String pbxTn;
 	private String pbxStatus;
 	private String pbxRegDate;
 	private String pbxUpdateDate;
@@ -60,21 +68,19 @@ public class ConsultantInfoRequestDto {
 	private String ctiTenantName;
 	private String counUseyn;
 	//신규 내용 
-	private String pbxButton01;
-	private String pbxButton02;
-	private String pbxButton03;
-	private String pbxButton04;
-	private String pbxButton05;
-	private String pbxButton06;
-	private String pbxButton07;
-	private String pbxDisplayLangage;
+	
 	
 	//신규
 	private String partId;
 	private String insttCode;
 	private String agentStatus;
 	private String consultCode;
+	private String ipSoftphone;
 	
+	private String pbxExists;
+	private String agentExists;
+	private String ctiExists;
 	
-	private List<ConsultantAgentInfo> agentInfo;
+	private List<StationButtonInfo> stationButton;
+	private List<AgentScenInfo> scenInfos;
 }

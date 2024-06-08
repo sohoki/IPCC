@@ -86,6 +86,38 @@
 				AND A.CENTER_ID = E.CENTER_ID 
 				AND A.TENANT_ID = E.TENANT_ID
 	</select>
+	<select id="selectEmployeesSearchList"  resultType="NexusAgentInfoResponseDto">
+		SELECT A.CENTER_ID, A.TENANT_ID, A.EMPLOYEEGRP_ID, A.EMPLOYEEPART_ID, A.EMPLOYEE_ID, A.LOGIN_ID, 
+				A.EMPLOYEE_NAME, A.EMPLOYEE_PAWD, A.EMPLOYEE_CLASS, A.BLEND_KIND, A.PERMIT_ID,
+				A.DEFAULT_QUEUE, A.SEND_FILESIZE, A.MONITOR_FLAG, A.WORK_HOURS,
+				A.JOINING_DATE, A.END_UPDATEDATE, A.UPDATE_USER, A.TEL_HOME, 
+				A.EMPLOYEE_DUTY, A.EMAIL_ADDR, A.LOGOFF_REASON, A.LEAVING_DATE, A.EMPLOYEE_ALIAS ,
+				B.CENTER_NAME , E.TENANT_NAME, C.EMPLOYEEGRP_NAME, D.EMPLOYEEPART_NAME
+		FROM MA_EMPLOYEE A, MA_CENTER B	, MA_EMPLOYEEGRP C,	MA_EMPLOYEEPART D, MA_TENANT E	   
+		WHERE 1=1
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(loginId)">
+				AND A.LOGIN_ID LIKE  CONCAT('%',#{loginId},'%')  
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(employeeId)">
+				AND A.EMPLOYEE_ID LIKE  CONCAT('%',#{employeeId},'%')  
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(centerId)">
+				AND A.CENTER_ID=#{centerId} 
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(tenantId)">
+				AND A.TENANT_ID=#{tenantId} 
+				</if>
+				AND A.CENTER_ID = B.CENTER_ID 
+				AND A.EMPLOYEEGRP_ID = C.EMPLOYEEGRP_ID
+				AND A.CENTER_ID = C.CENTER_ID
+				AND A.TENANT_ID = C.TENANT_ID
+				AND A.EMPLOYEEGRP_ID = D.EMPLOYEEGRP_ID 
+				AND A.EMPLOYEEPART_ID = D.EMPLOYEEPART_ID 
+				AND A.CENTER_ID = D.CENTER_ID
+				AND A.TENANT_ID = D.TENANT_ID
+				AND A.CENTER_ID = E.CENTER_ID 
+				AND A.TENANT_ID = E.TENANT_ID
+	</select>
 	<select id="selectEmployeesExistInfoDetailCnt" resultType="Integer">
 		SELECT IFNULL(COUNT(*),0)
 		FROM MA_EMPLOYEE A	   

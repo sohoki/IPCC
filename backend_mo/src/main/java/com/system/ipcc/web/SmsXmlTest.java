@@ -52,12 +52,7 @@ public class SmsXmlTest {
 	@Autowired
 	private SmsModelInfoManageService smsService;
 	
-	@Autowired 
-	private ConsultantManageService consoltService;
-	
 
-	@Autowired 
-	private NexusEmployeeManageService ctiService;
 
 	@Autowired
 	private  SMSReq client;
@@ -70,8 +65,6 @@ public class SmsXmlTest {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
-			//SMSXMLTest client = new SMSXMLTest();
-			//SMSReq client = new SMSReq();
 			
 			Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail(searchMap.get("notiSeq").toString());
 			
@@ -103,7 +96,7 @@ public class SmsXmlTest {
 				}
 			}else {
 				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		   		model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
+				model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
 			}
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -113,6 +106,7 @@ public class SmsXmlTest {
 		
 		
 	} 
+	/*
 	@PostMapping("/consultant/memberInsert.do")
 	public ModelAndView UserInsertPbx( @RequestBody  ConsultantInfoRequestDto pbxInfo,
 									  HttpServletRequest request ) throws Exception {
@@ -147,23 +141,9 @@ public class SmsXmlTest {
 																		.loginId(pbxInfo.getPbxLoginId())
 																		.build();
 						
-						List<pbxType> sn = new ArrayList<pbxType>();
-						List<pbxType> sr = new ArrayList<pbxType>();
 						
 						
-						for(ConsultantAgentInfo agent : pbxInfo.getAgentInfo()) {
-							pbxType pbxsn = new pbxType();
-							pbxsn.setValue(agent.getPbxSnType());
-							pbxsn.setIndex(Integer.parseInt( agent.getPbxSnIndex()));
-							sn.add(pbxsn);
-							
-							pbxType pbxsr = new pbxType();
-							pbxsr.setValue(agent.getPbxSrType());
-							pbxsr.setIndex(Integer.parseInt( agent.getPbxSrIndex()));
-							sr.add(pbxsr);
-						}
-						pbxinfoR.setSn(sn);
-						pbxinfoR.setSr(sr);
+						
 						model = client.execRequestMemberInsert(pbxinfoR);
 						
 						
@@ -240,68 +220,8 @@ public class SmsXmlTest {
 		return model;
 		
 	}
-	@DeleteMapping("/consultant/{extension}.do")
-	public ModelAndView counDeleteProcess(@PathVariable String extension, HttpServletRequest request ) throws Exception {
-		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-		try {
-			//멤버 삭제
-			Optional<ConsultantInfo> info = consoltService.selectConsultantrManageDetail(extension);
-			
-			if (!info.isPresent()) {
-				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-				model.addObject(Globals.STATUS_MESSAGE, "사용자 내역이 없습니다.");
-			}
-			//사용자 삭제 
-			//SMSReq client = new SMSReq();
-			String notiSeq = "101";
-			String status = "list";
-			String qualifier = "count 10";
-			Optional<SmsModelInfo> models = smsService.selectSmsInfoDetail(notiSeq);
-			
-			if (models.isPresent()) {
-				
-				
-				
-				boolean loaded = client.loadProps(models.get().getSmsModel().replace("Type", ""), models.get().getSmsFields(), status, qualifier);
-				if ( (!client.isValid()) || !loaded) // any args invalid
-				{
-					
-					model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-					model.addObject(Globals.STATUS_MESSAGE, "Usage (smsxml.properties):");
-				} else {
-					try {
-						System.out.println("============ 사용자 삭제 시작1:"  + info.get().getPbxExtension());
-						PbxMemberInfo pbxInfo = new PbxMemberInfo();
-						pbxInfo.setExtension(info.get().getPbxExtension());
-						pbxInfo.setLoginId(info.get().getPbxLoginId());
-						//사용자 삭제
-						System.out.println("============ 사용자 삭제 시작2:" + info.get().getPbxLoginId());
-						model = client.execRequestMemberDelete(pbxInfo);
-						
-						System.out.println(model.getStatus());
-						if (model.getStatus() == HttpStatus.OK) {
-							consoltService.deleteConsultantrManage(info.get().getPbxExtension());
-						}
-					} catch (Exception e) {
-						
-						model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-						model.addObject(Globals.STATUS_MESSAGE, "SMSXMLTest failed with an unexpected exception:" + e.toString());
-						
-					}
-				}
-			}else {
-				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			model.addObject(Globals.STATUS_MESSAGE, "적용 되는 값이 없습니다.");
-			}
-			
-			
-		}catch(Exception e) {
-			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			model.addObject(Globals.STATUS_MESSAGE, e.toString());
-		}
-		return model;
-		
-	}
+	*/
+	
 	@GetMapping("/SmsTrank/trankStatus.do")
 	public ModelAndView SmsTrank( HttpServletRequest request ) throws Exception {
 		

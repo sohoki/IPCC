@@ -8,10 +8,14 @@ import org.egovframe.rte.fdl.cmmn.EgovAbstractServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.system.backoffice.sys.pbx.avaya.mapper.AgentInfoManageMapper;
+import com.system.backoffice.sys.pbx.avaya.mapper.StationInfoManageMapper;
 import com.system.backoffice.uat.uia.mapper.ConsultantManageMapper;
 import com.system.backoffice.uat.uia.models.ConsultantInfo;
 import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
 import com.system.backoffice.uat.uia.service.ConsultantManageService;
+import com.system.backoffice.util.service.UtilInfoService;
 import com.system.ipcc.cti.nexus.mapper.NexusEmployeeManageMapper;
 
 
@@ -26,6 +30,12 @@ public  class ConsultantManageServiceImpl extends EgovAbstractServiceImpl implem
 	
 	@Autowired
 	private NexusEmployeeManageMapper nexMapper;
+	
+	@Autowired
+	private StationInfoManageMapper stationMapper;
+	
+	@Autowired
+	private AgentInfoManageMapper agentMapper;
 
 	@Override
 	public int deleteConsultantrManage(String extension) throws Exception {
@@ -97,5 +107,16 @@ public  class ConsultantManageServiceImpl extends EgovAbstractServiceImpl implem
 	public Optional<ConsultantInfo> selectConsultantrManageDetailConstantCode(String ConstantCode) throws Exception {
 		// TODO Auto-generated method stub
 		return conMapper.selectConsultantrManageDetailConstantCode(ConstantCode);
+	}
+	@Override
+	public List<Map<String, Object>> selectExistsInfraList(Map<String, Object> params) throws Exception {
+		return UtilInfoService.NVLObj( params.get("Exists"), "Station").equals("Station")  ? stationMapper.selectStationInfoPageList(params) : 
+				agentMapper.selectAgentInfoPageList(params);
+	}
+	//상담사 퇴직 처리 
+	@Override
+	public int updateConsultWithdrow(ConsultantInfoRequestDto info) throws Exception {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

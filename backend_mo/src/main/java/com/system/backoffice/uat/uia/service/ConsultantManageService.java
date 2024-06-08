@@ -16,6 +16,8 @@ public	interface ConsultantManageService {
 	
 	List<Map<String, Object>> selectConstantEmpCombo(Map<String, Object> params) throws Exception;
 	
+	List<Map<String, Object>> selectExistsInfraList(Map<String, Object> params) throws Exception;
+	
 	int insertConsultantrManage(ConsultantInfoRequestDto vo) throws Exception;
 	
 	int updateConsultantrPbxStatusManage(ConsultantInfoRequestDto adminInfo) throws Exception;
@@ -27,6 +29,8 @@ public	interface ConsultantManageService {
 	int updateConsultantrManage(ConsultantInfoRequestDto adminInfo) throws Exception;
 
 	Optional<ConsultantInfo> selectConsultantrManageDetail(String extension) throws Exception;
+	
+	int updateConsultWithdrow(ConsultantInfoRequestDto info) throws Exception;
 	
 	Optional<ConsultantInfo> selectConsultantrManageDetailConstantCode(String ConstantCode) throws Exception;
 	

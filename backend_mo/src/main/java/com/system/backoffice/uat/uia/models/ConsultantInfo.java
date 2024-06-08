@@ -2,27 +2,30 @@ package com.system.backoffice.uat.uia.models;
 
 import java.util.List;
 
+import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
+import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+
+
+
 @Getter
 @Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor	
+@Schema(title="ConsultantInfo : 상담사정보 " )
 public class ConsultantInfo {
 
 	private String consultCode;
 	private String pbxExtension;
-	private String pbxType;
-	private String pbxCor;
-	private String pbxCos;
 	private String pbxName;
-	private String pbxSecurityCode;
-	
 	private String pbxLoginId;
 	private String pbxStatus;
 	private String pbxRegDate;
@@ -56,22 +59,12 @@ public class ConsultantInfo {
 	private String lastUpdusrId;
 	private String counRemark;
 	private String counUseyn;
-	
-	//신규 업데이트 
-	private String pbxButton01;
-	private String pbxButton02;
-	private String pbxButton03;
-	private String pbxButton04;
-	private String pbxButton05;
-	private String pbxButton06;
-	private String pbxButton07;
-	private String pbxDisplayLangage;
-	
 	//신규
 	private String partId;
 	private String insttCode;
 	private String agentStatus;
 	
 	
-	private List<ConsultantAgentInfo> agentInfo;
+	private StationInfo stationInfo;
+	private AgentInfo agentInfo;
 }

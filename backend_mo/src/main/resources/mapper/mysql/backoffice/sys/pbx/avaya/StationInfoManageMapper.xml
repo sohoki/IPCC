@@ -15,12 +15,18 @@
 				FROM TB_STATIONINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
-					AND 
-					( 
-						A.EXTENSION LIKE '%'|| #{params.searchKeyword} || '%' 
-						OR
-						A.NAME LIKE '%' ||  #{params.searchKeyword} || '%'
-					) 
+					<choose>
+						<when test="params.searchCondition == 'conName'">
+							AND A.NAME LIKE   CONCAT('%',#{params.searchKeyword},'%')  
+						</when>
+						<otherwise>
+							AND A.EXTENSION LIKE   CONCAT('%',#{params.searchKeyword},'%')  
+						</otherwise>
+					</choose>
+				</if>
+				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.Exists)">
+					AND  A.EXTENSION NOT IN (SELECT PBX_EXTENSION FROM TB_CONSULTANT WHERE COUN_STATUS = 'Y' )
+					AND A.EXTENSION BETWEEN #{params.searchStart} AND #{params.searchEnd}
 				</if>
 			) TB 
 		) TA
@@ -80,6 +86,8 @@
 							NAME = #{name,jdbcType=VARCHAR},  TN =  #{tn,jdbcType=VARCHAR},
 							SECURITY_CODE =#{securityCode},  DISPLAY_LANGAGE =  #{displayLangage,jdbcType=VARCHAR}, 
 							IP_SOFTPHONE =   #{ipSoftphone,jdbcType=VARCHAR}, UPDATE_DATE = NOW();
+		INSERT INTO TB_STATIONHISTORY(EXTENSION, CONSULTANT_CODE, REG_DATE, HIS_REMARK)
+		VALUES (#{extension}, '', NOW(), '최초 입고');
 							
 		DELETE FROM TB_STATION_BUTTIN_INFO WHERE  EXTENSION = #{extension};
 		<foreach collection="stationButton" item="subItem" separator=";">

@@ -44,6 +44,7 @@ import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
 import egovframework.com.jwt.config.JwtVerification;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -69,7 +70,7 @@ public class SmsManageController {
 	private  SMSReq client ;
 	
 	
-    /** EgovMessageSource */
+	/** EgovMessageSource */
 	@Resource(name = "egovMessageSource")
 	EgovMessageSource egovMessageSource;
 	
@@ -136,6 +137,7 @@ public class SmsManageController {
 			}
 			return model;
 	}
+	@ApiOperation(value="상담사 등록", notes = "성공시 상담사 등록 합니다.")
 	@PostMapping("/consultant/memberInsert.do")
 	public ModelAndView UserInsertPbx( @RequestBody  ConsultantInfoRequestDto pbxInfo,
 														HttpServletRequest request ) throws Exception {
@@ -143,14 +145,14 @@ public class SmsManageController {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 			
-			//상담사 수정 
-			if (!jwtVerification.isVerificationAdmin(request)) {
-				ResultVO resultVO = new ResultVO();
-				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-			}else {
-				pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
-			}
-			
+				//상담사 수정 
+				if (!jwtVerification.isVerificationAdmin(request)) {
+					ResultVO resultVO = new ResultVO();
+					return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+				}else {
+					pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
+				}
+				
 				if (model.getStatus().equals(HttpStatus.OK) ) {
 					consoltService.insertConsultantrManage(pbxInfo) ;
 					consoltService.updateConsultantrPbxAgentManage(pbxInfo);
@@ -231,13 +233,12 @@ public class SmsManageController {
 			
 			//상담사 수정 
 			if (!jwtVerification.isVerificationAdmin(request)) {
-	    		ResultVO resultVO = new ResultVO();
+				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-	    	}else {
+			}else {
 
-	    		pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
-	    	}
-			
+				pbxInfo.setUserId(jwtVerification.getTokenUserName(request));
+			}
 			
 			if (pbxInfo.getMode().equals("CTI")) {
 				//수정 구문 정리 하기 
@@ -329,6 +330,7 @@ public class SmsManageController {
 		}
 		return model;
 	}
+	//상담사 삭제
 	@DeleteMapping("{extension}.do")
 	public ModelAndView deleteConsultantDeleteInfo(@PathVariable String extension,
 												HttpServletRequest request)throws Exception {
@@ -465,6 +467,8 @@ public class SmsManageController {
 		return model;
 		
 	}
+	
+	
 	@GetMapping("/SmsTrank/trankStatus.do")
 	public ModelAndView SmsTrank( HttpServletRequest request ) throws Exception {
 		
