@@ -93,6 +93,10 @@
 		(
 			#{loginId}, #{name}, #{extension,jdbcType=VARCHAR}, NOW()
 		)
+		
+
+		INSERT INTO TB_AGENTINTOHISTORY(LOGIN_ID, CONSULTANT_CODE, AGT_REG_DATE, AGT_HIS_REMARK)
+		VALUES (#{extension}, '', NOW(), '최초 입고');
 		<foreach collection="scenInfos" item="subItem" separator="">
 				INSERT INTO TB_AGENTINTO_SNSR_INFO(LOGIN_ID, SCEN_GUBUN, SCEN_POSITION, SCEN_VALUE)
 				VALUES(#{loginId},  #{subItem.scenGubun},  #{subItem.scenPosition} ,  #{subItem.scenValue});

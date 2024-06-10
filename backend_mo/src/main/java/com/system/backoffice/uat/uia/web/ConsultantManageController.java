@@ -29,6 +29,7 @@ import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
 import com.system.backoffice.sys.pbx.avaya.service.AgentInfoManageService;
 import com.system.backoffice.sys.pbx.avaya.service.SmsModelInfoManageService;
 import com.system.backoffice.sys.pbx.avaya.service.StationInfoManageService;
+import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
 import com.system.backoffice.uat.uia.models.ConsultantInfo;
 import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
 import com.system.backoffice.uat.uia.service.ConsultantManageService;
@@ -202,7 +203,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 							status = stationService.updateStationInfo(station) > 0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 							
 						}else {
-							status =Globals.STATUS_FAIL;
+							status = Globals.STATUS_FAIL;
 						}
 						if (status.equals(Globals.STATUS_SUCCESS)) {
 							consulService.insertConsultantrManage(pbxInfo) ;
@@ -249,21 +250,21 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 																			.employeePawd(pbxInfo.getCtiPassword())
 																			.blendKind(pbxInfo.getCtiBlendKind())
 																			.permitId(pbxInfo.getCtiPermitId())
-																			.skillDepth1("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth2("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth3("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth4("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth5("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth6("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth7("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth8("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth9("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
-																			.skillDepth10("0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000")
+																			.skillDepth1(Globals.CTI_BASIC_SKILL)
+																			.skillDepth2(Globals.CTI_BASIC_SKILL)
+																			.skillDepth3(Globals.CTI_BASIC_SKILL)
+																			.skillDepth4(Globals.CTI_BASIC_SKILL)
+																			.skillDepth5(Globals.CTI_BASIC_SKILL)
+																			.skillDepth6(Globals.CTI_BASIC_SKILL)
+																			.skillDepth7(Globals.CTI_BASIC_SKILL)
+																			.skillDepth8(Globals.CTI_BASIC_SKILL)
+																			.skillDepth9(Globals.CTI_BASIC_SKILL)
+																			.skillDepth10(Globals.CTI_BASIC_SKILL)
 																			.defaultQueue(pbxInfo.getCtiDefaultQueue())
 																			.userDefine1("")
 																			.userDefine2("")
 																			.userDefine3("")
-																			.sendFilesize("30")
+																			.sendFilesize(pbxInfo.getCtiFileSize())
 																			.monitorFlag(pbxInfo.getCtiMoniterFlag())
 																			.workHours("0")
 																			.emailAddr("")
@@ -299,6 +300,70 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 					model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));		
 				}else {
 					//업데이트 일때
+					if (pbxInfo.getMode().equals("CTI")) {
+						NexusAgentRequestInfoDto cti = NexusAgentRequestInfoDto.builder().mode("Edt")
+																											.centerId(pbxInfo.getCtiCenterId())
+																											.tenantId(pbxInfo.getCtiTenantId())
+																											.employeegrpId(pbxInfo.getCtiEmployeegrpid())
+																											.employeepartId(pbxInfo.getCtiEmployeepartid())
+																											.employeeId(pbxInfo.getCtiEmployeeid())
+																											.loginId(pbxInfo.getPbxLoginId() )
+																											.employeeName(pbxInfo.getCtiName())
+																											.employeePawd(pbxInfo.getCtiPassword())
+																											.blendKind(pbxInfo.getCtiBlendKind())
+																											.permitId(pbxInfo.getCtiPermitId())
+																											.skillDepth1(Globals.CTI_BASIC_SKILL)
+																											.skillDepth2(Globals.CTI_BASIC_SKILL)
+																											.skillDepth3(Globals.CTI_BASIC_SKILL)
+																											.skillDepth4(Globals.CTI_BASIC_SKILL)
+																											.skillDepth5(Globals.CTI_BASIC_SKILL)
+																											.skillDepth6(Globals.CTI_BASIC_SKILL)
+																											.skillDepth7(Globals.CTI_BASIC_SKILL)
+																											.skillDepth8(Globals.CTI_BASIC_SKILL)
+																											.skillDepth9(Globals.CTI_BASIC_SKILL)
+																											.skillDepth10(Globals.CTI_BASIC_SKILL)
+																											.defaultQueue(pbxInfo.getCtiDefaultQueue())
+																											.userDefine1("")
+																											.userDefine2("")
+																											.userDefine3("")
+																											.sendFilesize(pbxInfo.getCtiFileSize())
+																											.monitorFlag(pbxInfo.getCtiMoniterFlag())
+																											.workHours("0")
+																											.emailAddr("")
+																											.employeeAlias("")
+																											.updateUser("NEX10000")
+																											.userId("NEX10000")
+																											.employeeDuty("")
+																											.logoffReason("0")
+																											.tel_home("")
+																											.build();
+																			
+						int ret = ctiService.updateNexusEmployeesInfo(cti);
+						
+						if (ret > 0) {
+							NexusAgentInfo agentinfo = new NexusAgentInfo();
+							agentinfo.setCenterId(cti.getCenterId());
+							agentinfo.setEmployeeId(pbxInfo.getCtiEmployeeid());
+							agentinfo.setTenantId(pbxInfo.getCtiTenantId());
+							
+							Optional<NexusAgentInfoResponseDto> nexus =  ctiService.selectEmployeesExistInfoDetail(agentinfo);
+							if (nexus.isPresent()){
+								pbxInfo.setCtiCenterName(nexus.get().getCenterName());
+								pbxInfo.setCtiTenantName(nexus.get().getTenantName());
+								pbxInfo.setCtiEmployeegrpName(nexus.get().getEmployeegrpName());
+								pbxInfo.setCtiEmployeepartName(nexus.get().getEmployeepartName());
+								ret = consulService.updateConsultantrCtisManage(pbxInfo);
+								
+							}
+							model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+							model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));
+						}else {
+							throw new Exception( egovMessageSource.getMessage("fail.value.notexits"));
+						}
+					}
+					
+					
+					//변경값 저장 하기 
 					
 					
 					model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
@@ -379,6 +444,8 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 		}
 		return model;
 	}
+	
+	@ApiOperation( value = "상담사 정보 조회" , notes = "성공시 상담사 정보 조회한다.")
 	@GetMapping("consultant/{consultCode}.do")
 	public ModelAndView selectConsultantCombo (@PathVariable  String consultCode,
 																		HttpServletRequest request)	throws Exception {

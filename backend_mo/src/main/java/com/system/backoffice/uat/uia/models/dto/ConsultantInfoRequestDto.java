@@ -80,6 +80,8 @@ public class ConsultantInfoRequestDto {
 	private String pbxExists;
 	private String agentExists;
 	private String ctiExists;
+	private String ctiFileSize;
+	private String consultStatus;
 	
 	private List<StationButtonInfo> stationButton;
 	private List<AgentScenInfo> scenInfos;

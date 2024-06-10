@@ -86,6 +86,7 @@
 							NAME = #{name,jdbcType=VARCHAR},  TN =  #{tn,jdbcType=VARCHAR},
 							SECURITY_CODE =#{securityCode},  DISPLAY_LANGAGE =  #{displayLangage,jdbcType=VARCHAR}, 
 							IP_SOFTPHONE =   #{ipSoftphone,jdbcType=VARCHAR}, UPDATE_DATE = NOW();
+							
 		INSERT INTO TB_STATIONHISTORY(EXTENSION, CONSULTANT_CODE, REG_DATE, HIS_REMARK)
 		VALUES (#{extension}, '', NOW(), '최초 입고');
 							

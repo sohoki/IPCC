@@ -3,9 +3,9 @@
 <mapper namespace="com.system.backoffice.uat.uia.mapper.ConsultantManageMapper">
 	<select id="selectConsultantrManageListByPagination" resultType="camelmap">     	      
 		SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
-			   TB.* FROM (
-					   SELECT
-							    A.PBX_EXTENSION, A.PBX_LOGIN_ID, A.PBX_STATUS, A.INSTT_CODE, A.PART_ID,
+				TB.* FROM (
+						SELECT A.CONSULT_CODE,
+								A.PBX_EXTENSION, A.PBX_LOGIN_ID, A.PBX_STATUS, A.INSTT_CODE, A.PART_ID,
 								A.PBX_REG_DATE, A.PBX_UPDATE_DATE, A.CTI_CENTER_ID, A.CTI_TENANT_ID,
 								A.CTI_EMPLOYEEGRPID, A.CTI_EMPLOYEEPARTID, A.CTI_EMPLOYEEID, 
 								A.CTI_NAME, A.CTI_PASSWORD, A.CTI_BLEND_KIND, A.CTI_PERMIT_ID,
@@ -13,8 +13,8 @@
 								A.COUN_STATUS, DATE_FORMAT(A.FRST_REGIST_PNTTM, '%Y-%m-%d %H:%i') FRST_REGIST_PNTTM , A.FRST_REGISTER_ID, A.AGENT_STATUS,
 								DATE_FORMAT(A.LAST_UPDT_PNTTM, '%Y-%m-%d %H:%i') LAST_UPDT_PNTTM, A.LAST_UPDUSR_ID, A.COUN_REMARK, A.COUN_USEYN,
 								A.CTI_CENTER_NAME, A.CTI_EMPLOYEEGRP_NAME, A.CTI_EMPLOYEEPART_NAME, CTI_TENANT_NAME,
-								B.ALL_INSTT_NM, C.PART_NM
-						FROM   TB_CONSULTANT A, COMTNINSTTCODE B, TB_PARTINFO C
+								B.ALL_INSTT_NM, C.PART_NM, A.CONSULT_STATUS
+						FROM	TB_CONSULTANT A, COMTNINSTTCODE B, TB_PARTINFO C
 						WHERE  A.INSTT_CODE = B.INSTT_CODE
 										AND A.PART_ID = C.PART_ID
 						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -31,7 +31,37 @@
 						</if>	
 						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.useYn)">
 								 AND A.COUN_USEYN = #{params.useYn}
-						</if>		     
+						</if>	
+						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchInsttCode)">
+								 AND A.INSTT_CODE = #{params.searchInsttCode}
+						</if>	
+						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchPartId)">
+								 AND A.INSTT_CODE = #{params.searchPartId}
+						</if>	
+						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.roleId) and params.roleId != 'ROLE_ADMIN'">
+							AND a.INSTT_CODE = #{params.insttCode} 
+							<choose>
+								<when test="params.roleId == 'ROLE_TEAM'">
+									AND a.PART_ID IN (WITH RECURSIVE  CTE AS (
+														SELECT 
+															PART_ID, PARENT_PART_ID
+														FROM TB_PARTINFO
+														WHERE PART_ID  = #{params.partId}
+														UNION ALL
+														SELECT 
+															ac.PART_ID, ac.PARENT_PART_ID
+														FROM TB_PARTINFO ac
+														INNER JOIN CTE bbc on ac.PARENT_PART_ID = bbc.PART_ID
+														)
+														SELECT PART_ID from CTE
+													)
+								</when>
+								
+								<otherwise>
+									AND a.PART_ID = #{params.partId} 
+								</otherwise>
+							</choose>
+						</if>	     
 						 ORDER BY A.FRST_REGIST_PNTTM  DESC
 			) TB 
 			LIMIT #{params.firstIndex} , #{params.recordCountPerPage}      		 	    
@@ -58,34 +88,38 @@
 													AND PART_ID = #{params.partId}
 												</if> 
 										 )
-	</select>   
+	</select>
 	
 	
 	<select id="selectConsultantrManageDetail" resultType="ConsultantInfo">
-		SELECT PBX_EXTENSION,
-			 PBX_LOGIN_ID,
-			 PBX_STATUS,
-			 PBX_REG_DATE,
-			 PBX_UPDATE_DATE,
-			 PBX_DISPLAY_LANGAGE,
-			 CTI_CENTER_ID,
-			 CTI_TENANT_ID,
-			 CTI_EMPLOYEEGRPID,
-			 CTI_EMPLOYEEPARTID,
-			 CTI_EMPLOYEEID,
-			 CTI_NAME,
-			 CTI_PASSWORD,
-			 CTI_BLEND_KIND,
-			 CTI_PERMIT_ID,
-			 CTI_MONITER_FLAG,
-			 CTI_DEFAULT_QUEUE,
-			 CTI_UPDATE_DATE,
-			 COUN_STATUS,
-			 FRST_REGIST_PNTTM,
-			 FRST_REGISTER_ID,
-			 LAST_UPDT_PNTTM,
-			 LAST_UPDUSR_ID,
-			 COUN_REMARK
+		SELECT 
+			INSTT_CODE,
+			PART_ID,
+			PBX_EXTENSION,
+			PBX_LOGIN_ID,
+			PBX_STATUS,
+			PBX_REG_DATE,
+			PBX_UPDATE_DATE,
+			PBX_DISPLAY_LANGAGE,
+			CTI_CENTER_ID,
+			CTI_TENANT_ID,
+			CTI_EMPLOYEEGRPID,
+			CTI_EMPLOYEEPARTID,
+			CTI_EMPLOYEEID,
+			CTI_NAME,
+			CTI_PASSWORD,
+			CTI_BLEND_KIND,
+			CTI_PERMIT_ID,
+			CTI_MONITER_FLAG,
+			CTI_DEFAULT_QUEUE,
+			CTI_UPDATE_DATE,
+			COUN_STATUS,
+			FRST_REGIST_PNTTM,
+			FRST_REGISTER_ID,
+			LAST_UPDT_PNTTM,
+			LAST_UPDUSR_ID,
+			COUN_REMARK,
+			CONSULT_STATUS
 		FROM TB_CONSULTANT
 		WHERE PBX_EXTENSION = #{pbxExtension}
 	</select>
@@ -108,32 +142,40 @@
 					CTI_UPDATE_DATE,
 					COUN_STATUS,
 					COUN_USEYN,
+					CTI_FILE_SIZE,
 					AGENT_STATUS,
 					PART_ID,
 					INSTT_CODE,
-					COUN_REMARK
+					COUN_REMARK,
+					CONSULT_STATUS
 		FROM TB_CONSULTANT
 		WHERE CONSULT_CODE = #{consultCode}
 	</select>
 	<select id="selectConsultantrMangerIDCheck" resultType="java.lang.Integer">
-	  SELECT  IFNULL(COUNT(*),0)      
-	  FROM   TB_CONSULTANT
-	  WHERE  PBX_EXTENSION = #{pbxExtension}
+		SELECT  IFNULL(COUNT(*),0)      
+		FROM   TB_CONSULTANT
+		WHERE  PBX_EXTENSION = #{pbxExtension}
 	</select>
 	
 	<insert id="insertConsultantrManage">
 		<selectKey resultType="string" keyProperty="consultCode" order="BEFORE">
 			SELECT FN_CONSULTANT_ID(#{pbxExtension})
 		</selectKey>
-		INSERT INTO TB_CONSULTANT(CONSULT_CODE, PBX_EXTENSION, 
+		INSERT INTO TB_CONSULTANT(CONSULT_CODE, PBX_EXTENSION, INSTT_CODE, PART_ID,
 									COUN_REMARK, PBX_STATUS, PBX_REG_DATE, PBX_UPDATE_DATE,
 									FRST_REGIST_PNTTM, FRST_REGISTER_ID, LAST_UPDT_PNTTM, LAST_UPDUSR_ID
 									)
-		VALUES (#{consultCode}, #{pbxExtension}
+		VALUES (#{consultCode}, #{pbxExtension}, #{insttCode}, #{partId},
 							#{counRemark ,jdbcType=VARCHAR}, 'OK', NOW(), NOW(),
 							NOW(), #{userId }, NOW(), #{userId }  );
+		
+		UPDATE TB_STATIONINFO SET CONSULT_USEYN = 'Y',
+																 CONSULT_CODE = #{consultCode},   
+																 UPDATE_DATE = NOW()
+		WHERE EXTENSION = #{pbxExtension};	
+		
 		INSERT INTO TB_STATIONHISTORY(EXTENSION, CONSULTANT_CODE, REG_DATE, HIS_REMARK)
-		VALUES (#{extension}, #{consultCode}, NOW(), #{ctiName} +  '상담사 사용');
+		VALUES (#{pbxExtension}, #{consultCode}, NOW(),  CONCAT( #{ctiName} ,  ' 상담사 사용'));
 	</insert>
 	<update id="updateConsultantrPbxStatusManage">
 		UPDATE TB_CONSULTANT SET  PBX_STATUS = 'OK'
@@ -141,6 +183,10 @@
 		WHERE PBX_EXTENSION = #{pbxExtension};			
 	</update>
 	<update id="updateConsultantrPbxAgentManage">
+		<selectKey resultType="string" keyProperty="consultCode" order="BEFORE">
+			SELECT CONSULT_CODE FROM TB_CONSULTANT WHERE PBX_EXTENSION = #{pbxExtension}
+		</selectKey>
+		
 		UPDATE TB_CONSULTANT SET PBX_LOGIN_ID = #{pbxLoginId}
 																 , AGENT_STATUS = 'OK'
 																 , PBX_UPDATE_DATE =  NOW()
@@ -148,29 +194,40 @@
 										 						, LAST_UPDUSR_ID = #{userId}
 		WHERE PBX_EXTENSION = #{pbxExtension};
 		
+		UPDATE TB_AGENTINTO SET   CONSULT_USEYN = 'Y',  CONSULT_CODE = #{consultCode}
+		 WHERE LOGIN_ID = #{pbxLoginId};
+		
+		INSERT INTO TB_AGENTINTOHISTORY(LOGIN_ID, CONSULT_CODE, AGT_REG_DATE, AGT_HIS_REMARK)
+		VALUES (#{pbxLoginId}, #{consultCode}, NOW(), CONCAT( #{ctiName} ,  ' 상담사 사용'));
+		
 	</update>
 	<update id="updateConsultantrCtisManage">
 		UPDATE TB_CONSULTANT SET CTI_CENTER_ID= #{ctiCenterId},
-								CTI_TENANT_ID= #{ctiTenantId},
-								CTI_EMPLOYEEGRPID= #{ctiEmployeegrpid},
-								CTI_EMPLOYEEPARTID= #{ctiEmployeepartid},
-								CTI_EMPLOYEEID= #{ctiEmployeeid},
-								CTI_NAME= #{ctiName},
-								CTI_PASSWORD= #{ctiPassword},
-								CTI_BLEND_KIND= #{ctiBlendKind},
-								CTI_PERMIT_ID= #{ctiPermitId},
-								CTI_MONITER_FLAG= #{ctiMoniterFlag},
-								CTI_DEFAULT_QUEUE= #{ctiDefaultQueue},
-								CTI_UPDATE_DATE =  NOW(),
-								LAST_UPDT_PNTTM  = NOW(),
-								LAST_UPDUSR_ID = #{userId},
-								COUN_USEYN = #{counUseyn},
-								CTI_CENTER_NAME = #{ctiCenterName},
-								CTI_EMPLOYEEGRP_NAME = #{ctiEmployeegrpName},
-								CTI_EMPLOYEEPART_NAME = #{ctiEmployeepartName},
-								CTI_TENANT_NAME = #{ctiTenantName},
-								COUN_STATUS = 'Y'
-		WHERE PBX_EXTENSION = #{pbxExtension}
+																	CTI_TENANT_ID= #{ctiTenantId},
+																	CTI_EMPLOYEEGRPID= #{ctiEmployeegrpid},
+																	CTI_EMPLOYEEPARTID= #{ctiEmployeepartid},
+																	CTI_EMPLOYEEID= #{ctiEmployeeid},
+																	CTI_NAME= #{ctiName},
+																	CTI_PASSWORD= #{ctiPassword},
+																	CTI_BLEND_KIND= #{ctiBlendKind},
+																	CTI_PERMIT_ID= #{ctiPermitId},
+																	CTI_MONITER_FLAG= #{ctiMoniterFlag},
+																	CTI_DEFAULT_QUEUE= #{ctiDefaultQueue},
+																	CTI_UPDATE_DATE =  NOW(),
+																	LAST_UPDT_PNTTM  = NOW(),
+																	LAST_UPDUSR_ID = #{userId},
+																	COUN_USEYN = #{counUseyn},
+																	CTI_CENTER_NAME = #{ctiCenterName},
+																	CTI_EMPLOYEEGRP_NAME = #{ctiEmployeegrpName},
+																	CTI_EMPLOYEEPART_NAME = #{ctiEmployeepartName},
+																	CTI_TENANT_NAME = #{ctiTenantName},
+																	COUN_STATUS = 'Y',
+																	CTI_FILE_SIZE = #{ctiFileSize  ,jdbcType=VARCHAR} ,
+																	CONSULT_STATUS = #{consultStatus  ,jdbcType=VARCHAR} ,
+																	COUN_REMARK = #{counRemark  ,jdbcType=VARCHAR} ,
+																	INSTT_CODE		 = #{ insttCode ,jdbcType=VARCHAR} ,
+																	PART_ID		 = #{ partId ,jdbcType=VARCHAR} 
+		WHERE CONSULT_CODE = #{consultCode}
 	</update>
 	<update id="updateConsultantrManage">
 		UPDATE TB_CONSULTANT set COUN_REMARK = #{counRemark}, 

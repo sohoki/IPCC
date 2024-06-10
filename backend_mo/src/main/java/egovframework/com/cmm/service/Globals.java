@@ -128,4 +128,8 @@ public class Globals {
 	public static final String STATUS_FLOORS = "selectFloorCombo";
 	public static final String STATUS_FLOORE = "selectFloorEndCombo";
 	public static final String STATUS_GROUP = "selectGroupCombo";
+	
+	//cti 정보
+	public static final String CTI_BASIC_SKILL = "0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000 0000000000";
+	
 }

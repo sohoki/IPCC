@@ -95,6 +95,7 @@ public class NexusEmployeeManageService {
 	}
 	public int checkNexusEmployeesInfo(NexusAgentRequestInfoDto vo) {
 		int ret = 0;   	
+		
 		if (employMapper.selectNexusEmployeesExistsInfo(vo) > 0) {
 			return -1;
 		}
@@ -112,11 +113,7 @@ public class NexusEmployeeManageService {
 	}
 	public int deleteNexusEmployeesInfo(NexusAgentInfo vo) {
 		int ret = employMapper.selectEmployeesExistInfoDetailCnt(vo);
-		if (ret > 0) {
-			return employMapper.deleteNexusEmployeesInfo(vo);
-		}else {
-			return 1;
-		}
+		return (ret > 0) ?  employMapper.deleteNexusEmployeesInfo(vo) : 1;
 	}
 	public List<NexusAgentInfoResponseDto> selectEmployeesSearchList(NexusAgentInfo vo){
 		return employMapper.selectEmployeesSearchList(vo);

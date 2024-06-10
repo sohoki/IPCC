@@ -63,7 +63,9 @@ public class ConsultantInfo {
 	private String partId;
 	private String insttCode;
 	private String agentStatus;
+	private String ctiFileSize;
 	
+	private String consultStatus;
 	
 	private StationInfo stationInfo;
 	private AgentInfo agentInfo;

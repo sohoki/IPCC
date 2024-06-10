@@ -11,6 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.system.backoffice.sys.pbx.avaya.mapper.AgentInfoManageMapper;
 import com.system.backoffice.sys.pbx.avaya.mapper.StationInfoManageMapper;
+import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
+import com.system.backoffice.sys.pbx.avaya.models.StationInfo;
+import com.system.backoffice.sys.pbx.avaya.service.AgentInfoManageService;
+import com.system.backoffice.sys.pbx.avaya.service.StationInfoManageService;
 import com.system.backoffice.uat.uia.mapper.ConsultantManageMapper;
 import com.system.backoffice.uat.uia.models.ConsultantInfo;
 import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
@@ -32,8 +36,13 @@ public  class ConsultantManageServiceImpl extends EgovAbstractServiceImpl implem
 	private NexusEmployeeManageMapper nexMapper;
 	
 	@Autowired
-	private StationInfoManageMapper stationMapper;
+	private StationInfoManageService stationService;
 	
+	@Autowired
+	private AgentInfoManageService agentService;
+	//추후 변경 가능한지 확인 필요 
+	@Autowired
+	private StationInfoManageMapper stationMapper;
 	@Autowired
 	private AgentInfoManageMapper agentMapper;
 
@@ -106,7 +115,20 @@ public  class ConsultantManageServiceImpl extends EgovAbstractServiceImpl implem
 	@Override
 	public Optional<ConsultantInfo> selectConsultantrManageDetailConstantCode(String ConstantCode) throws Exception {
 		// TODO Auto-generated method stub
-		return conMapper.selectConsultantrManageDetailConstantCode(ConstantCode);
+		Optional<ConsultantInfo> constantInfo =  conMapper.selectConsultantrManageDetailConstantCode(ConstantCode);
+		if (constantInfo.isPresent()) {
+			if (!constantInfo.get().getPbxExtension().isEmpty()) {
+				Optional<StationInfo> station =  stationService.selectStationInfoDetail(constantInfo.get().getPbxExtension());
+				if (station.isPresent())
+					constantInfo.get().setStationInfo(station.get());
+			}
+			if (!constantInfo.get().getPbxLoginId().isEmpty()) {
+				Optional<AgentInfo> agent = agentService.selectAgentInfoDetail(constantInfo.get().getPbxLoginId());
+				if (agent.isPresent())
+					constantInfo.get().setAgentInfo(agent.get());
+			}
+		}
+		return constantInfo;
 	}
 	@Override
 	public List<Map<String, Object>> selectExistsInfraList(Map<String, Object> params) throws Exception {
