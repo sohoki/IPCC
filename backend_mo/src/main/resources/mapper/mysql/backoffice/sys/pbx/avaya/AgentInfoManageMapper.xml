@@ -119,12 +119,13 @@
 						SR_INDEX = (SELECT  SCEN_POSITION FROM TB_AGENTINTO_SNSR_INFO WHERE   LOGIN_ID = #{loginId} AND SCEN_GUBUN = 'SR' ORDER BY SCEN_POSITION ASC LIMIT 1)
 		WHERE  LOGIN_ID = #{loginId};
 	</update>
+	<!-- 
 	<update id="updateStationConsultInfo">
 		UPDATE TB_AGENTINTO SET CONSULT_USEYN = #{consultUseyn}
 								AGENT_UPDATE = NOW()       
 		WHERE LOGIN_ID = #{loginId}
 	</update>
-	
+	 -->
 	<delete id="deleteAgentInfo">
 	    <!-- 추후 삭제시 메뉴 에서 삭제 시키기 -->
 		DELETE FROM TB_AGENTINTO
