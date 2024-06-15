@@ -20,11 +20,7 @@
 		<typeAlias alias="ComDefaultCodeVO" type="egovframework.com.cmm.ComDefaultCodeVO" />
 		<typeAlias alias="comDefaultVO"		type="egovframework.com.cmm.ComDefaultVO" />
 		<typeAlias alias="AdminLoginVO"		type="egovframework.com.cmm.AdminLoginVO" />
-		<typeAlias alias="UserAuthInfoDto"		type="com.system.backoffice.uat.uia.models.dto.UserAuthInfoDto" />
 		
-		
-		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
-		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
 		
 		<typeAlias alias="ServerInfo"		type="com.system.backoffice.sym.svr.models.ServerInfo" />
 		<typeAlias alias="ServerInfoRequestDto"		type="com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto" />
@@ -42,42 +38,6 @@
 		<typeAlias alias="InsttCodeInfoReqDto"	type="com.system.backoffice.bas.icr.models.dto.InsttCodeInfoReqDto" />	
 		<typeAlias alias="InsttCodeRecptnReqDto"	type="com.system.backoffice.bas.icr.models.dto.InsttCodeRecptnReqDto" />	
 		
-		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
-		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
-		<typeAlias alias="CmmnCode"			type="com.system.backoffice.bas.code.models.CmmnCode" />
-	    <typeAlias alias="CmmnClCode"		type="com.system.backoffice.bas.code.models.CmmnClCode" />
-		<typeAlias alias="CmmnDetailCode"	type="com.system.backoffice.bas.code.models.CmmnDetailCode" />										  
-		
-		<typeAlias alias="ProgrmInfoDto"	type="com.system.backoffice.bas.program.models.dto.ProgrmInfoDto" />	
-		<typeAlias alias="ProgrmInfo"	    type="com.system.backoffice.bas.program.models.ProgrmInfo" />	
-		
-		<typeAlias alias="VocInfoRequestDto" type="com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto" />
-		<typeAlias alias="VocProcessInfoResDto" type="com.system.backoffice.sym.voc.models.dto.VocProcessInfoResDto" />
-		<typeAlias alias="VocInfo"	        type="com.system.backoffice.sym.voc.models.VocInfo" />
-		<typeAlias alias="VocInfoResDto"	type="com.system.backoffice.sym.voc.models.dto.VocInfoResDto" />
-		
-		<typeAlias alias="RoleInfo"	         type="com.system.backoffice.uat.role.models.RoleInfo" />
-		<typeAlias alias="RoleInfoRequestDto"  type="com.system.backoffice.uat.role.models.dto.RoleInfoRequestDto" />
-		
-		<typeAlias alias="AdminInfo"  type="com.system.backoffice.uat.uia.models.AdminInfo" />
-		<typeAlias alias="AdminInfoVO"  type="com.system.backoffice.uat.uia.models.AdminInfoVO" />
-		<typeAlias alias="ConsultantInfo"  type="com.system.backoffice.uat.uia.models.ConsultantInfo" />
-		
-		<typeAlias alias="StationInfo"  type="com.system.backoffice.sys.pbx.avaya.models.StationInfo" />
-		<typeAlias alias="StationInfoReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto" />
-		
-		<typeAlias alias="AgentInfo"  type="com.system.backoffice.sys.pbx.avaya.models.AgentInfo" />
-		<typeAlias alias="AgentInfoReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.AgentInfoReqDto" />
-		
-		
-		<typeAlias alias="ConsultantAgentInfo"  type="com.system.backoffice.uat.uia.models.ConsultantAgentInfo" />
-		<typeAlias alias="PartInfo"  type="com.system.backoffice.uat.uia.models.PartInfo" />
-		<typeAlias alias="PartInfoVO"  type="com.system.backoffice.uat.uia.models.PartInfoVO" />
-		<typeAlias alias="UniUtilInfo"  type="com.system.backoffice.uat.uia.models.UniUtilInfo" />
-		<typeAlias alias="UserRoleInfo"  type="com.system.backoffice.uat.uia.models.UserRoleInfo" />
-		<typeAlias alias="UserToken"  type="com.system.backoffice.uat.uia.models.UserToken" />
-		<typeAlias alias="ConsultantInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto" />
-		<typeAlias alias="UserRoleInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.UserRoleInfoRequestDto" />
 		
 		<typeAlias alias="SystemInfoRequestDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoRequestDto" />
 		<typeAlias alias="SystemInfoResDto"  type="com.system.backoffice.bas.system.models.dto.SystemInfoResDto" />
@@ -93,43 +53,135 @@
 		<typeAlias alias="CompanyInfo"		type="com.system.backoffice.infra.cor.com.models.CompanyInfo" />
 		<typeAlias alias="CompanyInfoVO"	type="com.system.backoffice.infra.cor.com.models.CompanyInfoVO" />
 		
+		<typeAlias alias="CenterInfo"		type="com.system.backoffice.infra.bld.cnt.models.CenterInfo" />
+		<typeAlias alias="CenterInfoVO"		type="com.system.backoffice.infra.bld.cnt.models.CenterInfoVO" />
+		<typeAlias alias="CenterInfoReqDto"		type="com.system.backoffice.infra.bld.cnt.models.dto.CenterInfoReqDto" />
+		
+		<typeAlias alias="LoginLogInfo"		type="com.system.backoffice.uat.log.models.LoginLogInfo" />
+		<typeAlias alias="LoginLogResponseDto"		type="com.system.backoffice.uat.log.models.dto.LoginLogResponseDto" />
+		
+		<typeAlias alias="AgentInfo"  type="com.system.backoffice.sys.pbx.avaya.models.AgentInfo" />
+		<typeAlias alias="AgentInfoReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.AgentInfoReqDto" />
+		
+		<typeAlias alias="PbxDelReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.PbxDelReqDto" />
+		
+		<typeAlias alias="SmsModelInfo"		type="com.system.backoffice.sys.pbx.avaya.models.SmsModelInfo" />
+		<typeAlias alias="SmsModeReqlInfoDto"		type="com.system.backoffice.sys.pbx.avaya.models.dto.SmsModeReqlInfoDto" />
+		
+		<typeAlias alias="StationInfo"  type="com.system.backoffice.sys.pbx.avaya.models.StationInfo" />
+		<typeAlias alias="StationInfoReqDto"  type="com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto" />
+		
+		<typeAlias alias="agentArrTypeInfo"  type="com.system.backoffice.sys.pbx.avaya.models.agentArrTypeInfo" />
+		
+		<typeAlias alias="AgentScenInfo"  type="com.system.backoffice.sys.pbx.avaya.models.AgentScenInfo" />
+		
+		<typeAlias alias="StationButtonInfo"  type="com.system.backoffice.sys.pbx.avaya.models.StationButtonInfo" />
+		
+		<typeAlias alias="ClassificationInfoReqDto"	type="com.system.backoffice.bas.code.models.dto.ClassificationInfoReqDto" />
+		<typeAlias alias="ClassificationInfo"			type="com.system.backoffice.bas.code.models.ClassificationInfo" />
+		
+		<typeAlias alias="CmmnClCodeReqDto"	type="com.system.backoffice.bas.code.models.dto.CmmnClCodeReqDto" />	
+		<typeAlias alias="CmmnClCode"		type="com.system.backoffice.bas.code.models.CmmnClCode" />
+		
+		<typeAlias alias="CmmnCodeDto"		type="com.system.backoffice.bas.code.models.dto.CmmnCodeDto" />
+		<typeAlias alias="CmmnCode"			type="com.system.backoffice.bas.code.models.CmmnCode" />
+		
+		<typeAlias alias="CmmnDetailCodeDto"	type="com.system.backoffice.bas.code.models.dto.CmmnDetailCodeDto" />	
+		<typeAlias alias="CmmnDetailCode"	type="com.system.backoffice.bas.code.models.CmmnDetailCode" />	
+
+		<typeAlias alias="VocInfoRequestDto" type="com.system.backoffice.sym.voc.models.dto.VocInfoRequestDto" />
+		<typeAlias alias="VocInfo"	        type="com.system.backoffice.sym.voc.models.VocInfo" />
+		
+		<typeAlias alias="VocInfoResDto" type="com.system.backoffice.sym.voc.models.dto.VocInfoResDto" />
+		
+		<typeAlias alias="VocProcessInfoReqDto" type="com.system.backoffice.sym.voc.models.dto.VocProcessInfoReqDto" />
+		<typeAlias alias="VocProcessInfoResDto" type="com.system.backoffice.sym.voc.models.dto.VocProcessInfoResDto" />
+		<typeAlias alias="VocProcessFileInfo"	        type="com.system.backoffice.sym.voc.models.VocProcessFileInfo" />
+		<typeAlias alias="VocProcessInfo"	        type="com.system.backoffice.sym.voc.models.VocProcessInfo" />
+		
+		<typeAlias alias="MenuInfoRequestDto" type="com.system.backoffice.bas.menu.models.dto.MenuInfoRequestDto" />
+		<typeAlias alias="MenuCreatInfo"	        type="com.system.backoffice.bas.menu.models.MenuCreatInfo" />
+		<typeAlias alias="MenuInfo"	        type="com.system.backoffice.bas.menu.models.MenuInfo" />
+
+		<typeAlias alias="ProgrmInfoDto"	type="com.system.backoffice.bas.program.models.dto.ProgrmInfoDto" />	
+		<typeAlias alias="ProgrameChangeInfo"	    type="com.system.backoffice.bas.program.models.ProgrameChangeInfo" />	
+		<typeAlias alias="ProgrmInfo"	    type="com.system.backoffice.bas.program.models.ProgrmInfo" />	
+
+		<typeAlias alias="RoleInfo"	         type="com.system.backoffice.uat.role.models.RoleInfo" />
+		<typeAlias alias="RoleInfoRequestDto"  type="com.system.backoffice.uat.role.models.dto.RoleInfoRequestDto" />
+		
+		
+		
+		<typeAlias alias="ConsultantInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto" />
+		<typeAlias alias="ConsultantInfoResponseDto"  type="com.system.backoffice.uat.uia.models.dto.ConsultantInfoResponseDto" />
+		<typeAlias alias="PartInfraInfoRequestDto"		type="com.system.backoffice.uat.uia.models.dto.PartInfraInfoRequestDto" />
+		<typeAlias alias="UserAuthInfoDto"		type="com.system.backoffice.uat.uia.models.dto.UserAuthInfoDto" />
+		<typeAlias alias="UserAuthInfoReqDto"		type="com.system.backoffice.uat.uia.models.dto.UserAuthInfoReqDto" />
+		<typeAlias alias="UserRoleInfoRequestDto"  type="com.system.backoffice.uat.uia.models.dto.UserRoleInfoRequestDto" />
+		
+		<typeAlias alias="AdminInfo"  type="com.system.backoffice.uat.uia.models.AdminInfo" />
+		<typeAlias alias="AdminInfoVO"  type="com.system.backoffice.uat.uia.models.AdminInfoVO" />
+		<typeAlias alias="AdminStateChangeInfo"  type="com.system.backoffice.uat.uia.models.AdminStateChangeInfo" />
+		<typeAlias alias="ConsultantAgentInfo"  type="com.system.backoffice.uat.uia.models.ConsultantAgentInfo" />
+		<typeAlias alias="ConsultantHistoryInfo"  type="com.system.backoffice.uat.uia.models.ConsultantHistoryInfo" />
+		
+		<typeAlias alias="ConsultantInfo"  type="com.system.backoffice.uat.uia.models.ConsultantInfo" />
+		<typeAlias alias="GroupInfo"  type="com.system.backoffice.uat.uia.models.GroupInfo" />
+		<typeAlias alias="GroupInfoVO"  type="com.system.backoffice.uat.uia.models.GroupInfoVO" />
+		<typeAlias alias="PartInfo"  type="com.system.backoffice.uat.uia.models.PartInfo" />
+		<typeAlias alias="PartInfoVO"  type="com.system.backoffice.uat.uia.models.PartInfoVO" />
+		
+		<typeAlias alias="PartInfraInfo"  type="com.system.backoffice.uat.uia.models.PartInfraInfo" />
+		<typeAlias alias="UniUtilInfo"  type="com.system.backoffice.uat.uia.models.UniUtilInfo" />
+		<typeAlias alias="UserAuthInfo"  type="com.system.backoffice.uat.uia.models.UserAuthInfo" />
+		<typeAlias alias="UserRoleInfo"  type="com.system.backoffice.uat.uia.models.UserRoleInfo" />
+		<typeAlias alias="UserToken"  type="com.system.backoffice.uat.uia.models.UserToken" />
+		
+		<typeAlias alias="AmqpConfigInfoDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.AmqpConfigInfoDto" />
+		<typeAlias alias="MessageConfigInfoReqDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.MessageConfigInfoReqDto" />
+		<typeAlias alias="MessageDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.MessageDto" />
+		<typeAlias alias="MessageInfoDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.MessageInfoDto" />
+		<typeAlias alias="SystemQueueInfos"	type="com.system.backoffice.sys.rabbitmq.models.dto.SystemQueueInfos" />
+		
+		<typeAlias alias="AmqpConfigInfo"		type="com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo" />
 		<typeAlias alias="MessageConfigInfo"	type="com.system.backoffice.sys.rabbitmq.models.MessageConfigInfo" />
 		<typeAlias alias="MessageConfigInfoVO"	type="com.system.backoffice.sys.rabbitmq.models.MessageConfigInfoVO" />
 		
-		<typeAlias alias="AmqpConfigInfo"		type="com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo" />
 		
 		
-		<package name="com.system.backoffice.infra.bld.cnt.models"/>
-		
-		
+<!-- 		<package name="com.system.backoffice.infra.bld.cnt.models"/> -->
+
 		<package name="com.system.backoffice.sys.svr.models"/>
 		<package name="com.system.backoffice.sys.svr.models.dto"/>
 		
-		<package name="com.system.backoffice.uat.log.models.dto"/>
-		<package name="com.system.backoffice.uat.log.models"/>
-		
-		<package name="com.system.backoffice.sys.pbx.avaya.models"/>
-		<package name="com.system.backoffice.sys.pbx.avaya.models.dto"/>
-		
-		<package name="com.system.backoffice.bas.code.models"/>	
-		<package name="com.system.backoffice.bas.code.models.dto"/>	
-		
-		<package name="com.system.backoffice.sym.voc.models"/>	
-		<package name="com.system.backoffice.sym.voc.models.dto"/>	
-		
-		<package name="com.system.backoffice.bas.menu.models"/>	
-		<package name="com.system.backoffice.bas.menu.models.dto"/>	
-		
-		<package name="com.system.backoffice.bas.program.models"/>	
-		<package name="com.system.backoffice.bas.program.models.dto"/>	
-		
-		<package name="com.system.backoffice.uat.role.models"/>	
-		<package name="com.system.backoffice.uat.uia.models"/>		
-		<package name="com.system.backoffice.uat.uia.models.dto"/>		
+<!-- 		<package name="com.system.backoffice.uat.log.models.dto"/> -->
+<!-- 		<package name="com.system.backoffice.uat.log.models"/> -->
+
+<!-- 		<package name="com.system.backoffice.sys.pbx.avaya.models"/> -->
+<!-- 		<package name="com.system.backoffice.sys.pbx.avaya.models.dto"/> -->
+
+<!-- 		<package name="com.system.backoffice.bas.code.models"/>	 -->
+<!-- 		<package name="com.system.backoffice.bas.code.models.dto"/>	 -->
+
+<!-- 		<package name="com.system.backoffice.sym.voc.models"/>	 -->
+<!-- 		<package name="com.system.backoffice.sym.voc.models.dto"/>	 -->
+
+<!-- 		<package name="com.system.backoffice.bas.menu.models"/>	 -->
+<!-- 		<package name="com.system.backoffice.bas.menu.models.dto"/>	 -->
+
+<!-- 		<package name="com.system.backoffice.bas.program.models"/>	 -->
+<!-- 		<package name="com.system.backoffice.bas.program.models.dto"/> -->
+
+<!-- 		<package name="com.system.backoffice.uat.role.models"/>	 -->
+
+<!-- 		<package name="com.system.backoffice.uat.uia.models"/>		 -->
+<!-- 		<package name="com.system.backoffice.uat.uia.models.dto"/>	 -->
+
 		<package name="com.system.backoffice.sym.error.models"/>		
 		
-		<package name="com.system.backoffice.sys.rabbitmq.models"/>
-		<package name="com.system.backoffice.sys.rabbitmq.models.dto"/>
+<!-- 		<package name="com.system.backoffice.sys.rabbitmq.models"/> -->
+<!-- 		<package name="com.system.backoffice.sys.rabbitmq.models.dto"/> -->
+		
 	</typeAliases>
     
 </configuration>
