@@ -45,6 +45,39 @@ dependencies {
    
 	compileOnly fileTree(dir: 'src/main/resources/libs', includes: ['*.jar'])
 	
+	dependencies {
+	    //implementation files('libs/client-combined-3.141.59.jar')
+		compile files('lib/activation.jar')
+		compile files('src/main/resources/bcprov-jdk15on-1.54.jar')
+		compile files('src/main/resources/FastInfoset.jar')
+		compile files('lib/jaxb-api.jar')
+		compile files('src/main/resources/jaxb-impl.jar')
+		compile files('src/main/resources/jaxb-xjc.jar')
+		compile files('src/main/resources/jaxws-tools.jar')
+		compile files('src/main/resources/jsr173_api.jar')
+		compile files('src/main/resources/jsr181-api.jar')
+		compile files('src/main/resources/jsr250-api.jar')
+		compile files('src/main/resources/mimepull.jar')
+		
+		compile files('lib/jaxws-api.jar')
+		compile files('lib/jaxws-rt.jar')
+		compile files('lib/nxcapi_v2_java1.7-v1.0.15.01.jar')
+		compile files('lib/nxcapi.jar')
+		compile files('lib/passni-sso-agent-4.0.007.jar')
+		compile files('lib/passni-sso-agent-external-lib.jar')
+		compile files('lib/PniccJNI_1.1_for_bcprov.jar')
+		
+		compile files('lib/resolver.jar')
+		compile files('lib/saaj-api.jar')
+		compile files('lib/saaj-impl.jar')
+		compile files('lib/sjsxp.jar')
+		compile files('lib/stax-ex.jar')
+		compile files('lib/streambuffer.jar')
+		compile files('lib/systemmanagementservice-xml-stubs.jar')
+	}
+	
+	//compileOnly fileTree(dir: 'lib', includes: ['*.jar'])
+	
 	implementation group: 'org.egovframe.rte', name: 'org.egovframe.rte.psl.dataaccess', version:'4.1.0'
 	implementation group: 'org.egovframe.rte', name: 'org.egovframe.rte.fdl.idgnr', version:'4.1.0'
 	implementation group: 'org.egovframe.rte', name: 'org.egovframe.rte.fdl.property', version:'4.1.0'
@@ -99,6 +132,9 @@ dependencies {
 	// RabbitMQ
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 	testImplementation 'org.springframework.amqp:spring-rabbit-test'
+	
+	// https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
+	implementation group: 'com.rabbitmq', name: 'amqp-client', version: '5.16.0'
 		
 	// https://mvnrepository.com/artifact/io.jsonwebtoken/jjwt
 	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
