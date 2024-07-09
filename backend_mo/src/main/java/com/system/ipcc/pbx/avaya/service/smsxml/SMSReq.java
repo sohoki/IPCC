@@ -1,15 +1,13 @@
 package com.system.ipcc.pbx.avaya.service.smsxml;
 
+
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.xml.bind.JAXBContext;
@@ -21,24 +19,20 @@ import javax.xml.ws.Binding;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.handler.Handler;
 
-import org.apache.ibatis.javassist.bytecode.annotation.IntegerMemberValue;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
-import com.system.ipcc.pbx.avaya.smsxml.Result;
-import com.system.ipcc.pbx.avaya.smsxml.ArrayType;
-import com.system.ipcc.pbx.avaya.smsxml.ObjectFactory;
-import com.system.ipcc.pbx.avaya.smsxml.ModelChoices;
-import com.system.ipcc.pbx.avaya.smsxml.ReturnType;
-import com.system.ipcc.pbx.avaya.smsxml.StationType;
-import com.system.ipcc.pbx.avaya.smsxml.SubmitRequestType;
-import com.system.ipcc.pbx.avaya.smsxml.SystemManagementPort;
-import com.system.ipcc.pbx.avaya.smsxml.SystemManagementService;
-import com.system.ipcc.pbx.avaya.smsxml.TrunkGroupType;
-import com.system.ipcc.pbx.avaya.smsxml.TrunkStatusType;
-import com.system.ipcc.pbx.avaya.smsxml.AgentType;
+import com.avaya.smsxml.Result;
+import com.avaya.smsxml.ArrayType;
+import com.avaya.smsxml.ModelChoices;
+import com.avaya.smsxml.ReturnType;
+import com.avaya.smsxml.StationType;
+import com.avaya.smsxml.SubmitRequestType;
+import com.avaya.smsxml.SystemManagementPort;
+import com.avaya.smsxml.SystemManagementService;
+import com.avaya.smsxml.TrunkGroupType;
+import com.avaya.smsxml.TrunkStatusType;
 import com.sun.xml.ws.developer.WSBindingProvider;
 import com.system.backoffice.sys.pbx.avaya.models.AgentInfo;
 import com.system.backoffice.sys.pbx.avaya.models.AgentScenInfo;
@@ -50,11 +44,12 @@ import com.system.backoffice.sys.pbx.avaya.models.dto.StationInfoReqDto;
 import com.system.ipcc.pbx.avaya.models.PbxMemberInfo;
 import com.system.ipcc.pbx.avaya.models.PbxPropertieinfo;
 import com.system.ipcc.pbx.avaya.models.TrankGroupInfo;
-import com.system.ipcc.pbx.avaya.models.pbxType;
-
+import com.avaya.smsxml.AgentType;
+import com.avaya.smsxml.ObjectFactory;
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import lombok.extern.slf4j.Slf4j;
+
 
 @Slf4j
 @SuppressWarnings("unchecked")
@@ -780,7 +775,7 @@ public class SMSReq {
 				
 				modelList.add(modelClass.newInstance());
 				objectFactory = new ObjectFactory();
-				com.system.ipcc.pbx.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();
+				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();
 				StationType st_submit = objectFactory.createStationType();
 				//여기 구문 정리 하기 
 				
@@ -917,7 +912,7 @@ public class SMSReq {
 				// 여기 부분이 에이전트 생성 
 				
 				objectFactory = new ObjectFactory();
-				com.system.ipcc.pbx.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();//
+				com.avaya.smsxml.ModelChoices mf_add = objectFactory.createModelChoices();//
 				AgentType ag_submit =objectFactory.createAgentType();
 				
 				ArrayType sn_list = objectFactory.createArrayType();
