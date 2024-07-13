@@ -11,15 +11,11 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class NexusSkillEmployeeInfo {
+public class NexusLoginIdInfo {
 
-	
 	private String centerId;
-	private String tenantId;
-	private String employeegrpId;
-	private String employeepartId;
-	private String employeeId;
-	private String skillLevel;
-	private String skillId;
-	private String insttCode;
+	private String mediaId;
+	private String loginId;
+	private String createDate;
+	private String monitorFlag;
 }

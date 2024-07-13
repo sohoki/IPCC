@@ -20,6 +20,7 @@ public	interface ConsultantManageService {
 	
 	int insertConsultantrManage(ConsultantInfoRequestDto vo) throws Exception;
 	
+	
 	int updateConsultantrPbxStatusManage(ConsultantInfoRequestDto adminInfo) throws Exception;
 	
 	int updateConsultantrPbxAgentManage(ConsultantInfoRequestDto adminInfo) throws Exception;
@@ -30,7 +31,7 @@ public	interface ConsultantManageService {
 
 	Optional<ConsultantInfo> selectConsultantrManageDetail(String extension) throws Exception;
 	
-	int updateConsultWithdrow(ConsultantInfoRequestDto info) throws Exception;
+	int updateConsultWithdrow(String consultCode) throws Exception;
 	
 	Optional<ConsultantInfo> selectConsultantrManageDetailConstantCode(String ConstantCode) throws Exception;
 	

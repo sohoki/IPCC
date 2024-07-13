@@ -37,7 +37,7 @@ public class NexusSkillManageService {
 	
 	
 	@Transactional(readOnly = false)
-    public int updateNexusSkillInfo(NexusSkillRequestInfo vo) {
+	public int updateNexusSkillInfo(NexusSkillRequestInfo vo) {
 		int ret = 0;
 		if (vo.getMode().equals("Ins")) {
 			ret = skillMapper.selectNexusSkillExistInfo(vo);
@@ -53,22 +53,16 @@ public class NexusSkillManageService {
 		return ret;
 	}
 	@Transactional(readOnly = false)
-    public int updateNexusSkillEmployeeInfo(NexusSkillEmployeeRequestInfoDto vo) {
-		int ret = 0;
-		if (vo.getMode().equals("Ins")) {
-			
-			ret = skillMapper.insertNexusSkillEmployeeInfo(vo);
-		}else {
-			ret =skillMapper.updateNexusSkillEmployeeInfo(vo);
-		}
-		return ret;
+	public int updateNexusSkillEmployeeInfo(NexusSkillEmployeeRequestInfoDto vo) {
+	
+		return vo.getMode().equals("Ins") ? skillMapper.insertNexusSkillEmployeeInfo(vo) : skillMapper.updateNexusSkillEmployeeInfo(vo);
 	}
 	@Transactional(readOnly = false)
-    public int deleteNexusSkillInfo(NexusSkillInfo vo) {
+	public int deleteNexusSkillInfo(NexusSkillInfo vo) {
 		return skillMapper.deleteNexusSkillInfo(vo);
 	}
 	@Transactional(readOnly = false)
-    public int deleteNexusSkillEmployeeInfo(NexusSkillEmployeeInfo vo) {
+	public int deleteNexusSkillEmployeeInfo(NexusSkillEmployeeInfo vo) {
 		return skillMapper.deleteNexusSkillEmployeeInfo(vo);
 	}
 }

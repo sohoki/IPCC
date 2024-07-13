@@ -19,9 +19,13 @@ public interface NexusManageMapper {
 	
 	public List<Map<String, Object>> selectDnMajroInfoCombo(@Param("params") Map<String, Object> params);
 	
+	public List<Map<String, Object>> selectDnKindInfoCombo();
+	
 	public List<Map<String, Object>> selectDnSubInfoCombo(@Param("params") Map<String, Object> params);
 	
 	public List<Map<String, Object>> selectDnInfoCombo(@Param("params") Map<String, Object> params);
+	
+	public List<Map<String, Object>> selectMediaInfoCombo(String centerId);
 	
 	public List<Map<String, Object>> selectEmployeeCombo(@Param("params") Map<String, Object> params);
 	

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sym.svr.mapper.ServerStatusManageMapper">
+	<select id="selectServiceStatusInfoPageList" resultType="camelmap">
+		SELECT * FROM 
+		( 
+			SELECT 	
+				SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT, 
+				TB.* 
+			FROM 	
+			(	
+				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
+								A.SERVER_SEQ, A.SERVER_CODE, A.CPU, A.MEMORY, A.HDD_INFO, A.HDD_TOTAL_INFO, A.LAST_UPDT_PNTTM
+				FROM TB_SERVER_STATUS A,TB_SERVERINFO B, (select @ROWNUM := 0) RN_TB
+				WHERE  A.SERVER_CODE = B.SERVER_CODE
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchServerCode)">
+									AND A.SERVER_CODE = #{params.searchServerCode}
+								</if>
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.startDay)">
+									DATE_FORMAT(LAST_UPDT_PNTTM, '%Y%m%d') BETWEEN #{param.startDay} and #{param.endDay} 
+								</if>
+				ORDER BY SERVER_SEQ ASC 
+				) TB 
+		) TA
+		ORDER BY TA.RNUM DESC 
+		LIMIT #{params.firstIndex},#{params.recordCountPerPage} 
+	</select>
+	<insert id="insertServiceInfo">
+		INSERT INTO TB_SERVER_STATUS(SERVER_CODE, PING, CPU, MEMORY, HDD_INFO,HDD_TOTAL_INFO,  LAST_UPDT_PNTTM)
+		VALUES (#{serverCode}, #{ping},#{cpu}, #{memory}, #{hddInfo}, #{hddTotalInfo}, now() );
+		
+		UPDATE  TB_SERVERINFO SET SERVER_STATUS = #{ping}
+		WHERE SERVER_CODE = #{serverCode}
+		
+	</insert>
+	<delete id="deleteServiceStatusInfo">
+		DELETE FROM TB_SERVER_STATUS 
+		WHERE DATE_FORMAT(LAST_UPDT_PNTTM, '%Y%m%d') BETWEEN #{param.startDay} and #{param.endDay} 
+	</delete>
+</mapper>

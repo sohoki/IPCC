@@ -24,7 +24,7 @@ public class ServiceInfo {
 	private String licenseCount;
 	private String licenseDc;
 	private String comCodeNumber;
-	private String serviceOidUseyn;
+	private String serviceOidUseYn;
 	private String serviceSnmpVersion;
 	private String serviceSnmpCommunityName;
 	private String serviceSnmpId;

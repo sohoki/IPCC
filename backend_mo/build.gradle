@@ -47,6 +47,7 @@ dependencies {
 	
 	dependencies {
 	    //implementation files('libs/client-combined-3.141.59.jar')
+	    /*
 		compile files('lib/activation.jar')
 		compile files('src/main/resources/bcprov-jdk15on-1.54.jar')
 		compile files('src/main/resources/FastInfoset.jar')
@@ -74,6 +75,7 @@ dependencies {
 		compile files('lib/stax-ex.jar')
 		compile files('lib/streambuffer.jar')
 		compile files('lib/systemmanagementservice-xml-stubs.jar')
+		*/
 	}
 	
 	//compileOnly fileTree(dir: 'lib', includes: ['*.jar'])
@@ -208,7 +210,13 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
 	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5'
 		
-		
+	// https://mvnrepository.com/artifact/com.jcraft/jsch
+	implementation group: 'com.jcraft', name: 'jsch', version: '0.1.55'
+
+	
+	// https://mvnrepository.com/artifact/org.snmp4j/snmp4j
+	implementation group: 'org.snmp4j', name: 'snmp4j', version: '3.8.1'
+	
 	
 	testImplementation 'org.projectlombok:lombok'
 	testAnnotationProcessor 'org.projectlombok:lombok'

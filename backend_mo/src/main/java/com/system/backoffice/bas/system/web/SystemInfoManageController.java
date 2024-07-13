@@ -82,7 +82,7 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
-    @ApiOperation(value="시스템 리스트 ", notes="통합 시스템 리스트")
+	@ApiOperation(value="시스템 리스트 ", notes="통합 시스템 리스트")
 	@PostMapping("systemList.do")
 	public ModelAndView selectSystemInfoListAjax(@RequestBody Map<String, Object> searchVO,
 			HttpServletRequest request) throws Exception {
@@ -90,9 +90,9 @@ public class SystemInfoManageController {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
 		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+    			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
+		}
 		
 		
 		int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ? propertiesService.getInt(Globals.PAGE_UNIT)
@@ -122,19 +122,19 @@ public class SystemInfoManageController {
 		
 		return model;
 	}
-    @ApiOperation(value="시스템 combo ", notes="통합 시스템 combo box")
-    @GetMapping("systemCombo.do")
+	@ApiOperation(value="시스템 combo ", notes="통합 시스템 combo box")
+	@GetMapping("systemCombo.do")
 	public ModelAndView systemCombo(@RequestParam Map<String, Object> paramMap,
 									HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		try {
 			if (!jwtVerification.isVerificationAdmin(request)) {
-	    		ResultVO resultVO = new ResultVO();
+				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-	    	}
+			}
 			
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(paramMap));
+			model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemCombo(paramMap));
 			
 		}catch(Exception e){
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -148,8 +148,8 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
-    @NoLogging
-    @ApiOperation(value="시스템 정보 저장 ", notes="시스템 정보 저장 :SYS LOG에 외 안되는지 확인 필요")
+	@NoLogging
+	@ApiOperation(value="시스템 정보 저장 ", notes="시스템 정보 저장 :SYS LOG에 외 안되는지 확인 필요")
 	@PostMapping ("systemInfo.do")
 	public ModelAndView updateSystemInfo(MultipartRequest mRequest,
 										SystemInfoRequestDto SystemInfoDto,
@@ -159,11 +159,11 @@ public class SystemInfoManageController {
 		
 		// 0. Spring Security 사용자권한 처리
 		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}else {
-    		SystemInfoDto.setUserId(jwtVerification.getTokenUserName(request));
-    	}
+		}else {
+			SystemInfoDto.setUserId(jwtVerification.getTokenUserName(request));
+		}
 		
 		//	
 		if (SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) && systemService.selectMenuNoByPk(SystemInfoDto.getSystemCode()) == false ) {
@@ -177,20 +177,20 @@ public class SystemInfoManageController {
 		
 		
 		String message = "";
-	    String states = "";
-	    SystemInfoDto.setSystemIcon(fileNm); 
-		
-	    int ret = systemService.updateSystemInfo(SystemInfoDto);
-		
+		String states = "";
+		SystemInfoDto.setSystemIcon(fileNm); 
+	
+		int ret = systemService.updateSystemInfo(SystemInfoDto);
+	
 		if (ret > 0) {
-	    	message = SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("success.common.insert") : egovMessageSource.getMessage("success.common.update");
-	    	states =  Globals.STATUS_SUCCESS;
-	    }else {
-	    	message = SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("fail.common.insert") : egovMessageSource.getMessage("fail.common.update");
-	    	states =  Globals.STATUS_FAIL;
-	    }
-	    
-	    model.addObject(Globals.STATUS, states);
+			message = SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("success.common.insert") : egovMessageSource.getMessage("success.common.update");
+			states =  Globals.STATUS_SUCCESS;
+		}else {
+			message = SystemInfoDto.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("fail.common.insert") : egovMessageSource.getMessage("fail.common.update");
+			states =  Globals.STATUS_FAIL;
+		}
+		
+		model.addObject(Globals.STATUS, states);
 		model.addObject(Globals.STATUS_MESSAGE, message);
 		
 		return model;
@@ -219,28 +219,28 @@ public class SystemInfoManageController {
 		
 		return model;
 	}
-    
-    @ApiOperation(value="시스템 정보 상세", notes="시스템 정보 상세")
+	
+	@ApiOperation(value="시스템 정보 상세", notes="시스템 정보 상세")
 	@GetMapping ("{systemCode}.do")
 	public ModelAndView selectSystemInfoManage(@PathVariable String systemCode, 
 												HttpServletRequest request) throws Exception {
-    	
-    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
-        	if (!jwtVerification.isVerificationAdmin(request)) {
-        		ResultVO resultVO = new ResultVO();
-    			return jwtVerification.handleAuthError(resultVO); // 토큰 확
-        	}
-        	model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemInfoDetail(systemCode));
-    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
+			}
+			model.addObject(Globals.JSON_RETURN_RESULT, systemService.selectSystemInfoDetail(systemCode));
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			log.error("selectCmmnDetailCodeDetail error:" + e.toString());
-    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-    		model.addObject(Globals.STATUS_MESSAGE, e.toString());
-    	}
-    	return model;
-    	
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, e.toString());
+		}
+		return model;
+		
 	}
 	
 	/**
@@ -249,25 +249,25 @@ public class SystemInfoManageController {
 	 * @return
 	 * @throws Exception
 	 */
-    @ApiOperation(value="시스템 정보 중복 체크", notes="시스템 정보 중복 체크")
+	@ApiOperation(value="시스템 정보 중복 체크", notes="시스템 정보 중복 체크")
 	@NoLogging
-    @GetMapping ("systemIDCheck/{systemCode}.do")
-    public ModelAndView programIDCheck(@PathVariable String systemCode, 
-    								  HttpServletRequest request) throws Exception {
+	@GetMapping ("systemIDCheck/{systemCode}.do")
+	public ModelAndView programIDCheck(@PathVariable String systemCode, 
+									  HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
-    	
-    	int ret = uniMangeServiec.selectIdDoubleCheckString("SYSTEM_CODE", "TB_SYSTEMINFO", "SYSTEM_CODE = ["+ systemCode + "[");
-    	if (ret == 0) {
-    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeOk.msg"));
-    	}
-    	else {
-    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeFail.msg"));
-    	}
 		
-    	return model;
-    }
+		int ret = uniMangeServiec.selectIdDoubleCheckString("SYSTEM_CODE", "TB_SYSTEMINFO", "SYSTEM_CODE = ["+ systemCode + "[");
+		if (ret == 0) {
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeOk.msg"));
+		}
+		else {
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeFail.msg"));
+		}
+		
+		return model;
+	}
     @ApiOperation(value="system JWT 로그인", notes = "system  JWT 로그인을 처리한다")
 	@ApiImplicitParam(name = "SystemLoginDto", value = "로그인 정보(아이디, 토큰 정보)")
 	@PostMapping(value = "systemLoginJWT.do")
@@ -298,5 +298,4 @@ public class SystemInfoManageController {
 		
 		return resultMap;
 	}
-    
 }

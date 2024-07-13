@@ -38,5 +38,6 @@ public class CompanyInfo  implements Serializable{
 	private String lastUpdusr_id;
 	private String lastUpdt_pnttm;
 	private String comMemo;
+	private String comUseyn;
 
 }

@@ -3,6 +3,8 @@ package com.system.ipcc.cti.nexus.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 import com.system.ipcc.cti.nexus.mapper.NexusEmployeeManageMapper;
 import com.system.ipcc.cti.nexus.mapper.NexusManageMapper;
@@ -48,9 +50,15 @@ public class NexusEmployeeManageService {
 	public List<Map<String, Object>> selectDnMajroInfoCombo(Map<String, Object> params){
 		return nexusMapper.selectDnMajroInfoCombo(params);
 	}
+	public List<Map<String, Object>> selectDnKindInfoCombo(){
+		return nexusMapper.selectDnKindInfoCombo();
+	}
 	
 	public List<Map<String, Object>> selectDnSubInfoCombo(Map<String, Object> params){
 		return nexusMapper.selectDnSubInfoCombo(params);
+	}
+	public List<Map<String, Object>> selectMediaInfoCombo(String centerId){
+		return nexusMapper.selectMediaInfoCombo(centerId);
 	}
 	
 	public List<Map<String, Object>> selectDnInfoCombo(Map<String, Object> params){

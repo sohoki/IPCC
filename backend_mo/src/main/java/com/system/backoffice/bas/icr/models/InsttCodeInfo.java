@@ -38,4 +38,5 @@ public class InsttCodeInfo {
 	private String frstRegistPnttm;
 	private String lastUpdusrId;
 	private String lastUpdtPnttm;
+	private String tenantId;
 }

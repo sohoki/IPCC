@@ -8,9 +8,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.system.backoffice.sym.svr.mapper.ServerInfoManageMapper;
+import com.system.backoffice.sym.svr.mapper.ServerStatusManageMapper;
 import com.system.backoffice.sym.svr.models.dto.ServerInfoRequestDto;
 import com.system.backoffice.sym.svr.models.dto.ServerStatusDto;
 import com.system.backoffice.sym.svr.models.ServerInfo;
+import com.system.backoffice.sym.svr.models.ServerStatusInfo;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 public class ServerInfoManageService {
 	
 	private final ServerInfoManageMapper serviceMapper;
+	
+	private final ServerStatusManageMapper statusMapper;
 
 	public List<Map<String, Object>> selectServerInfoPageList(Map<String, Object> params){
 		return serviceMapper.selectServerInfoPageList(params);
@@ -32,15 +36,23 @@ public class ServerInfoManageService {
 		return serviceMapper.selectServerInfoDetail(serverSeq);
 	}
 	@Transactional(readOnly = false)
-    public int updateServerInfo(ServerInfoRequestDto vo) {
-    	return vo.getMode().equals("Ins") ? serviceMapper.insertServerInfo(vo) : serviceMapper.updateServerInfo(vo);
-    }
+	public int updateServerInfo(ServerInfoRequestDto vo) {
+		return vo.getMode().equals("Ins") ? serviceMapper.insertServerInfo(vo) : serviceMapper.updateServerInfo(vo);
+	}
 	@Transactional(readOnly = false)
-    public int updateServerStatus(ServerStatusDto status) {
-    	return serviceMapper.updateServerStatus(status);
-    }
+	public int updateServerStatus(ServerStatusDto status) {
+		return serviceMapper.updateServerStatus(status);
+	}
 	@Transactional(readOnly = false)
-    public int deleteServerInfo(String serverSeq) {
-    	return serviceMapper.deleteServerInfo(serverSeq);
-    }
+	public int deleteServerInfo(String serverSeq) {
+		return serviceMapper.deleteServerInfo(serverSeq);
+	}
+	@Transactional(readOnly = false)
+	public int insertServiceStatusInfo(ServerStatusInfo vo) {
+		return statusMapper.insertServiceInfo(vo);
+	}
+	@Transactional(readOnly = false)
+	public int deleteServiceStatusInfo(Map<String, Object> params) {
+		return statusMapper.deleteServiceStatusInfo(params);
+	}
 }

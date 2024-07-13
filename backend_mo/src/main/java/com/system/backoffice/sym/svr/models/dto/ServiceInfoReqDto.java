@@ -26,7 +26,7 @@ public class ServiceInfoReqDto {
 	private String licenseCount;
 	private String licenseDc;
 	private String comCodeNumber;
-	private String serviceOidUseyn;
+	private String serviceOidUseYn;
 	private String serviceSnmpCersion;
 	private String serviceSnmpCommunityName;
 	private String serviceSnmpId;

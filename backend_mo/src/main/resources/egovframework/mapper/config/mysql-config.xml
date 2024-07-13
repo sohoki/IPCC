@@ -30,6 +30,7 @@
 		
 		<typeAlias alias="ServiceOidInfo"		type="com.system.backoffice.sym.svr.models.ServiceOidInfo" />
 		<typeAlias alias="ServiceOidInfoReqDto"		type="com.system.backoffice.sym.svr.models.dto.ServiceOidInfoReqDto" />
+		<typeAlias alias="ServiceOidInfoResDto"		type="com.system.backoffice.sym.svr.models.dto.ServiceOidInfoResDto" />
 		
 		
 		<typeAlias alias="InsttCodeInfo"		type="com.system.backoffice.bas.icr.models.InsttCodeInfo" />

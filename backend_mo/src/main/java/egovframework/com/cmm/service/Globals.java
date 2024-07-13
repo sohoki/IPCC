@@ -43,7 +43,21 @@ public class Globals {
 	public static final String PBX_WSDL = "wsdl_xml/SystemManagementService.wsdl";
 	public static final String PBX_SYSETM_SERVICE = "/smsxml/SystemManagementService.php";
 	
+	//ssh 정보
+	public static final String SSH_CPU_CMD = "top -bn1 | grep \"Cpu(s)\" | awk '{printf(\"CPU 사용률 : %.1f%%\\n\", 100 - $8)}'";
+	public static final String SSH_MEMORY_CMD = "cat /proc/meminfo";
+	public static final String SSH_MEMORY_CMD1 = "cat /proc/meminfo";
+	public static final String SSH_HDD_CMD = "df -h";
+	public static final String SSH_HDD_TOTAL_CMD = "du -s";
 	
+	public static final String SSH_CPU = "CPU";
+	public static final String SSH_MEMORY = "MEMORY";
+	public static final String SSH_HDD = "HDD";
+	public static final String SSH_HDD_TOTAL = "HDD_TOTAL";
+	public static final String SSH_PING = "PING";
+	
+	public static final int SESSION_TIMEOUT = 30000;
+	public static final int CONNECT_TIMEOUT = 3000;
 	//token 
 	public static final String TOKEN = "jToken";
 	public static final String REFRESH_TOKEN = "refreshToken";

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.system.backoffice.sym.svr.mapper.ServiceOidInfoManageMapper;
 import com.system.backoffice.sym.svr.models.ServiceOidInfo;
 import com.system.backoffice.sym.svr.models.dto.ServiceOidInfoReqDto;
+import com.system.backoffice.sym.svr.models.dto.ServiceOidInfoResDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,19 +26,23 @@ public class ServiceOidInfoManageService {
 		return oidMapper.selectServiceOidInfoPageList(params);
 	}
 	
-	public Optional<ServiceOidInfo> selectServiceOidInfoDetail(String oidSeq){
+	public Optional<ServiceOidInfoResDto> selectServiceOidInfoDetail(String oidSeq){
 		return oidMapper.selectServiceOidInfoDetail(oidSeq); 
 	}
+	/*
+	 * oid 값 중복 체크 하기 
+	public int selectServiceOidInfoExists(ServiceOidInfoReqDto  vo){
+		return oidMapper.selectServiceOidInfoDetail(oidSeq); 
+	}
+	*/
+	public int updateServiceOidInfo(ServiceOidInfoReqDto vo) {
+		return vo.getMode().equals("Ins") ? oidMapper.insertServiceOidInfo(vo) : oidMapper.updateServiceOidInfo(vo);
+	}
 	
+	//public int updateServerStatus(ServerStatusDto vo);
 	
-    public int updateServiceOidInfo(ServiceOidInfoReqDto vo) {
-    	return vo.getMode().equals("Ins") ? oidMapper.insertServiceOidInfo(vo) : oidMapper.updateServiceOidInfo(vo);
-    }
-    
-    //public int updateServerStatus(ServerStatusDto vo);
-   
-    public int deleteServiceOidInfo(String oidSeq) {
-    	return oidMapper.deleteServiceOidInfo(oidSeq);
-    }
+	public int deleteServiceOidInfo(String oidSeq) {
+		return oidMapper.deleteServiceOidInfo(oidSeq);
+	}
 	
 }

@@ -154,8 +154,7 @@ public class EgovCcmCmmnCodeManageController {
 				
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			model.addObject(Globals.JSON_RETURN_RESULT, cmmnCodeManageService.selectCmmnCodeDetail(codeId, systemCode));    		
-			
-	    	
+		
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, e.toString());
@@ -226,29 +225,29 @@ public class EgovCcmCmmnCodeManageController {
 		return model;
 
 	}
-    @ApiOperation(value="공통코드 중복체크", notes = "성공시 공통코드 중복체크 합니다.")
-    //ID 체크 
-    @NoLogging
-    @GetMapping("codeIDCheck/{codeId}.do")
-    public ModelAndView selectIdCheck(@PathVariable String codeId ,
-    									@RequestParam String systemCode,
-    									HttpServletRequest request)throws Exception{
-    	
-    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-    	
+	@ApiOperation(value="공통코드 중복체크", notes = "성공시 공통코드 중복체크 합니다.")
+	//ID 체크 
+	@NoLogging
+	@GetMapping("codeIDCheck/{codeId}.do")
+	public ModelAndView selectIdCheck(@PathVariable String codeId ,
+										@RequestParam String systemCode,
+										HttpServletRequest request)throws Exception{
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-    	if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+		if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
-    	
-    	
-    	
-    	UniUtilInfo util = new UniUtilInfo();
-    	util.setInCondition("CODE_ID = [" + codeId + "[ AND SYSTEM_CODE =["+ systemCode + "[");
-    	util.setInTable("COMTCCMMNCODE");
-    	util.setInCheckName("CODE_ID");
-    	
+		}
+		
+		
+		
+		UniUtilInfo util = new UniUtilInfo();
+		util.setInCondition("CODE_ID = [" + codeId + "[ AND SYSTEM_CODE =["+ systemCode + "[");
+		util.setInTable("COMTCCMMNCODE");
+		util.setInCheckName("CODE_ID");
+		
 		int ret = utilService.selectIdDoubleCheck(util);
 		if (ret == 0) {
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
@@ -259,13 +258,13 @@ public class EgovCcmCmmnCodeManageController {
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeFail.msg"));
 		}
 		return model;
-    }
-    
-  	
-  	@SuppressWarnings("finally")	
-  	@ApiOperation(value="공통코드 업데이트", notes = "성공시 공통코드 업데이트 합니다.")
-  	@PostMapping("code/codeUpdate.do")
-  	public ModelAndView  updateCmmCode (@Valid @RequestBody CmmnCodeReqDto vo
+	}
+	
+	
+	@SuppressWarnings("finally")	
+	@ApiOperation(value="공통코드 업데이트", notes = "성공시 공통코드 업데이트 합니다.")
+	@PostMapping("code/codeUpdate.do")
+	public ModelAndView  updateCmmCode (@Valid @RequestBody CmmnCodeReqDto vo
                                        , HttpServletRequest request
                       			       , BindingResult bindingResult) throws Exception {
 			

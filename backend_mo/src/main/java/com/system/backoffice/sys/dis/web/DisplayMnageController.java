@@ -33,15 +33,15 @@ public class DisplayMnageController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DisplayMnageController.class);
 	
 	@Value("${page.pageUnit}")
-    private int pageUnitSetting ;
-    
-    @Value("${page.pageSize}")
-    private int pageSizeSetting ;
-    
-    /** JwtVerification */
+	private int pageUnitSetting ;
+	
+	@Value("${page.pageSize}")
+	private int pageSizeSetting ;
+	
+	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
-    
+
 	@Resource(name="egovMessageSource")
 	protected EgovMessageSource egovMessageSource;
 	
@@ -51,31 +51,29 @@ public class DisplayMnageController {
 	@ApiOperation(value="cti as list", notes = "성공시 CTI AS 소켓 정보를 표출 합니다.")
 	@GetMapping("asList.do")
 	public ModelAndView selectIvrOnlineList ( HttpServletRequest request) throws Exception {
-    	
-    	ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-    	try
-    	{
-    		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-    		
-        	if (!jwtVerification.isVerificationAdmin(request)) {
-        		ResultVO resultVO = new ResultVO();
-    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-        	}
-        	
-    	    System.out.println("===================");
-    	    List<Map<String, Object>> skillList = displayService.selectDisplayAs();
-    	    
-    		model.addObject(Globals.JSON_RETURN_RESULT_LIST, skillList);
-    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		
-    	}catch (Exception e){
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try
+		{
+			// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}
+			
+			List<Map<String, Object>> skillList = displayService.selectDisplayAs();
+			model.addObject(Globals.JSON_RETURN_RESULT_LIST, skillList);
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			
+		}catch (Exception e){
 			LOGGER.debug("selectCmmnCodeList error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-	    }
-	    
-        return model;
-        
-        
+		}
+		
+		return model;
+		
+		
 	}
 }

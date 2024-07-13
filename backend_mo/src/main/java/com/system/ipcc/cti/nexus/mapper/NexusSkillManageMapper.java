@@ -26,15 +26,15 @@ public interface NexusSkillManageMapper {
 	
 	public Optional<NexusSkillInfo> selectNexusSkillInfoDetail(String skillId);
 	
-    public int insertNexusSkillInfo(NexusSkillRequestInfo vo);
+	public int insertNexusSkillInfo(NexusSkillRequestInfo vo);
+		
+	public int updateNexusSkillInfo(NexusSkillRequestInfo vo);
 	
-    public int updateNexusSkillInfo(NexusSkillRequestInfo vo);
-
-    public int deleteNexusSkillInfo(NexusSkillInfo vo);
-    
-    public int insertNexusSkillEmployeeInfo(NexusSkillEmployeeRequestInfoDto vo);
+	public int deleteNexusSkillInfo(NexusSkillInfo vo);
 	
-    public int updateNexusSkillEmployeeInfo(NexusSkillEmployeeRequestInfoDto vo);
-
-    public int deleteNexusSkillEmployeeInfo(NexusSkillEmployeeInfo vo);
+	public int insertNexusSkillEmployeeInfo(NexusSkillEmployeeRequestInfoDto vo);
+		
+	public int updateNexusSkillEmployeeInfo(NexusSkillEmployeeRequestInfoDto vo);
+	
+	public int deleteNexusSkillEmployeeInfo(NexusSkillEmployeeInfo vo);
 }

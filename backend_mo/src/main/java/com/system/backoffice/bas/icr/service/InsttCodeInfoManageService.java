@@ -37,8 +37,6 @@ public class InsttCodeInfoManageService {
 		
 		switch (insttCodeRecptn.getMode()) {
 			case "Ins" : 
-				
-				
 				Optional<InsttCodeInfo> insttcode = insttManageMapper.selectInsttCodeDetail(insttCodeRecptn.getInsttCode());
 				if (insttcode.isEmpty()) {
 					ret = insttManageMapper.insertInsttCode(insttCodeRecptn);
@@ -53,7 +51,6 @@ public class InsttCodeInfoManageService {
 			case "Edt" : 
 				ret = insttManageMapper.updateInsttCode(insttCodeRecptn);
 				if (ret < 1) {
-					
 					insttCodeRecptn.setProcessSe("12");
 				}
 				break;

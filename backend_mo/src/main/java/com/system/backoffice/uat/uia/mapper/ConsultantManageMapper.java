@@ -19,7 +19,9 @@ public interface ConsultantManageMapper {
 	
 	public List<Map<String, Object>> selectConstantEmpCombo(@Param("params") Map<String, Object> params) throws Exception;
 	
-	public int deleteConsultantrManage(String extension) throws Exception;
+	public int deleteConsultantrManage(ConsultantInfo info) throws Exception;
+	
+	public int counWithdrowProcess(ConsultantInfo info) throws Exception;
 	
 	public int insertConsultantrManage(ConsultantInfoRequestDto vo) throws Exception;
 	

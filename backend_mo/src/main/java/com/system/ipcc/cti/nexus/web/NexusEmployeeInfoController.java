@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.system.backoffice.bas.icr.service.InsttCodeInfoManageService;
 import com.system.backoffice.util.service.UtilInfoService;
 import com.system.ipcc.cti.nexus.models.NexusAgentInfo;
 import com.system.ipcc.cti.nexus.models.dto.NexusAgentRequestInfoDto;
@@ -61,6 +63,8 @@ public class NexusEmployeeInfoController {
 	@Resource(name = "propertiesService")
 	protected EgovPropertyService propertiesService;
 	
+	
+	
 	@ApiOperation(value=" CTI 상담사 리스트", notes = "성공시 CTI 상담사 리스트를 반환 합니다.")
 	@PostMapping("employList.do")
 	public ModelAndView selectCtiList (@RequestBody Map<String, Object> searchMap
@@ -84,7 +88,7 @@ public class NexusEmployeeInfoController {
 			int pageSize = UtilInfoService.NVLObj(searchMap.get(Globals.PAGE_SIZE), propertiesService.getInt(Globals.PAGE_SIZE));
 			/** pageing */
 			PaginationInfo paginationInfo = new PaginationInfo();
-			paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get("pageIndex").toString() ));
+			paginationInfo.setCurrentPageNo( Integer.valueOf( searchMap.get(Globals.PAGE_INDEX).toString() ));
 			paginationInfo.setRecordCountPerPage(pageUnit);
 			paginationInfo.setPageSize(pageSize);
 			
@@ -113,10 +117,7 @@ public class NexusEmployeeInfoController {
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 		}
-		
 		return model;
-		
-		
 	}
 	@ApiOperation(value=" CTI 테넌트 콤보 리스트", notes = "성공시 CTI 테넌트 콤보 리스트를 반환 합니다.")
 	@GetMapping("tenantCombo/{centerId}.do")
@@ -126,8 +127,8 @@ public class NexusEmployeeInfoController {
 		try {
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			if (!jwtVerification.isVerificationAdmin(request)) {
-			ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}
 
 			model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectTenantInfoCombo(centerId));
@@ -167,8 +168,8 @@ public class NexusEmployeeInfoController {
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			
 			if (!jwtVerification.isVerificationAdmin(request)) {
-			ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}
 			
 			
@@ -233,13 +234,11 @@ public class NexusEmployeeInfoController {
 											  HttpServletRequest request)	throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
-		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-			
+			// 기존 세션 체크 인증에서 토큰 방식으로 변경
 			if (!jwtVerification.isVerificationAdmin(request)) {
 				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확
 			}
-			
 			
 			model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectEmployeeCombo(searchMap));
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
@@ -286,6 +285,47 @@ public class NexusEmployeeInfoController {
 			
 			
 			model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectDnMajroInfoCombo(searchMap));
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}catch(Exception e){
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, e.toString());
+		}
+		return model;
+	}
+	@ApiOperation(value=" CTI DnKind 콤보 리스트", notes = "성공시 CTI DnKind  콤보 리스트를 반환 합니다.")
+	@PostMapping("dnKindCombo.do")
+	public ModelAndView selectDnKindInfoCombo (HttpServletRequest request)	throws Exception {
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
+			}
+			
+			model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectDnKindInfoCombo());
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		}catch(Exception e){
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, e.toString());
+		}
+		return model;
+	}
+	@ApiOperation(value=" CTI Media 콤보 리스트", notes = "성공시 CTI Media  콤보 리스트를 반환 합니다.")
+	@GetMapping("MediaCombo/{centerId}.do")
+	public ModelAndView selectMediaInfoCombo (@PathVariable String centerId, 
+																	HttpServletRequest request)	throws Exception {
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+		// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
+			}
+			
+			model.addObject(Globals.JSON_RETURN_RESULT, employeeService.selectMediaInfoCombo(centerId));
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		}catch(Exception e){
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -392,7 +432,6 @@ public class NexusEmployeeInfoController {
 		}finally{
 			return model;
 		}
-		
 	}
 	@ApiOperation(value=" CTI 상담사 삭제", notes = "성공시 CTI 상담사 삭제 합니다.")
 	@PostMapping(value="employeeDelete.do")

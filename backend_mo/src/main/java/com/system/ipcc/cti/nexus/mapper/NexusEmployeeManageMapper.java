@@ -33,6 +33,8 @@ public interface NexusEmployeeManageMapper {
 	public int insertNexusEmployeesInfo(NexusAgentRequestInfoDto vo);
 	
 	public int updateNexusEmployeesInfo(NexusAgentRequestInfoDto vo);
+	//상담사 퇴직 처리 
+	public int counWithdrowProcess(NexusAgentRequestInfoDto vo);
 
 	public int deleteNexusEmployeesInfo(NexusAgentInfo vo);
 }

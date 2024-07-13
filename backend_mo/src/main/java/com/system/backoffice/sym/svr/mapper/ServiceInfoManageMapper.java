@@ -18,11 +18,11 @@ public interface ServiceInfoManageMapper {
 	
 	public Optional<ServiceInfo> selectServiceInfoDetail(String serverCode);
 	
-    public int insertServiceInfo(ServiceInfoReqDto vo);
+	public int insertServiceInfo(ServiceInfoReqDto vo);
+		
+	public int updateServiceInfo(ServiceInfoReqDto vo);
 	
-    public int updateServiceInfo(ServiceInfoReqDto vo);
-    
-    //public int updateServiceStatus(ServerStatusDto vo);
-   
-    public int deleteServiceInfo(String serverCode);
+	//public int updateServiceStatus(ServerStatusDto vo);
+	
+	public int deleteServiceInfo(String serverCode);
 }

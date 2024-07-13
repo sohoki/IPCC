@@ -18,9 +18,12 @@ import com.system.backoffice.sys.pbx.avaya.service.StationInfoManageService;
 import com.system.backoffice.uat.uia.mapper.ConsultantManageMapper;
 import com.system.backoffice.uat.uia.models.ConsultantInfo;
 import com.system.backoffice.uat.uia.models.dto.ConsultantInfoRequestDto;
+import com.system.backoffice.uat.uia.models.dto.ConsultantInfoResponseDto;
 import com.system.backoffice.uat.uia.service.ConsultantManageService;
 import com.system.backoffice.util.service.UtilInfoService;
 import com.system.ipcc.cti.nexus.mapper.NexusEmployeeManageMapper;
+import com.system.ipcc.cti.nexus.models.NexusAgentInfo;
+import com.system.ipcc.cti.nexus.models.dto.NexusAgentRequestInfoDto;
 
 
 
@@ -46,10 +49,29 @@ public  class ConsultantManageServiceImpl extends EgovAbstractServiceImpl implem
 	@Autowired
 	private AgentInfoManageMapper agentMapper;
 
+	@Transactional(readOnly = false)
 	@Override
-	public int deleteConsultantrManage(String extension) throws Exception {
+	public int deleteConsultantrManage(String ConstantCode) throws Exception {
 		// TODO Auto-generated method stub
-		return conMapper.deleteConsultantrManage(extension);
+				
+		Optional<ConsultantInfo> constantInfo =  conMapper.selectConsultantrManageDetailConstantCode(ConstantCode);
+				
+		if (constantInfo.isPresent()) {
+			
+			NexusAgentInfo nexus = NexusAgentInfo.builder()
+																	.centerId(constantInfo.get().getCtiCenterId())
+																	.tenantId(constantInfo.get().getCtiTenantId())
+																	.employeegrpId(constantInfo.get().getCtiEmployeegrpid())
+																	.employeepartId(constantInfo.get().getCtiEmployeepartid())
+																	.employeeId(constantInfo.get().getCtiEmployeeid())
+																	.build();
+			
+			int ret = nexMapper.deleteNexusEmployeesInfo(nexus);
+			ret = conMapper.deleteConsultantrManage(constantInfo.get());
+			
+			return ret ;
+		}
+		return 0; 
 	}
 	@Transactional(readOnly = false)
 	@Override
@@ -136,9 +158,35 @@ public  class ConsultantManageServiceImpl extends EgovAbstractServiceImpl implem
 				agentMapper.selectAgentInfoPageList(params);
 	}
 	//상담사 퇴직 처리 
+	@Transactional(readOnly = false)
 	@Override
-	public int updateConsultWithdrow(ConsultantInfoRequestDto info) throws Exception {
+	public int updateConsultWithdrow(String consultCode) throws Exception {
 		// TODO Auto-generated method stub
+		
+		Optional<ConsultantInfo> info = conMapper.selectConsultantrManageDetailConstantCode(consultCode);
+		
+		if (info.isPresent()) {
+				NexusAgentRequestInfoDto ctiInfo = NexusAgentRequestInfoDto.builder()
+																									.centerId(info.get().getCtiCenterId())
+																									.tenantId(info.get().getCtiTenantId())
+																									.employeegrpId(info.get().getCtiEmployeegrpid())
+																									.employeepartId(info.get().getCtiEmployeepartid())
+																									.employeeId(info.get().getCtiEmployeeid())
+																									.loginId(info.get().getPbxLoginId())
+																									.build();
+			//넥서스 에서 퇴직 처리 
+			int ret = nexMapper.counWithdrowProcess(ctiInfo);
+			System.out.println("퇴직자 ret:" + ret);
+			
+			if (ret > 0) {
+				ret = conMapper.counWithdrowProcess(info.get());
+				//내선번호 /agent 회수 및 LoginId 값 변경 
+				return ret;
+			}
+		}else {
+			return 0;
+		}
 		return 0;
 	}
+	
 }

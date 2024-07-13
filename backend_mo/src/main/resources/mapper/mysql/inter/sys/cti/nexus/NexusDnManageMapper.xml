@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.ipcc.cti.nexus.mapper.NexusDnManageMapper">
+	<select id="selectDnInfoPageList" resultType="camelmap">
+		SELECT R.* FROM
+		(
+			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+				ROW_NUMBER() OVER (ORDER BY A.DN ASC) AS RNUM, 
+				A.CENTER_ID, A.TENANT_ID, A.DNMAJOR_ID, A.DNSUB_ID,
+				A.DN, A.MEDIA_ID, A.SUBMEDIA_ID, 
+				A.DN_MODELNAME, A.DN_SERVICEDESC, 
+				A.DN_KIND, A.DN_TYPE, A.DN_IP, A.OBSERVER_FLAG, A.MONITOR_FLAG, A.TAG ,
+				B.CENTER_NAME , E.TENANT_NAME
+			FROM MA_DN A	, MA_CENTER B, MA_TENANT E	  		     
+			WHERE A.CENTER_ID = B.CENTER_ID 
+						AND A.CENTER_ID = E.CENTER_ID
+						AND A.CENTER_ID = E.CENTER_ID
+						AND A.TENANT_ID = E.TENANT_ID
+			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+				AND (A.DN LIKE  CONCAT('%',#{params.searchKeyword},'%')  )
+			</if>					
+		) R
+		ORDER BY RNUM ASC
+		LIMIT   #{params.firstIndex},   #{params.recordCountPerPage}  
+	</select>
+	<select id="selectDnDetailInfo" resultType="NexusDnInfo">
+		SELECT CENTER_ID,TENANT_ID,DNMAJOR_ID,DNSUB_ID,
+						DN,MEDIA_ID,SUBMEDIA_ID, 
+						DN_MODELNAME,DN_SERVICEDESC, 
+						DN_KIND,DN_TYPE,DN_IP,OBSERVER_FLAG,MONITOR_FLAG,TAG 
+		FROM MA_DN 
+		WHERE DN=#{dn} AND TENANT_ID=#{tenantId} AND CENTER_ID=#{centerId}
+	</select>
+	<select id="selectDnExistslInfo" resultType="Integer">
+		SELECT (
+			SELECT COUNT(1) 
+			FROM MA_DN 
+			WHERE DN=#{dn} 
+						AND TENANT_ID=#{tenantId} 
+						AND CENTER_ID=#{centerId}
+		) FROM DUAL
+	</select>
+	<select id="selectDnParentIdExistslInfo" resultType="Integer">
+		SELECT (
+			SELECT COUNT(1) 
+			FROM MA_DNSUBCATEGORY 
+			WHERE DNSUB_ID=#{dnsubId} 
+						AND DNMAJOR_ID=#{dnmajorId} 
+						AND TENANT_ID=#{tenantId} 
+						AND CENTER_ID=#{centerId}
+		) FROM DUAL
+	</select>
+	<select id="selectMediaExistslInfo"  resultType="Integer">
+		SELECT(
+			SELECT COUNT(1) 
+			FROM MA_MEDIA WHERE MEDIA_ID=#{mediaId} AND CENTER_ID=#{centerId}
+		) FROM DUAL
+	</select>
+	<select id="selectMultiDnExistslInfo"  resultType="Integer">
+		SELECT(
+			SELECT COUNT(1) 
+			FROM MA_MEDIA 
+			WHERE  SUB_DN=#{dn} AND TENANT_ID=#{tenantId} AND CENTER_ID=#{centerId}
+		) FROM DUAL
+	</select>
+	<select id="selectSubMediaExistslInfo"  resultType="Integer">
+		SELECT(
+			SELECT COUNT(1) 
+			FROM MA_MEDIA 
+			WHERE MEDIA_ID=#{submediaId} AND CENTER_ID=#{centerId}
+		) FROM DUAL
+	</select>
+	<insert id="insertDnManagerMapper">
+		INSERT INTO MA_DN(CENTER_ID,TENANT_ID,DNMAJOR_ID,DNSUB_ID,DN,MEDIA_ID,SUBMEDIA_ID,DN_MODELNAME,DN_SERVICEDESC,
+												DN_KIND,DN_TYPE,DN_IP, OBSERVER_FLAG,MONITOR_FLAG,TAG) 
+		VALUES(#{centerId},#{tenantId},#{dnmajorId},#{dnsubId},#{dn},#{mediaId},#{submediaId,jdbcType=VARCHAR},#{dnModelname,jdbcType=VARCHAR},#{dnServicedesc,jdbcType=VARCHAR},
+						#{dnKind},#{dnType},#{dnIp ,jdbcType=VARCHAR},#{observerFlag,jdbcType=VARCHAR },#{monitorFlag,jdbcType=VARCHAR},#{tag,jdbcType=VARCHAR})
+	</insert>
+	<update id="updateDnManagerMapper">
+		UPDATE MA_DN SET CENTER_ID=#{centerId}, 
+												TENANT_ID=#{tenantId},
+												DNMAJOR_ID=#{dnmajorId},
+												DNSUB_ID=#{dnsubId},
+												DN=#{dn},
+												MEDIA_ID=#{mediaId},
+												SUBMEDIA_ID=#{submediaId,jdbcType=VARCHAR},
+												DN_MODELNAME=#{dnModelname,jdbcType=VARCHAR},
+												DN_SERVICEDESC=#{dnServicedesc,jdbcType=VARCHAR},
+												DN_KIND=#{dnKind},
+												DN_TYPE=#{dnType},
+												DN_IP=#{dnIp ,jdbcType=VARCHAR},
+												OBSERVER_FLAG=#{observerFlag}, 
+												MONITOR_FLAG=#{monitorFlag,jdbcType=VARCHAR},
+												TAG=#{tag,jdbcType=VARCHAR}
+		WHERE DN=#{dn} AND TENANT_ID=#{tenantId} AND CENTER_ID=#{centerId}
+	</update>
+	<delete id="deleteDnManagerMapper">
+		<choose>
+			<when test="!@org.apache.commons.lang3.StringUtils@isEmpty(dnsubId)">
+				DELETE FROM MA_DN WHERE CENTER_ID=#{centerId} AND TENANT_ID=#{tenantId} AND DN=#{dn} AND DNMAJOR_ID=#{dnmajorId} AND DNSUB_ID=#{dnsubId}
+			</when> 
+			<when test="!@org.apache.commons.lang3.StringUtils@isEmpty(dnmajorId)">
+				DELETE FROM MA_DN WHERE CENTER_ID=#{centerId} AND TENANT_ID=#{tenantId} AND DN=#{dn} AND DNMAJOR_ID=#{dnmajorId} 
+			</when> 
+			<otherwise>
+				DELETE FROM MA_DN WHERE CENTER_ID=#{centerId} AND TENANT_ID=#{tenantId} AND DN=#{dn} 
+			</otherwise> 
+		</choose>
+	</delete>
+</mapper>
