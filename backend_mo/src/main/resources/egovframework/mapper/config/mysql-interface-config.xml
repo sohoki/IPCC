@@ -21,7 +21,7 @@
 		
 		<typeAlias alias="NexusAgentComboInfo"  type="com.system.ipcc.cti.nexus.models.dto.NexusAgentComboInfo" />
 		<typeAlias alias="NexusAgentRequestInfoDto"  type="com.system.ipcc.cti.nexus.models.dto.NexusAgentRequestInfoDto" />
-		<typeAlias alias="NexusAgentComboInfo"  type="com.system.ipcc.cti.nexus.models.dto.NexusAgentComboInfo" />
+<!-- 		<typeAlias alias="NexusAgentComboInfo"  type="com.system.ipcc.cti.nexus.models.dto.NexusAgentComboInfo" /> -->
 		<typeAlias alias="NexusSubEmployeeInfo"  type="com.system.ipcc.cti.nexus.models.dto.NexusSubEmployeeInfo" />
 		<typeAlias alias="NexusSkillRequestInfo"  type="com.system.ipcc.cti.nexus.models.dto.NexusSkillRequestInfo" />
 		<typeAlias alias="NexusAgentInfoResponseDto"  type="com.system.ipcc.cti.nexus.models.dto.NexusAgentInfoResponseDto" />
@@ -36,6 +36,8 @@
 		<typeAlias alias="NexusTeamInfo"  type="com.system.ipcc.cti.nexus.models.NexusTeamInfo" />
 		<typeAlias alias="NexusTenantInfo"  type="com.system.ipcc.cti.nexus.models.NexusTenantInfo" />
 		<typeAlias alias="NexusDnSubInfo"  type="com.system.ipcc.cti.nexus.models.NexusDnSubInfo" />
+		
+		<typeAlias alias="NexusLoginIdInfo"	type="com.system.ipcc.cti.nexus.models.NexusLoginIdInfo" />
 		
 		
 		<package name="com.system.ipcc.cti.nexus.models"/>
