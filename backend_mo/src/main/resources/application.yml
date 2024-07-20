@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: prod
     group:
       dev:
         - dev
@@ -13,7 +13,7 @@ spring:
         - common
 
 
-#################### common 공통 영역 #####################
+#################### common 공통 영역 ####################
 ---
 server:
   servlet: 
@@ -143,7 +143,7 @@ Globals:
   DbType : mysql
   mysql:
     DriverClassName : net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    Url : jdbc:log4jdbc:mysql://192.168.22.179:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    Url : jdbc:log4jdbc:mysql://192.168.22.175:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
     UserName : root
     Password : Qwer1234!@#$
   ctisql:
@@ -156,13 +156,13 @@ Globals:
     Password : yesdev1!    
 
 spring.redis :
-     host: 192.168.22.179
+     host: 192.168.22.175
      port: 30004
      password : Rowa230927!@  
 
     
 spring.rabbitmq:
-    host: 192.168.22.179
+    host: 192.168.22.175
     port: 30003
     username: admin
     password: Rowa230927!@
@@ -190,7 +190,7 @@ Globals:
   DbType : mysql
   mysql:
     DriverClassName : net.sf.log4jdbc.sql.jdbcapi.DriverSpy
-    Url : jdbc:log4jdbc:mysql://59.14.245.89:20000/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
+    Url : jdbc:log4jdbc:mysql://192.168.85.45:3306/DB_IPCCINFO?useSSL=false&characterEncoding=utf8&allowPublicKeyRetrieval=true&serverTimezone=UTC&allowMultiQueries=true
     UserName : root
     Password : Qwer1234!@#$
   ctisql:
@@ -203,25 +203,24 @@ Globals:
     Password : yesdev1!    
 
 spring.redis :
-     host: 59.14.245.89
+     host: 192.168.22.175
      port: 30004
      password : Rowa230927!@  
 
     
 spring.rabbitmq:
-    host: localhost
-    port: 25672
+    host: 192.168.22.175
+    port: 30003
     username: admin
     password: Rowa230927!@
     
 pbx-info:
-    cm-root : http://192.168.90.43
-    sms-id : smsuser@192.168.90.11:5022
-    sms-password: Arisys123$
-    output-format : xml
-    output-objectname: objectname
-    output-fields : fields
+    sms_root : http://192.168.90.43
+    cm_id : smsuser@192.168.90.11:5022
+    cm_password: Arisys123$
+    output_format : xml
+    output_fields : fields
     #output-fields : key-value
-    soap-ws_default_namespace : http://xml.avaya.com/ws/SystemManagementService/2008/07/01
-    soap-format_xml : xml
-    soap-sms_ns : http://xml.avaya.com/sms
+    soap_ws_default_namespace : http://xml.avaya.com/ws/SystemManagementService/2008/07/01
+    soap_format_xml : xml
+    soap_sms_ns : http://xml.avaya.com/sms
