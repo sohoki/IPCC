@@ -29,7 +29,7 @@
 		INSERT INTO TB_SERVER_STATUS(SERVER_CODE, PING, CPU, MEMORY, HDD_INFO,HDD_TOTAL_INFO,  LAST_UPDT_PNTTM)
 		VALUES (#{serverCode}, #{ping},#{cpu}, #{memory}, #{hddInfo}, #{hddTotalInfo}, now() );
 		
-		UPDATE  TB_SERVERINFO SET SERVER_STATUS = #{ping}
+		UPDATE  TB_SERVERINFO SET SERVER_STATUS = #{ping}, SERVER_END_TIME = NOW()
 		WHERE SERVER_CODE = #{serverCode}
 		
 	</insert>
