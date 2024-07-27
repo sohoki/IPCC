@@ -154,8 +154,7 @@ public class PartInfoManageController {
 		try{ 
 			PartInfoVO info = partService.selectPartInfoDetail(partId);
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-    		model.addObject(Globals.JSON_RETURN_RESULT, info);
-    		
+			model.addObject(Globals.JSON_RETURN_RESULT, info);
 		 }catch(Exception e){
 			log.error("partInfoDetail : error" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg"));	
@@ -193,12 +192,7 @@ public class PartInfoManageController {
 											HttpServletRequest request) throws Exception {  
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW); 
-		/*
-		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
-			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-        }
-		*/
+
 		try{ 
 			model.addObject(Globals.JSON_RETURN_RESULT_LIST, partService.selectPartInfoCombo(commandMap));
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
@@ -235,7 +229,7 @@ public class PartInfoManageController {
 	}
 	@ApiOperation(value="부서 정보 업데이트", notes = "성공시 부서 정보 업데이트 합니다.")
 	@PostMapping("partUpdate.do")
-	public ModelAndView partInfoUpdate ( @RequestBody PartInfo partInfo
+	public ModelAndView partInfoUpdateMessage ( @RequestBody PartInfo partInfo
 										, HttpServletRequest request
 										, BindingResult bindingResult) throws Exception {  
 		
@@ -259,7 +253,7 @@ public class PartInfoManageController {
 			status = ret >0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			meesage = partInfo.getMode().equals("Ins") ? "sucess.common.insert" : "sucess.common.update";
 			if (ret > 0) {
-				
+				/*
 				MessageDto dto =  MessageDto.builder()
 									.id(partInfo.getPartId())
 									.processGubun(partInfo.getMode())
@@ -273,6 +267,7 @@ public class PartInfoManageController {
 						exchangeName,
 						routingKey);
 				log.info("=========== send message");
+				*/
 			}
 			
 			model.addObject(Globals.STATUS, status);
@@ -286,7 +281,7 @@ public class PartInfoManageController {
 	@ApiOperation(value="기관별 부서 정보 삭제", notes = "성공시 기관별 부서 정보 삭제 합니다.")
 	@ApiImplicitParam(name = "partId", value = "부서 코드 ")
 	@DeleteMapping("{partId}.do")
-	public ModelAndView partDelete(@PathVariable String partId ) throws Exception {
+	public ModelAndView partDeleteMessage(@PathVariable String partId ) throws Exception {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 
@@ -297,6 +292,7 @@ public class PartInfoManageController {
 			
 			int ret = utilService.deleteUniStatement(utilInfo);	
 			if (ret > 0) {
+				/*
 				MessageDto dto =  MessageDto.builder()
 						.id(partId)
 						.processGubun("DEL")
@@ -310,6 +306,7 @@ public class PartInfoManageController {
 								exchangeName,
 								routingKey);
 						log.info("=========== send message");
+				*/
 			}
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.request.msg"));	
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS); 

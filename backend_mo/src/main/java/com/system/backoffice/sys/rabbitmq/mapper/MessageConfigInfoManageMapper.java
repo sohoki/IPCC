@@ -15,11 +15,13 @@ import com.system.backoffice.sys.rabbitmq.models.dto.MessageConfigInfoReqDto;
 @Mapper
 public interface MessageConfigInfoManageMapper {
 	
-    public List<MessageConfigInfoVO> selectMessageConfigInfoManageListByPagination(@Param("params") Map<String, Object> vo);
+	public List<MessageConfigInfoVO> selectMessageConfigInfoManageListByPagination(@Param("params") Map<String, Object> vo);
 	
-    public int updateMessageConfigInfoManage(MessageConfigInfoReqDto vo);
-    
-    public int insertMessageConfigInfoManage(MessageConfigInfoReqDto vo);
-    
-    public int deleteMessageConfigInfoManage(String comCode);
+	public Optional<MessageConfigInfo> selectMessageConfigInfoDetail(String msgSection);
+		
+	public int updateMessageConfigInfoManage(MessageConfigInfoReqDto vo);
+	
+	public int insertMessageConfigInfoManage(MessageConfigInfoReqDto vo);
+	
+	public int deleteMessageConfigInfoManage(String comCode);
 }

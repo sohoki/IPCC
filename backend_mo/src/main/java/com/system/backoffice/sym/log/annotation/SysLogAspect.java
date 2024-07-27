@@ -1,10 +1,12 @@
 package com.system.backoffice.sym.log.annotation;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -16,24 +18,29 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.egovframe.rte.fdl.cmmn.exception.manager.AbstractExceptionHandleManager;
 import org.egovframe.rte.fdl.cmmn.exception.manager.ExceptionHandlerService;
 import org.mybatis.spring.MyBatisSystemException;
 import org.mybatis.spring.SqlSessionTemplate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-
-import com.system.backoffice.sym.log.models.SysLog;
 import com.system.backoffice.sym.log.service.EgovSysLogService;
+import com.system.backoffice.sys.rabbitmq.models.MessageConfigInfo;
+import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
+import com.system.backoffice.sys.rabbitmq.service.MessageConfigInfoService;
+import com.system.backoffice.sys.rabbitmq.service.MessageService;
+import com.system.backoffice.uat.uia.models.AdminInfoVO;
+import com.system.backoffice.uat.uia.models.PartInfo;
 import com.system.backoffice.util.service.ParamToJson;
-
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.jwt.config.JwtVerification;
 import egovframework.let.utl.sim.service.EgovClntInfo;
+import lombok.extern.slf4j.Slf4j;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -45,21 +52,32 @@ import org.springframework.web.servlet.ModelAndView;
 // spring security 사용 안함
 //import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 
+@Slf4j
 @Aspect
 @Component
 public class SysLogAspect extends AbstractExceptionHandleManager implements ExceptionHandlerService{
 
- 
-	private static final Logger LOGGER = LoggerFactory.getLogger(SysLogAspect.class);
-	public static final String KEY_ECODE = "ecode";
+ 	public static final String KEY_ECODE = "ecode";
+ 	
+	@Value("${rabbitmq.topic.name}")
+	private String exchangeName;
+
+	@Value("${rabbitmq.topic.key}")
+	private String routingKey;
 	
 	@Autowired
 	protected EgovMessageSource egovMessageSource;
-	
+	/*
 	@Autowired
 	private EgovSysLogService sysLogService;
+	*/
+	@Autowired
+	private MessageConfigInfoService messageConfig;
 	
-    /** JwtVerification */
+	@Autowired
+	private MessageService messageService;
+	
+	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
 	
@@ -93,20 +111,155 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 	}
 	@SuppressWarnings("unused")
 	private void mapperSelect(ProceedingJoinPoint joinPoint) throws Throwable {
-		LOGGER.debug("mapper--------------------------------------------------------------------------------------------------------------");
+		log.debug("mapper--------------------------------------------------------------------------------------------------------------");
  		StopWatch stopWatch = new StopWatch();
  		//Object sqlid  = null;
 		try {
 			stopWatch.start();
 			Object[] methodArgs = joinPoint.getArgs(); //, sqlArgs = null;
-			LOGGER.debug("length:" + methodArgs.length);
+			log.debug("length:" + methodArgs.length);
 			for (Object  methodArg : methodArgs){
-				LOGGER.debug("methodArg:" + methodArg.toString());
+				log.debug("methodArg:" + methodArg.toString());
 			}
 			stopWatch.stop();
 			//return retValue;
 		} catch (Throwable e) {
 			throw e;
+		}
+	}
+	@Around("execution(public * com.system.backoffice..web.*Controller.*Message(..))")	
+	public Object logMessageUpdate(ProceedingJoinPoint joinPoint) throws Throwable {
+		HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+		Class<?> clazz = joinPoint.getTarget().getClass();
+		Object result = null; 
+		Object sqlId  = null;
+		
+		StopWatch stopWatch = new StopWatch();
+		try {
+			log.info(" [" + clazz.getSimpleName() + "] ---------------------------------------------------------------------------------//");
+			
+			
+			Arrays.stream(joinPoint.getArgs())
+				.filter(not(HttpSession.class::isInstance))
+				.filter(not(HttpServletRequest.class::isInstance))
+				.filter(not(BeanPropertyBindingResult.class::isInstance))
+				.forEach(arg -> {
+					try {
+						log.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: mapper " + objectMapper.writeValueAsString(arg));
+					
+					} catch (Exception e) {
+						log.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: arg " + arg);
+					}
+			});
+			
+			stopWatch.start();
+			Object[] methodArgs = joinPoint.getArgs();
+			
+			if (methodArgs.length > 0){
+				
+				sqlId = methodArgs[0];
+			}
+			
+			result = joinPoint.proceed();
+			return result;
+		} catch (Throwable e) {
+			throw e;
+		} finally {
+			stopWatch.stop();
+			if (result instanceof ModelAndView  && result != null) {
+				ModelAndView mav = ((ModelAndView) result);
+				if (!mav.getModel().isEmpty()) {
+					log.info(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Controller Return: " + mav.getModel());
+				}
+			}
+			
+			// List Check
+			Object processSqlId = sqlId;  
+			if (sqlId instanceof List) { 
+				List<?> list = (List<?>) sqlId;
+				if (!list.isEmpty()) {
+					processSqlId = list.get(0);  
+					
+				}
+			}
+			
+			
+			final String processSeCode = joinPoint.getSignature().getName().contains("delete") ? Globals.SYSLOG_PROCESS_SE_CODE_DELETE : 
+					ParamToJson.JsonKeyToString(processSqlId, "mode").equals(Globals.SAVE_MODE_INSERT) 
+					? Globals.SYSLOG_PROCESS_SE_CODE_INSERT : Globals.SYSLOG_PROCESS_SE_CODE_UPDATE;
+			final String ipAddr = EgovClntInfo.getClntIP(request);
+			final String processTime = Long.toString(stopWatch.getTotalTimeMillis());
+			
+			log.info("HttpStatus.OK.value():"+ HttpStatus.OK.value());
+			log.info("processSeCode:"+ processSeCode);
+			log.info("getSimpleName:"+ clazz.getSimpleName());
+			log.info("getName:"+joinPoint.getSignature().getName());
+			log.info("sqlId:"+sqlId);
+			
+			
+			
+			Optional<MessageConfigInfo> config = messageConfig.selectMessageConfigInfoDetail(joinPoint.getSignature().getName());
+			if (config.isPresent() && HttpStatus.OK.value() == 200) {
+				
+				String mode ="";
+				String ID ="";
+				
+				if (!processSeCode.equals("D") && joinPoint.getSignature().getName().equals("updateMangerMessage") ) {
+					log.info("======================== 관리자:");
+					ObjectMapper mapper = new ObjectMapper();
+					AdminInfoVO vo = mapper.readValue(ParamToJson.paramToJson(sqlId), AdminInfoVO.class);
+					mode = vo.getMode();
+					ID = vo.getAdminId();
+				}else if (!processSeCode.equals("D") && joinPoint.getSignature().getName().equals("partInfoUpdateMessage") ) {
+					log.info("======================== 부서:");
+					ObjectMapper mapper = new ObjectMapper();
+					PartInfo vo = mapper.readValue(ParamToJson.paramToJson(sqlId), PartInfo.class);
+					mode = vo.getMode();
+					ID = vo.getPartId();
+				}else if (!processSeCode.equals("D") && joinPoint.getSignature().getName().equals("partInfoUpdateMessage") ) {
+					log.info("======================== 부서:");
+					ObjectMapper mapper = new ObjectMapper();
+					PartInfo vo = mapper.readValue(ParamToJson.paramToJson(sqlId), PartInfo.class);
+					mode = vo.getMode();
+					ID = vo.getPartId();
+				}else {
+					mode = Globals.URL_METHOD_DELETE_MODE;
+					ID = sqlId.toString();
+				}	
+				log.info("======================== 2:");
+				String url = config.get().getMsgUrl().length() > 0 ? config.get().getMsgUrl()+ID+".do" : "";
+				MessageDto dto =  MessageDto.builder()
+						.id(ID)
+						.processGubun(mode)
+						.processName(config.get().getMsgGubun())
+						.urlMethod(config.get().getMsgSendGubun())
+						.url(url)
+						.build();
+				messageService.sendMessage(dto, 
+						config.get().getMsgGubun(), 
+						config.get().getExchangeName(),
+						config.get().getExchangeRoutingKey());
+				
+				
+				
+				
+			}
+			
+			
+			
+			// 시스템 로그 기록
+			/*
+			SysLog sysLog = new SysLog();
+			sysLog.setErrorCode(HttpStatus.OK.value()+"");
+			sysLog.setSrvcNm(clazz.getSimpleName());
+			sysLog.setMethodNm(joinPoint.getSignature().getName());
+			sysLog.setProcessSeCode(processSeCode);
+			sysLog.setProcessTime(processTime);
+			sysLog.setRqesterIp(ipAddr);
+			sysLog.setRqesterId(userId);
+			sysLog.setSqlParam(ParamToJson.paramToJson(sqlId));
+			sysLogService.logInsertSysLog(sysLog);
+			*/
 		}
 	}
 	/**
@@ -126,16 +279,16 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 		
 		StopWatch stopWatch = new StopWatch();
 		try {
-			LOGGER.info(" [" + clazz.getSimpleName() + "] ---------------------------------------------------------------------------------//");
+			log.info(" [" + clazz.getSimpleName() + "] ---------------------------------------------------------------------------------//");
 			Arrays.stream(joinPoint.getArgs())
 				.filter(not(HttpSession.class::isInstance))
 				.filter(not(HttpServletRequest.class::isInstance))
 				.filter(not(BeanPropertyBindingResult.class::isInstance))
 				.forEach(arg -> {
 					try {
-						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: mapper " + objectMapper.writeValueAsString(arg));
+						log.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: mapper " + objectMapper.writeValueAsString(arg));
 					} catch (Exception e) {
-						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: arg " + arg);
+						log.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: arg " + arg);
 					}
 			});
 			
@@ -154,7 +307,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			if (result instanceof ModelAndView  && result != null) {
 				ModelAndView mav = ((ModelAndView) result);
 				if (!mav.getModel().isEmpty()) {
-					LOGGER.info(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Controller Return: " + mav.getModel());
+					log.info(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Controller Return: " + mav.getModel());
 				}
 			}
 			
@@ -194,6 +347,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 	 * @return
 	 * @throws Throwable
 	 */
+	/*
 	@Around("execution(public * egovframework.let..web.*Controller.select*(..)) || execution(public * com.system.backoffice..web.*Controller.select*(..))"
 			+ " && !@target(com.system.backoffice.sym.log.annotation.NoLogging)"
             + " && !@annotation(com.system.backoffice.sym.log.annotation.NoLogging))")	
@@ -206,16 +360,16 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 		
 		StopWatch stopWatch = new StopWatch();
 		try {
-			LOGGER.info(" [" + clazz.getSimpleName() + "] ---------------------------------------------------------------------------------//");
+			log.info(" [" + clazz.getSimpleName() + "] ---------------------------------------------------------------------------------//");
 			Arrays.stream(joinPoint.getArgs())
 				.filter(not(HttpSession.class::isInstance))
 				.filter(not(HttpServletRequest.class::isInstance))
 				.filter(not(BeanPropertyBindingResult.class::isInstance))
 				.forEach(arg -> {
 					try {
-						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + objectMapper.writeValueAsString(arg));
+						log.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + objectMapper.writeValueAsString(arg));
 					} catch (Exception e) {
-						LOGGER.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + arg);
+						log.info(" (" + joinPoint.getSignature().getName() + ") Controller Parameters: " + arg);
 					}
 				});
 			
@@ -233,7 +387,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			if (result instanceof ModelAndView  && result != null) {
 				ModelAndView mav = ((ModelAndView) result);
 				if (!mav.getModel().isEmpty()) {
-					LOGGER.info(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Controller Return: " + mav.getModel());
+					log.info(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Controller Return: " + mav.getModel());
 				}
 			}
 			
@@ -258,10 +412,11 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			}else {
 				LOGGER.debug("====================== TOKEN 만료");
 			}
-			*/
+
 		}
 		
 	}
+	*/
 	/**
 	 * 데이터 삭제 관련 Controller 호출 후 반환 시 
 	 * @param joinPoint
@@ -323,31 +478,31 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 	 * @throws Exception
 	 */
 	@AfterThrowing(pointcut = "execution( public * egovframework.let..web.*Controller.*(..)) or execution(* com.system.backoffice..web.*Controller.*(..))"
-		     + " and !@target(com.system.backoffice.sym.log.annotation.NoLogging)"
-		     + " and !@annotation(com.system.backoffice.sym.log.annotation.NoLogging))", throwing = "error")
+					+ " and !@target(com.system.backoffice.sym.log.annotation.NoLogging)"
+					+ " and !@annotation(com.system.backoffice.sym.log.annotation.NoLogging))", throwing = "error")
 	public void logUpdateThrow(JoinPoint joinPoint, Exception error) throws Exception  {
 		Class<?> clazz = joinPoint.getTarget().getClass();
 		if (error.getClass().equals(MyBatisSystemException.class) || error.getClass().getName().contains("org.springframework.jdbc")) {
-			LOGGER.error(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Implement Throwable: " + error.getMessage());
+			log.error(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Implement Throwable: " + error.getMessage());
 		} else {
-			LOGGER.error(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Implement Throwable: " + error);
+			log.error(" ["+ clazz.getSimpleName() +"] ---------------------------------------------------------------------------------//\n(" + joinPoint.getSignature().getName() + ") Implement Throwable: " + error);
 		}
 	}
 	@SuppressWarnings("unused")
 	private Object logSql(ProceedingJoinPoint joinPoint) throws Throwable {
-		LOGGER.debug("SqlSession----------------------------------------------------------------------------------------------------------");
+		log.debug("SqlSession----------------------------------------------------------------------------------------------------------");
 		Object[] methodArgs = joinPoint.getArgs(), sqlArgs = null;
 		Object retValue = joinPoint.proceed();
 		String statement = null;
 		String sqlid = methodArgs[0].toString();
 		
-		LOGGER.debug("sqlid:" + sqlid);
-		LOGGER.debug("length:" + methodArgs.length);
+		log.debug("sqlid:" + sqlid);
+		log.debug("length:" + methodArgs.length);
 
 		for (int i =1, n = methodArgs.length; i < n; i++){
 			Object arg = methodArgs[i];
 			
-			LOGGER.debug("methodArgs:" + methodArgs[i].toString());
+			log.debug("methodArgs:" + methodArgs[i].toString());
 			
 			if (arg instanceof HashMap){
 				@SuppressWarnings("unchecked")
@@ -366,7 +521,7 @@ public class SysLogAspect extends AbstractExceptionHandleManager implements Exce
 			break;
 		}
 		String completedStatemane = (sqlArgs == null ? statement:fillParameters(statement, sqlArgs));
-		LOGGER.debug("completedStatemane:" + completedStatemane);
+		log.debug("completedStatemane:" + completedStatemane);
 		return retValue;
 	}
 }

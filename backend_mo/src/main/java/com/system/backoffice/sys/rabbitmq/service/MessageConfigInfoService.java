@@ -40,6 +40,9 @@ public class MessageConfigInfoService {
 		return messageConfigInfoMapper.selectMessageConfigInfoManageListByPagination(searchVO);
 	}
 
+	public Optional<MessageConfigInfo> selectMessageConfigInfoDetail(String msgSection){
+		return messageConfigInfoMapper.selectMessageConfigInfoDetail(msgSection);
+	}
 
 	public int updateMessageConfigInfoManage(MessageConfigInfoReqDto vo) throws Exception {
 		// TODO Auto-generated method stub

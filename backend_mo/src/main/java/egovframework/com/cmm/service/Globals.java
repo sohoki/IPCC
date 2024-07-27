@@ -131,7 +131,11 @@ public class Globals {
 	public static final String URL_METHOD_POST = "POST";
 	public static final String URL_METHOD_GET = "GET";
 	public static final String URL_METHOD_DELETE = "DELETE";
+	public static final String URL_METHOD_DELETE_MODE = "DEL";
 	public static final String URL_METHOD_PUT = "PUT";
+	
+	public static final String MSG_TYPE_GUBUN_DIR = "direct";
+	public static final String MSG_TYPE_GUBUN_TOP = "topic";
 	
 	//token 
 	public static final String USER_ROLE_ID = "roleId";

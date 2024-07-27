@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.egovframe.rte.ptl.mvc.tags.ui.pagination.PaginationInfo;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
@@ -19,10 +20,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import com.system.backoffice.sym.log.annotation.NoLogging;
 import com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo;
 import com.system.backoffice.sys.rabbitmq.models.dto.AmqpConfigInfoDto;
+import com.system.backoffice.sys.rabbitmq.models.dto.ExchangeInfoReqDto;
+import com.system.backoffice.sys.rabbitmq.models.dto.QueueInfoReqDto;
 import com.system.backoffice.sys.rabbitmq.service.AmqpConfigInfoManageService;
+import com.system.backoffice.sys.rabbitmq.service.QueueInfoManageService;
+import com.system.backoffice.util.service.UtilInfoService;
+
 import egovframework.com.cmm.EgovMessageSource;
 import egovframework.com.cmm.service.Globals;
 import egovframework.com.cmm.service.ResultVO;
@@ -41,16 +52,34 @@ public class AmqpConfigInfoManageController {
 	@Value("${page.pageSize}")
 	private int pageSizeSetting ;
 	
+	@Value("${spring.rabbitmq.host}")
+	private String host;
+	
+	@Value("${spring.rabbitmq.username}")
+	private String username;
+	
+	@Value("${spring.rabbitmq.password}")
+	private String password;
+	
+	@Value("${spring.rabbitmq.port}")
+	private int port;
+	
 	@Autowired
 	private AmqpConfigInfoManageService messageAmqpService;
 	
 	@Autowired
 	protected EgovMessageSource egovMessageSource;
 	
+	@Autowired
+	protected QueueInfoManageService queueService;
+	
 	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
 	
+	@Autowired
+	private RabbitTemplate rabbitTemplate;
+
 	
 	@ApiOperation(value="메세지 서비스 조회", notes = "성공시 메세지 서비스을 조회 합니다.")
 	@PostMapping(value="systemAmqpList.do")
@@ -134,7 +163,9 @@ public class AmqpConfigInfoManageController {
 		
 		return model;
 	}
-	/*
+	// fanoutExchange 설정 
+	
+	//Queues  삭제 방법
 	@ApiOperation(value="메세지 Queues 생성", notes = "성공시 메세지 Queues 생성 합니다.")
 	@GetMapping(value="createQueues.do")
 	public ModelAndView createQueuesInfo(@RequestParam Map<String, Object> amqp, 
@@ -147,19 +178,153 @@ public class AmqpConfigInfoManageController {
 				return jwtVerification.handleAuthError(resultVO); // 토큰 생성
 			}
 			
+			String gubun = UtilInfoService.NVL(amqp.get("gubun"),"ipcc.queue");
+			String queue = UtilInfoService.NVL(amqp.get("queue"),"ipcc.queue");
+			String processNm = UtilInfoService.NVL(amqp.get("processNm"),"ipcc.queue");
+			String routingKey = UtilInfoService.NVL(amqp.get("routingKey"),"ipcc.queue");
+			String type = UtilInfoService.NVL(amqp.get("type"),"direct");
 			
-			Optional<AmqpConfigInfo> info = messageAmqpService.selectAmqpConfigDetail(amqp.get("systemCode").toString(),
-																					amqp.get("messageType").toString(),
-																					amqp.get("messageExchangeName").toString());
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost(host);
+			factory.setPort(port);
+			factory.setUsername(username);
+			factory.setPassword(password);
+			
+			String status = "";
+			String message = "";
+			try (Connection connection = (Connection) factory.newConnection(); ) {
 				
-			if (info.isPresent()){
-				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
-				model.addObject(Globals.STATUS_REGINFO, info.get());
-			}else {
-				model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
-				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+				
+				Channel channel = connection.createChannel();
+				switch (gubun) {
+					case "queue" :
+						
+						try {
+							AMQP.Queue.DeclareOk declareOkExists = channel.queueDeclarePassive(queue);
+							message = "Exists";
+							status = Globals.STATUS_FAIL;
+						}catch (Exception e1) {
+							Channel channel1 = connection.createChannel();
+							boolean duration = routingKey.equals("Y") ? true: false;
+							boolean autoDelete = type.equals("Y") ? true: false;
+							AMQP.Queue.DeclareOk declareOk = channel1.queueDeclare(queue, duration, false, autoDelete, null);
+							
+							QueueInfoReqDto info = QueueInfoReqDto.builder()
+																						.queueNm(queue)
+																						.queueDuration(routingKey)
+																						.queueAutodelete(type)
+																						.userId(jwtVerification.getTokenUserName(request))
+																						.build();
+							
+							int ret = queueService.insertQueueInfo(info);
+							status = ret >0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+							
+							channel1.close();
+							message =  ret >0 ?  "정상 등록 되었습니다.":  "처리 도중 문제가 발생 하였습니다.";
+						}
+						break;
+					case "exchange" :
+						
+						try {
+							
+							AMQP.Exchange.DeclareOk declareOkExists1 = channel.exchangeDeclarePassive(processNm);
+							message = "Exists";
+						}catch (Exception e1) {
+							//exchange 설정
+						
+							Channel channel1 = connection.createChannel();
+							//AMQP.Exchange.DeclareOk ExchangedeclareOk = channel1.exchangeDeclare("ivr-topic", "topic");
+							AMQP.Exchange.DeclareOk ExchangedeclareOk = channel1.exchangeDeclare(processNm, type);
+							
+							
+							channel1.queueBind(queue, processNm, routingKey);
+							channel1.close();
+							ExchangeInfoReqDto info = ExchangeInfoReqDto.builder()
+																					.exchangeName(processNm)
+																					.queueNm(queue)
+																					.exchangeRoutingKey(routingKey)
+																					.exchangeType(type)
+																					.userId(jwtVerification.getTokenUserName(request))
+																					.build();
+							int ret = queueService.insertExchangeInfo(info);
+							status = ret >0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+							message =  ret >0 ?  "정상 등록 되었습니다.":  "처리 도중 문제가 발생 하였습니다.";
+						}
+						break;
+				}
+				if (channel.isOpen())
+					channel.close();
+				
 			}
 			
+			model.addObject(Globals.STATUS, status);
+			model.addObject(Globals.STATUS_REGINFO,message);
+			
+		}catch(Exception e) {
+			model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg") + e.toString());
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+		}
+		
+		return model;
+	}
+	
+	@ApiOperation(value="메세지 Queues 삭제", notes = "성공시 메세지 Queues 삭제 합니다.")
+	@GetMapping(value="deleteQueues.do")
+	public ModelAndView deleteQueuesInfo(@RequestParam Map<String, Object> amqp, 
+															HttpServletRequest request) throws Exception {
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		String status = "";
+		String message = "";
+		try {
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 생성
+			}
+			String gubun = UtilInfoService.NVL(amqp.get("gubun"),"ipcc.queue");
+			//processNm 
+			String processNm = UtilInfoService.NVL(amqp.get("processNm"),"ipcc.queue");
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost(host);
+			factory.setPort(port);
+			factory.setUsername(username);
+			factory.setPassword(password);
+			
+			try(Connection connection = (Connection) factory.newConnection(); Channel channel = connection.createChannel() ){
+				
+				switch (gubun) {
+					case "queue" :
+						AMQP.Queue.DeclareOk declareOkExists = channel.queueDeclarePassive(processNm);
+						if (declareOkExists.toString().contains("ok")) {
+							channel.queueDelete(processNm) ;
+							int ret = queueService.deleteQueueInfo(processNm);
+							status = ret >0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+							message =  ret >0 ?  "정상 삭제 되었습니다.":  "처리 도중 문제가 발생 하였습니다.";
+						}else {
+							status = Globals.STATUS_FAIL;
+							message = "존재하지 않은 큐 정보 입니다.";
+						}
+						break;
+					case "exchange" :
+						try {
+							AMQP.Exchange.DeclareOk declareOkExists1 = channel.exchangeDeclarePassive(processNm);
+							if (declareOkExists1.toString().contains("ok")) {
+								channel.exchangeDelete(processNm);
+								int ret = queueService.deleteExchangeInfo(processNm);
+								status = ret >0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
+								message =  ret >0 ?  "정상 삭제 되었습니다.":  "처리 도중 문제가 발생 하였습니다.";
+							}
+						}catch(Exception e) {
+							status = Globals.STATUS_FAIL;
+							message = "존재하지 않은 Exchange 정보 입니다.";
+						}
+						
+						break;
+				}
+			}
+			
+			model.addObject(Globals.STATUS, status);
+			model.addObject(Globals.STATUS_REGINFO,message);
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS_MESSAGE, this.egovMessageSource.getMessage("fail.request.msg"));
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
@@ -167,7 +332,6 @@ public class AmqpConfigInfoManageController {
 		
 		return model;
 	}
-	*/
 	
 	@ApiOperation(value="메세지 서비스 삭제", notes = "성공시 메세지 서비스를 삭제 합니다.")
 	@DeleteMapping(value="delete.do")

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.system.backoffice.sys.rabbitmq.models.dto.MessageDto;
 
+import egovframework.com.cmm.service.Globals;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,12 +37,12 @@ public class MessageService {
 		log.info("sendGubun: {},{},{}", sendGubun,exchangeName , routingKey);
 		//message 보내기 
 		switch (sendGubun) {
-		case "Direct" : 
-		rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
-		break;
-		case "Topic" :
-		rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
-		break;
+		case Globals.MSG_TYPE_GUBUN_DIR : 
+			rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
+			break;
+		case Globals.MSG_TYPE_GUBUN_TOP :
+			rabbitTemplate.convertAndSend(exchangeName, routingKey, messageDto);
+			break;
 		default :
 		rabbitTemplate.convertAndSend(exchangeName, "", messageDto);
 		}
@@ -54,7 +55,6 @@ public class MessageService {
 	 */
 	@RabbitListener(queues = "${rabbitmq.queue.name}")
 	public void reciveMessage(MessageDto messageDto) {
-	  log.info("backend Received message: {}", messageDto.toString());
-	  
+		log.info("backend Received message: {}", messageDto.toString());
 	}
 }

@@ -177,7 +177,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 	
 	@ApiOperation(value="상담사 업데이트", notes = "성공시 상담사 업데이트 합니다.")
 	@PostMapping("update.do")
-	public ModelAndView UserInsertPbx( @RequestBody  ConsultantInfoRequestDto pbxInfo,
+	public ModelAndView UserInsertPbxMessage( @RequestBody  ConsultantInfoRequestDto pbxInfo,
 														HttpServletRequest request ) throws Exception {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
@@ -532,7 +532,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 	}
 	@ApiOperation( value = "상담사  퇴직자 처리" , notes = "성공시 상담사  퇴직자 처리한다.")
 	@GetMapping("/consultant/withdrow/{extension}.do")
-	public ModelAndView counWithdrowProcess(@PathVariable String extension, HttpServletRequest request ) throws Exception {
+	public ModelAndView counWithdrowProcessMessage(@PathVariable String extension, HttpServletRequest request ) throws Exception {
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
 			//멤버 삭제
@@ -556,7 +556,7 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 	}
 	@ApiOperation( value = "Infra 및 상담사 삭제 처리" , notes = "성공시 Infra 및 상담사 삭제 처리한다.")
 	@DeleteMapping("{consultCode}.do")
-	public ModelAndView counDeleteProcess(@PathVariable String consultCode, HttpServletRequest request ) throws Exception {
+	public ModelAndView counDeleteProcessMessage(@PathVariable String consultCode, HttpServletRequest request ) throws Exception {
 		
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
 		try {
@@ -565,6 +565,9 @@ private static final Logger LOGGER = LoggerFactory.getLogger(AdminInfoManageCont
 				int ret  = consulService.deleteConsultantrManage(consultCode);
 				String status = ret > 0 ? Globals.STATUS_SUCCESS :  Globals.STATUS_FAIL;
 				String message =  ret > 0 ? "success.common.update": "fail.common.msg";
+				
+				
+				
 				
 				model.addObject(Globals.STATUS, status);
 				model.addObject(Globals.STATUS_MESSAGE,  egovMessageSource.getMessage(message) );

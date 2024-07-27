@@ -33,5 +33,6 @@ public class MessageConfigInfo  implements Serializable{
 	private String lastUpdtPnttm;
 	private String lastUpdusrId;
 	private String msgReturnExample;
-
+	private String exchangeRoutingKey;
+	private String exchangeName;
 }

@@ -49,22 +49,22 @@ public class EgovCcmCmmnCodeManageController {
 
 	
 	@Autowired
-    private EgovCcmCmmnCodeManageService cmmnCodeManageService;
-
-
-    @Value("${page.pageUnit}")
-    private int pageUnitSetting ;
-    
-    @Value("${page.pageSize}")
-    private int pageSizeSetting ;
+	private EgovCcmCmmnCodeManageService cmmnCodeManageService;
 	
+	
+	@Value("${page.pageUnit}")
+	private int pageUnitSetting ;
+	
+	@Value("${page.pageSize}")
+	private int pageSizeSetting ;
+		
 	@Resource(name="egovMessageSource")
 	protected EgovMessageSource egovMessageSource;
-	
-	
-    /** EgovPropertyService */
-    @Resource(name = "propertiesService")
-    protected EgovPropertyService propertiesService;
+		
+		
+	/** EgovPropertyService */
+	@Resource(name = "propertiesService")
+	protected EgovPropertyService propertiesService;
 
 	@Value("${rabbitmq.topic.name}")
 	private String exchangeName;
@@ -93,7 +93,7 @@ public class EgovCcmCmmnCodeManageController {
 	@ApiOperation(value="공통코드를 삭제", notes = "성공시 공통코드를 삭제 합니다.")
 	@ApiImplicitParam(name = "codeId", value = "공통코드 CODE ID")
 	@DeleteMapping("{codeId}.do")
-	public ModelAndView deleteCmmnCode (@PathVariable String codeId 
+	public ModelAndView deleteCmmnCodeMessage (@PathVariable String codeId 
 									, @RequestParam("systemCode") String systemCode
 									, HttpServletRequest request) throws Exception {
 		
@@ -107,7 +107,7 @@ public class EgovCcmCmmnCodeManageController {
 			int ret = cmmnCodeManageService.deleteCmmnCode(codeId, systemCode);
 			
 			if (ret > 0 && !systemCode.equals( Globals.SYSTEM_IPCC)){
-				
+				/*
 				MessageDto dto =  MessageDto.builder()
 								.id(codeId)
 								.processGubun("DEL")
@@ -121,13 +121,12 @@ public class EgovCcmCmmnCodeManageController {
 										exchangeName,
 										routingKey);
 								log.info("=========== send message");
-				
+				*/
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE,   egovMessageSource.getMessage("success.common.delete"));    		
 			}else {
-	    		throw new Exception();    		
-	    	}
-	    	
+				throw new Exception();    		
+			}
 		}catch(Exception e) {
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, e.toString());
@@ -265,24 +264,22 @@ public class EgovCcmCmmnCodeManageController {
 	@ApiOperation(value="공통코드 업데이트", notes = "성공시 공통코드 업데이트 합니다.")
 	@PostMapping("code/codeUpdate.do")
 	public ModelAndView  updateCmmCode (@Valid @RequestBody CmmnCodeReqDto vo
-                                       , HttpServletRequest request
-                      			       , BindingResult bindingResult) throws Exception {
+															, HttpServletRequest request
+															, BindingResult bindingResult) throws Exception {
 			
-  		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-  	    try{
-  	    	String systemCode = "";
-  	    	// 기존 세션 체크 인증에서 토큰 방식으로 변경
-        	if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
-        		ResultVO resultVO = new ResultVO();
-    			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-        	}else {
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try{
+			String systemCode = "";
+			// 기존 세션 체크 인증에서 토큰 방식으로 변경
+			if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}else {
 				String[] userinfo = jwtVerification.getTokenUserInfo(request);
 				vo.setUserId(userinfo[0]);
 				systemCode = userinfo[1];
-				
 			}
-  	    	
-    		String status = cmmnCodeManageService.updateCmmnCode(vo) > 0 ?
+        		String status = cmmnCodeManageService.updateCmmnCode(vo) > 0 ?
 			 		 Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = status.equals( Globals.STATUS_SUCCESS) ?
 					 	 egovMessageSource.getMessage("success.request.msg") :
@@ -290,6 +287,7 @@ public class EgovCcmCmmnCodeManageController {
 			
 			
 			if (status.equals(Globals.STATUS_SUCCESS) && !vo.getSystemCode().equals( Globals.SYSTEM_IPCC)) {
+				
 				MessageDto dto =  MessageDto.builder()
 						.id(vo.getCodeId())
 						.processGubun(vo.getMode())
@@ -299,22 +297,23 @@ public class EgovCcmCmmnCodeManageController {
 						.build();
 				
 						messageService.sendMessage(dto, 
-								"Topic", 
+								"topic", 
 								exchangeName,
 								routingKey);
 						log.info("=========== send message");
+				
 			}
 			model.addObject(Globals.STATUS, status);
-	   		model.addObject(Globals.STATUS_MESSAGE, message);
-	   		
-  	    }catch (Exception e){
-  	    	System.out.println("error:"+ e.toString()  );
-  	    	model.addObject("status", Globals.STATUS_FAIL);
+			model.addObject(Globals.STATUS_MESSAGE, message);
+			
+		}catch (Exception e){
+			System.out.println("error:"+ e.toString()  );
+			model.addObject("status", Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.insert"));		
-  	    }
-  	    finally{
-  	    	return model;
-  	    }
-  		
-  	}
+		}
+		finally{
+			return model;
+		}
+		
+	}
 }

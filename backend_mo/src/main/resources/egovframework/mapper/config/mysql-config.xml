@@ -139,10 +139,17 @@
 		<typeAlias alias="UserToken"  type="com.system.backoffice.uat.uia.models.UserToken" />
 		
 		<typeAlias alias="AmqpConfigInfoDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.AmqpConfigInfoDto" />
+		<typeAlias alias="MqQueseInfoDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.MqQueseInfoDto" />
 		<typeAlias alias="MessageConfigInfoReqDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.MessageConfigInfoReqDto" />
 		<typeAlias alias="MessageDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.MessageDto" />
 		<typeAlias alias="MessageInfoDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.MessageInfoDto" />
 		<typeAlias alias="SystemQueueInfos"	type="com.system.backoffice.sys.rabbitmq.models.dto.SystemQueueInfos" />
+		<typeAlias alias="MqQueseInfo"	type="com.system.backoffice.sys.rabbitmq.models.MqQueseInfo" />
+		
+		<typeAlias alias="ExchangeInfoReqDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.ExchangeInfoReqDto" />
+		<typeAlias alias="QueueInfoReqDto"	type="com.system.backoffice.sys.rabbitmq.models.dto.QueueInfoReqDto" />
+		<typeAlias alias="QueueInfo"	type="com.system.backoffice.sys.rabbitmq.models.MqQueseInfo" />
+		<typeAlias alias="ExchangeInfo"	type="com.system.backoffice.sys.rabbitmq.models.MqQueseInfo" />
 		
 		<typeAlias alias="AmqpConfigInfo"		type="com.system.backoffice.sys.rabbitmq.models.AmqpConfigInfo" />
 		<typeAlias alias="MessageConfigInfo"	type="com.system.backoffice.sys.rabbitmq.models.MessageConfigInfo" />

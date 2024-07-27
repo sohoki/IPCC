@@ -82,8 +82,7 @@ public class AdminInfoManageController {
 	@Value("${rabbitmq.topic.key}")
 	private String routingKey;
 	
-	@Autowired
-	private MessageService messageService;
+	
 	
 	//@PreAuthorize("hasAnyRole('ROLE_B2C','ROLE_B2B')")
 	@ApiOperation(value="관리자 리스트", notes = "성공시 관리자 리스트를 반환 합니다.")
@@ -271,7 +270,7 @@ public class AdminInfoManageController {
 	@ApiOperation(value="관리자 상태 업데이트", notes="관리자 상태 업데이트")
 	@ApiImplicitParam(name = "adminId", value = "adminId")
 	@GetMapping("StateChange/{adminId}.do")
-	public ModelAndView updateStateChange (@RequestParam Map<String, Object> commandMap,
+	public ModelAndView updateStateChangeMessage (@RequestParam Map<String, Object> commandMap,
 											HttpServletRequest request, 
 											@PathVariable String adminId) throws Exception{
 		AdminStateChangeInfo vo = new AdminStateChangeInfo();
@@ -297,7 +296,7 @@ public class AdminInfoManageController {
 			
 			if (ret >0){
 				
-				
+				/*
 				MessageDto dto =  MessageDto.builder()
 						.id(adminId)
 						.processGubun(Globals.SAVE_MODE_UPDATE)
@@ -311,7 +310,7 @@ public class AdminInfoManageController {
 						exchangeName,
 						routingKey);
 				log.info("=========== admin send message");
-				
+				*/
 				
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.insert"));		
@@ -329,7 +328,7 @@ public class AdminInfoManageController {
 	//추후 .do 파일 확인 하기 
 	@ApiOperation(value="사용자 업데이트", notes="관리자 업데이트")
 	@PostMapping("managerUpdate.do")
-	public ModelAndView updatemanger (@RequestBody  AdminInfoVO vo,
+	public ModelAndView updateMangerMessage  (@RequestBody  AdminInfoVO vo,
 									  HttpServletRequest request, 
 									  BindingResult bindingResult) throws Exception{
 		
@@ -356,7 +355,7 @@ public class AdminInfoManageController {
 			int ret = userManagerService.updateAdminUserManage(vo);
 			meesage =vo.getMode().equals("Ins") ?"success.common.insert" : "success.common.update";
 			if (ret >0){
-				
+				/*
 				MessageDto dto =  MessageDto.builder()
 						.id(vo.getAdminId())
 						.processGubun(vo.getMode())
@@ -370,7 +369,7 @@ public class AdminInfoManageController {
 						exchangeName,
 						routingKey);
 				log.info("=========== admin send message");
-				
+				*/
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(meesage));		
 			}else {	
@@ -384,7 +383,7 @@ public class AdminInfoManageController {
 		}	
 		return model;
 	}
-	@ApiOperation(value="사용자 업데이트", notes="관리자 업데이트")
+	@ApiOperation(value="관리자 업데이트", notes="관리자 업데이트 로그인 필요 없음")
 	@PostMapping("managerUpdateLogin.do")
 	public ModelAndView mangerUpdateLogin (@RequestBody  AdminInfoVO vo,
 									  HttpServletRequest request, 
@@ -406,6 +405,7 @@ public class AdminInfoManageController {
 			int ret = userManagerService.updateAdminUserManage(vo);
 			meesage =vo.getMode().equals(Globals.SAVE_MODE_INSERT) ?"success.common.insert" : "success.common.update";
 			if (ret >0){
+				/*
 				MessageDto dto =  MessageDto.builder()
 						.id(vo.getAdminId())
 						.processGubun(vo.getMode())
@@ -419,6 +419,7 @@ public class AdminInfoManageController {
 						exchangeName,
 						routingKey);
 				log.info("=========== admin send message");
+				*/
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(meesage));		
 			}else {	
@@ -434,7 +435,7 @@ public class AdminInfoManageController {
 	}
 	@ApiOperation(value="사용자 삭제", notes="사용자 체크 후 삭제")
 	@DeleteMapping("{adminId}.do")
-	public ModelAndView deleteMber(@PathVariable String adminId, 
+	public ModelAndView deleteMberMessage(@PathVariable String adminId, 
 									HttpServletRequest request) throws Exception {
 		
 		if (!jwtVerification.isVerificationAdmin(request)) {
@@ -443,9 +444,10 @@ public class AdminInfoManageController {
 		}
 	
 		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
-	   try{
+		try{
 			
 			int ret =  userManagerService.deleteAdminUserManage(adminId);
+			/*
 			if (ret>0) {
 				MessageDto dto =  MessageDto.builder()
 						.id(adminId)
@@ -461,6 +463,7 @@ public class AdminInfoManageController {
 								routingKey);
 						log.info("=========== send message");
 			}
+			*/
 			String status = ret > 0 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = ret > 0 ? "success.request.msg" : "fail.request.msg";
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(message));	
@@ -487,7 +490,6 @@ public class AdminInfoManageController {
 			String status = IDCheck < 1 ? Globals.STATUS_SUCCESS : Globals.STATUS_FAIL;
 			String message = IDCheck < 1 ? "member.idcheck.success" : "member.idcheck.fail";
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage(message));	
-			System.out.println("IDCheck:" + IDCheck + ":" +  status + ":" + message); 
 			model.addObject(Globals.STATUS, status); 
 		}catch(Exception e){
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.request.msg"));	

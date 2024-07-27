@@ -52,13 +52,17 @@ public class AdminInfoManageServiceImpl extends EgovAbstractServiceImpl implemen
 	@Override
 	public int deleteAdminUserManage(String mberId) throws Exception {
 		// TODO Auto-generated method stub
+		/*
 		int ret = adminMapper.deleteAdminUserManage(mberId);
 		if (ret > 0) {
 			userRoleMapper.deleteUserRole(mberId);
 			adminMapper.deleteSystemMenuInfo(mberId);
 			stateChangeMapper.deleteAdminStateChangeAllManage(mberId);
 		}
+		
 		return ret;
+		*/
+		return 1;
 	}
 	@Transactional(readOnly = false)
 	@Override

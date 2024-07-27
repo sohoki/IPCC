@@ -37,7 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 
 
 
-@Api(tags = {"기관별 부서 인프라 기초 정보 API"})
+@Api(tags = {"기관별 부서 인프라 기초 정보 API  내선번호/cti dn 및 login값"})
 @Slf4j
 @RestController
 @RequestMapping("/api/backoffice/uat/uia/partinfra")

@@ -36,5 +36,7 @@ public class MessageConfigInfoReqDto {
 	private String lastUpdtPnttm;
 	private String lastUpdusrId;
 	private String msgReturnExample;
+	private String exchangeRoutingKey;
+	private String exchangeName;
 	private String userId;
 }

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.system.backoffice.sys.rabbitmq.mapper.QueueInfoManageMapper">
+
+	<select id="selectQueueManageListByPagination" resultType="camelmap">
+			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+			TB.* FROM (
+								SELECT  QUEUE_NM, QUEUE_DURATION, QUEUE_AUTODELETE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+								FROM    TB_QUEUE_INFO 
+								WHERE 1=1
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+										AND QUEUE_NM LIKE CONCAT('%',#{params.searchKeyword},'%')  
+								</if>	     
+								ORDER BY LAST_UPDT_PNTTM  DESC
+			) TB  
+			ORDER BY TB.LAST_UPDT_PNTTM  DESC
+			LIMIT   #{params.firstIndex},   #{params.recordCountPerPage}  	
+	</select>
+	<select id="selectExchangeInfoManageListByPagination" resultType="camelmap">
+			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+			TB.* FROM (
+								SELECT  EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+								FROM  TB_EXCHANGE_INFO 
+								WHERE 1=1
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+										<choose>
+												<when test="params.searchCondition == 'queue'">
+													AND QUEUE_NM LIKE CONCAT('%',#{params.searchKeyword},'%') 
+												</when>
+												<otherwise>
+													AND EXCHANGE_NAME LIKE CONCAT('%',#{params.searchKeyword},'%')  
+												</otherwise>
+											</choose>
+								</if>	
+								ORDER BY LAST_UPDT_PNTTM  DESC
+			) TB  
+			ORDER BY TB.LAST_UPDT_PNTTM  DESC
+			LIMIT   #{params.firstIndex},   #{params.recordCountPerPage}  	
+	</select>
+	<select id="selectQueueDetail" resultType="QueueInfo">
+			SELECT QUEUE_NM, QUEUE_DURATION, QUEUE_AUTODELETE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+			FROM TB_QUEUE_INFO
+			WHERE QUEUE_NM = #{queueNm}
+	</select>
+	<select id="selectExchangeInfoDetail" resultType="ExchangeInfo">
+			SELECT EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+			FROM TB_EXCHANGE_INFO
+			WHERE EXCHANGE_NAME = #{exchangeName}
+	</select>
+	<insert id="insertQueueInfo">
+		INSERT INTO TB_QUEUE_INFO(QUEUE_NM, QUEUE_DURATION, QUEUE_AUTODELETE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM)
+		VALUES (#{queueNm}, #{queueDuration}, #{queueAutodelete}, #{userId}, NOW())
+	</insert>
+	<delete id="deleteQueueInfo">
+		DELETE FROM TB_QUEUE_INFO WHERE QUEUE_NM = #{queueNm}
+	</delete>
+	<insert id="insertExchangeInfo">
+		INSERT INTO TB_EXCHANGE_INFO(EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM)
+		VALUES (#{exchangeName},#{queueNm},#{exchangeRoutingKey},#{exchangeType}, #{userId}, NOW() )
+	</insert>
+	<delete id="deleteExchangeInfo">
+		DELETE FROM TB_EXCHANGE_INFO WHERE EXCHANGE_NAME = #{exchangeName}
+	</delete>
+</mapper>
