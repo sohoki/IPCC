@@ -245,26 +245,31 @@ public class AgentInfoManageController {
 		try
 		{
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
-				if (!jwtVerification.isVerificationAdmin(request)) {
-					ResultVO resultVO = new ResultVO();
-					return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-				}
+			if (!jwtVerification.isVerificationAdmin(request) &&  !jwtVerification.isVerificationSystem(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}else {
+				String[] userinfo = jwtVerification.getTokenUserInfo(request);
+				searchMap.put(Globals.PAGE_LOGIN_SYSTEM_CODE, userinfo[1]);
+				searchMap.put(Globals.PAGE_LOGIN_ROLEID, userinfo[2]);
+				searchMap.put(Globals.PAGE_LOGIN_PARTID , userinfo[3]);
+				searchMap.put(Globals.PAGE_LOGIN_INSTTCODE , userinfo[4]);
+			}
 				
-				
-				PaginationInfo paginationInfo = new PaginationInfo();
-				paginationInfo.setCurrentPageNo( Integer.valueOf( UtilInfoService.NVLObj(searchMap.get(Globals.PAGE_INDEX).toString(),"1") ));
-				paginationInfo.setRecordCountPerPage(UtilInfoService.NVLObj( searchMap.get(Globals.PAGE_UNIT), pageUnitSetting));
-				paginationInfo.setPageSize(UtilInfoService.NVLObj( searchMap.get(Globals.PAGE_SIZE), pageUnitSetting));
+			PaginationInfo paginationInfo = new PaginationInfo();
+			paginationInfo.setCurrentPageNo( Integer.valueOf( UtilInfoService.NVLObj(searchMap.get(Globals.PAGE_INDEX).toString(),"1") ));
+			paginationInfo.setRecordCountPerPage(UtilInfoService.NVLObj( searchMap.get(Globals.PAGE_UNIT), pageUnitSetting));
+			paginationInfo.setPageSize(UtilInfoService.NVLObj( searchMap.get(Globals.PAGE_SIZE), pageUnitSetting));
+		
+			searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+			searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+			searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+			List<Map<String, Object>> codeList = (List<Map<String, Object>>) agentService.selectAgentInfoPageList(searchMap);
+			int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).get(Globals.PAGE_TOTAL_RECORD_COUNT).toString().replace("-", "") ) :0;
 			
-				searchMap.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
-				searchMap.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
-				searchMap.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
-				List<Map<String, Object>> codeList = (List<Map<String, Object>>) agentService.selectAgentInfoPageList(searchMap);
-				int totCnt = codeList.size() > 0 ?  Integer.valueOf( codeList.get(0).get(Globals.PAGE_TOTAL_RECORD_COUNT).toString().replace("-", "") ) :0;
-				
-				paginationInfo.setTotalRecordCount(totCnt);
-				model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
-				model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
+			paginationInfo.setTotalRecordCount(totCnt);
+			model.addObject(Globals.JSON_RETURN_RESULT_LIST, codeList);
+			model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
 		}catch (Exception e){
 			log.debug("selectAgentList error:" + e.toString());
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.msg")+ e.toString());	

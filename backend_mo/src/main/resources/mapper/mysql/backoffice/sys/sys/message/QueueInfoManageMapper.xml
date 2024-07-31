@@ -5,7 +5,8 @@
 	<select id="selectQueueManageListByPagination" resultType="camelmap">
 			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
 			TB.* FROM (
-								SELECT  QUEUE_NM, QUEUE_DURATION, QUEUE_AUTODELETE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+								SELECT  QUEUE_NM, QUEUE_DURATION, QUEUE_AUTODELETE, LAST_UPDUSR_ID, 
+												DATE_FORMAT(LAST_UPDT_PNTTM, '%Y-%m-%d' )  LAST_UPDT_PNTTM
 								FROM    TB_QUEUE_INFO 
 								WHERE 1=1
 								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -19,7 +20,8 @@
 	<select id="selectExchangeInfoManageListByPagination" resultType="camelmap">
 			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
 			TB.* FROM (
-								SELECT  EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
+								SELECT  EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, 
+												DATE_FORMAT(LAST_UPDT_PNTTM, '%Y-%m-%d' )  LAST_UPDT_PNTTM
 								FROM  TB_EXCHANGE_INFO 
 								WHERE 1=1
 								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -32,6 +34,9 @@
 												</otherwise>
 											</choose>
 								</if>	
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(queueNm)">
+										AND QUEUE_NM = #{queueNm}
+								</if>
 								ORDER BY LAST_UPDT_PNTTM  DESC
 			) TB  
 			ORDER BY TB.LAST_UPDT_PNTTM  DESC

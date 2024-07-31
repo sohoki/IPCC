@@ -11,7 +11,7 @@
 			(	
 				SELECT @ROWNUM := @ROWNUM + 1 AS RNUM,
 					 			A.LOGIN_ID, A.NAME, A.EXTENSION, A.SN, A.SN_INDEX, A.SR, A.SR_INDEX, 
-					 			DATE_FORMAT( A.AGENT_UPDATE, '%Y-%m-%d') AGENT_UPDATE
+					 			DATE_FORMAT( A.AGENT_UPDATE, '%Y-%m-%d') AGENT_UPDATE, CONSULT_USEYN
 				FROM TB_AGENTINTO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">

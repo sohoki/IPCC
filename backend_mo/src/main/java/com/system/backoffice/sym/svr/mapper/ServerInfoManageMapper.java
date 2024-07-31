@@ -21,11 +21,11 @@ public interface ServerInfoManageMapper {
 	
 	public Optional<ServerInfo> selectServerInfoDetail(String serverCode);
 	
-    public int insertServerInfo(ServerInfoRequestDto vo);
+	public int insertServerInfo(ServerInfoRequestDto vo);
+		
+	public int updateServerInfo(ServerInfoRequestDto vo);
 	
-    public int updateServerInfo(ServerInfoRequestDto vo);
-    
-    public int updateServerStatus(ServerStatusDto vo);
-   
-    public int deleteServerInfo(String serverCode);
+	public int updateServerStatus(ServerStatusDto vo);
+	
+	public int deleteServerInfo(String serverCode);
 }

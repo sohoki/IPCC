@@ -57,25 +57,25 @@ public class SystemInfoManageController {
 	protected EgovMessageSource egovMessageSource;
 	
 	@Autowired
-    protected EgovPropertyService propertiesService;
-	
+	protected EgovPropertyService propertiesService;
+		
 	@Autowired
-    protected SystemInfoManageService systemService;
-	
+	protected SystemInfoManageService systemService;
+		
 	//파일 업로드
-    @Autowired
+	@Autowired
 	private fileService uploadFile;
-    
+	
 	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
-	
-    @Autowired
-    private UniUtilManageService uniMangeServiec;
-    
-    /** JWT */
+		
 	@Autowired
-    private EgovJwtTokenUtil jwtTokenUtil;
+	private UniUtilManageService uniMangeServiec;
+	
+	/** JWT */
+	@Autowired
+	private EgovJwtTokenUtil jwtTokenUtil;
 	/**
 	 * 시스템 목록 조회
 	 * @param searchVO
@@ -98,27 +98,27 @@ public class SystemInfoManageController {
 		int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ? propertiesService.getInt(Globals.PAGE_UNIT)
 				: Integer.valueOf((String) searchVO.get(Globals.PAGE_UNIT));
 		
-   	    PaginationInfo paginationInfo = new PaginationInfo();
-	    paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get(Globals.PAGE_INDEX),"1")));
-	    paginationInfo.setRecordCountPerPage(pageUnit);
-	    paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_SIZE));
-	    
-
-	    searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
-	    searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
-	    searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
-	    
-	    
-	    
+		PaginationInfo paginationInfo = new PaginationInfo();
+		paginationInfo.setCurrentPageNo( Integer.parseInt(UtilInfoService.NVL(searchVO.get(Globals.PAGE_INDEX),"1")));
+		paginationInfo.setRecordCountPerPage(pageUnit);
+		paginationInfo.setPageSize(propertiesService.getInt(Globals.PAGE_SIZE));
+		
+	
+		searchVO.put(Globals.PAGE_FIRST_INDEX, paginationInfo.getFirstRecordIndex());
+		searchVO.put(Globals.PAGE_LAST_INDEX, paginationInfo.getLastRecordIndex());
+		searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
+		
+		
+		
 		List<SystemInfoResDto> list = systemService.selectSystemInfoList(searchVO);
-        int totCnt =  list.size() > 0 ? list.get(0).getTotalRecordCount() : 0;
+			int totCnt =  list.size() > 0 ? list.get(0).getTotalRecordCount() : 0;
 		paginationInfo.setTotalRecordCount(totCnt);
-
+		
 		model.addObject(Globals.STATUS_REGINFO, searchVO);
 		model.addObject(Globals.JSON_RETURN_RESULT_LIST, list);
-	    model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
-	    model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
-	    model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		model.addObject(Globals.PAGE_TOTAL_COUNT, totCnt);
+		model.addObject(Globals.JSON_PAGEINFO, paginationInfo);
+		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 		
 		return model;
 	}

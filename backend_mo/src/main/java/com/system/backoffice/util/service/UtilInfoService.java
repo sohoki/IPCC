@@ -21,6 +21,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -47,8 +50,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.system.backoffice.sym.log.models.InterfaceInfo;
@@ -60,6 +61,10 @@ public class UtilInfoService {
 	
 	@Autowired
 	protected EgovPropertyService propertiesService;
+	
+	public static String alg = "AES/CBC/PKCS5Padding";
+	private final String key = "01234567890123456789012345678901";
+	private final String iv = key.substring(0, 16); // 16byte
 	/*
 	@Autowired
     public InterfaceInfoManageService interfaceService;
@@ -418,6 +423,26 @@ public class UtilInfoService {
 		}
 		
 		return encryptedSHA256;
+	}
+	public String encrypt(String text) throws Exception {
+		Cipher cipher = Cipher.getInstance(alg);
+		SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
+		IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
+		cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivParamSpec);
+	
+		byte[] encrypted = cipher.doFinal(text.getBytes("UTF-8"));
+		return java.util.Base64.getEncoder().encodeToString(encrypted);
+	}
+
+	public String decrypt(String cipherText) throws Exception {
+		Cipher cipher = Cipher.getInstance(alg);
+		SecretKeySpec keySpec = new SecretKeySpec(key.getBytes(), "AES");
+		IvParameterSpec ivParamSpec = new IvParameterSpec(iv.getBytes());
+		cipher.init(Cipher.DECRYPT_MODE, keySpec, ivParamSpec);
+	
+		byte[] decodedBytes = java.util.Base64.getDecoder().decode(cipherText);
+		byte[] decrypted = cipher.doFinal(decodedBytes);
+		return new String(decrypted, "UTF-8");
 	}
 
 	/**

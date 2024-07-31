@@ -45,19 +45,19 @@ public class ProgrmInfoManageController {
 	protected EgovMessageSource egovMessageSource;
 	
 	@Autowired
-    protected EgovPropertyService propertiesService;
-	
+	protected EgovPropertyService propertiesService;
+		
 	@Autowired
 	private ProgrameInfoManageService progrmService;
+		
+	@Autowired
+	private UniUtilManageService uniMangeServiec;
 	
-    @Autowired
-    private UniUtilManageService uniMangeServiec;
-
-
+	
 	/** JwtVerification */
 	@Autowired
 	private JwtVerification jwtVerification;
-    
+	
 
 	/**
 	 * 프로그램 목록 조회
@@ -73,9 +73,9 @@ public class ProgrmInfoManageController {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
 		if (!jwtVerification.isVerificationAdmin(request) && !jwtVerification.isVerificationSystem(request)) {
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}else {
+		}else {
 			String[] userinfo = jwtVerification.getTokenUserInfo(request);
 			searchVO.put(Globals.USER_ROLE_ID, userinfo[2]);
 			searchVO.put(Globals.USER_PART_ID, userinfo[3]);
@@ -127,12 +127,11 @@ public class ProgrmInfoManageController {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
 		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}else {
-    		progrmInfoDto.setUserId(jwtVerification.getTokenUserName(request));
-    	}
-		
+		}else {
+			progrmInfoDto.setUserId(jwtVerification.getTokenUserName(request));
+		}
 		int ret = 0;
 		switch (progrmInfoDto.getMode()) {
 			case Globals.SAVE_MODE_INSERT:
@@ -176,10 +175,9 @@ public class ProgrmInfoManageController {
 		
 
 		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
-		
+		}
 		
 		int ret = progrmService.deleteProgrmInfo(progrmFileNm);
 		if (ret > 0) {
@@ -202,27 +200,26 @@ public class ProgrmInfoManageController {
 	 */
 	@ApiOperation(value="프로그램 코드 중복 체크", notes="프로그램 코드 중복 체크")
 	@NoLogging
-    @GetMapping ("programIDCheck/{progrmFileNm}.do")
-    public ModelAndView programIDCheck(@PathVariable String progrmFileNm, 
-    								  HttpServletRequest request) throws Exception {
+	@GetMapping ("programIDCheck/{progrmFileNm}.do")
+	public ModelAndView programIDCheck(@PathVariable String progrmFileNm, 
+									  HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
-
+	
 		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
+		}
 		
-		
-    	int ret = uniMangeServiec.selectIdDoubleCheckString("PROGRM_FILE_NM", "COMTNPROGRMLIST", "PROGRM_FILE_NM = ["+ progrmFileNm + "[");
-    	if (ret == 0) {
-    		model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+		int ret = uniMangeServiec.selectIdDoubleCheckString("PROGRM_FILE_NM", "COMTNPROGRMLIST", "PROGRM_FILE_NM = ["+ progrmFileNm + "[");
+		if (ret == 0) {
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeOk.msg"));
-    	}
-    	else {
-    		model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
+		}
+		else {
+			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("common.codeFail.msg"));
-    	}
+		}
 		
-    	return model;
-    }
+		return model;
+	}
 }

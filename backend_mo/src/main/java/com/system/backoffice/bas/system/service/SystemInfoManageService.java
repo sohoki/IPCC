@@ -45,6 +45,7 @@ public class SystemInfoManageService {
 	@Transactional(readOnly = false)
 	public int updateSystemInfo(SystemInfoRequestDto  sysinfo) throws Exception {
 		
+		
 		if (sysinfo.getMode().equals("Ins") && (uniMapper.selectIdDoubleCheckString("SYSTEM_CODE", "TB_SYSTEMINFO", "SYSTEM_CODE = ["+ sysinfo.getSystemCode() + "[" ) > 0)) 
 			return -1 ;
 			

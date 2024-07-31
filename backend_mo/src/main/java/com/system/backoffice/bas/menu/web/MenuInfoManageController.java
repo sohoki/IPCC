@@ -258,10 +258,9 @@ public class MenuInfoManageController {
 //		}
 		if (!jwtVerification.isVerificationAdmin(request)) {
 
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
-    	
+		}
 		int ret = menuService.deleteMenuManage(menuNo);
 		if (ret > 0) {
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.delete"));
@@ -334,25 +333,22 @@ public class MenuInfoManageController {
 			
 			if (!jwtVerification.isVerificationAdmin(request)) {
 
-	    		ResultVO resultVO = new ResultVO();
+				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-	    	}
-	    	
+			}
 			int ret = menuService.deleteMenuManageList(checkedMenuNoForDel);
 			
-			
-			
 			if (ret == -1) {
-			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("menu.exist.fail"));
-			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
+				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("menu.exist.fail"));
+				model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
 			} else if (ret == 0 ) {
-			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
-			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
+				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
+				model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
 		
 			} else {
-			menuService.deleteMenuManageList(checkedMenuNoForDel);
-			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.delete"));
-			model.addObject(Globals.STATUS,  Globals.STATUS_SUCCESS);
+				menuService.deleteMenuManageList(checkedMenuNoForDel);
+				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.delete"));
+				model.addObject(Globals.STATUS,  Globals.STATUS_SUCCESS);
 			}
 		}catch(Exception e) {
 			log.info(e.toString());
@@ -380,15 +376,15 @@ public class MenuInfoManageController {
 		
 		// 0. Spring Security 사용자권한 처리
 		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}else {
-    		menuIno.setUserId(jwtVerification.getTokenUserName(request));
-    	}
-			Map<String, Object> params = new HashMap<String, Object>();
-			params.put("systemCode", menuIno.getSystemCode());
-			params.put("menuNo", menuIno.getMenuNo());
-			
+		}else {
+			menuIno.setUserId(jwtVerification.getTokenUserName(request));
+		}
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("systemCode", menuIno.getSystemCode());
+		params.put("menuNo", menuIno.getMenuNo());
+		
 			
 		if (menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) && menuService.selectMenuNoByPk(params) != 0 ) {
 			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
@@ -401,24 +397,24 @@ public class MenuInfoManageController {
 		
 		
 		String message = "";
-	    String states = "";
-	    menuIno.setRelateImageNm(fileNm);
-	    menuIno.setRelateImagePath(propertiesService.getString("Globals.filePath"));
+		String states = "";
+		menuIno.setRelateImageNm(fileNm);
+		menuIno.setRelateImagePath(propertiesService.getString("Globals.filePath"));
+	
+		int ret = menuService.updateMenuManage(menuIno);
 		
-	    int ret = menuService.updateMenuManage(menuIno);
-	  
-	    
-	    if (ret > 0) {
-	    	message = menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("success.common.insert") : egovMessageSource.getMessage("success.common.update");
-	    	states =  Globals.STATUS_SUCCESS;
-	    }else {
-	    	message = menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("fail.common.insert") : egovMessageSource.getMessage("fail.common.update");
-	    	states =  Globals.STATUS_FAIL;
-	    }
-	    
-	    model.addObject(Globals.STATUS, states);
+		
+		if (ret > 0) {
+			message = menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("success.common.insert") : egovMessageSource.getMessage("success.common.update");
+			states =  Globals.STATUS_SUCCESS;
+		}else {
+			message = menuIno.getMode().equals(Globals.SAVE_MODE_INSERT) ? egovMessageSource.getMessage("fail.common.insert") : egovMessageSource.getMessage("fail.common.update");
+			states =  Globals.STATUS_FAIL;
+		}
+		
+		model.addObject(Globals.STATUS, states);
 		model.addObject(Globals.STATUS_MESSAGE, message);
-	    
+		
 		return model;
 	}
 
@@ -466,14 +462,14 @@ public class MenuInfoManageController {
 	@ApiOperation(value="메뉴일괄등록처리 프로세스", notes = "성공시 메뉴일괄등록처리 프로세스 합니다.")
 	@PostMapping(value = "menuBndeRegist.do")
 	public ModelAndView menuBndeRegist(@RequestParam Map<String, Object> commandMap, 
-			                     final HttpServletRequest request, 
-			                     @ModelAttribute("MenuInfo") MenuInfo menuInfo,
-			                     ModelMap mmp) throws Exception {
+															final HttpServletRequest request, 
+															@ModelAttribute("MenuInfo") MenuInfo menuInfo,
+															ModelMap mmp) throws Exception {
 		
 		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
+		}
 		
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 	

@@ -240,9 +240,15 @@ public class StationInfoManageController {
 		try
 		{
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
-			if (!jwtVerification.isVerificationAdmin(request)) {
+			if (!jwtVerification.isVerificationAdmin(request) &&  !jwtVerification.isVerificationSystem(request)) {
 				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
+			}else {
+				String[] userinfo = jwtVerification.getTokenUserInfo(request);
+				searchMap.put(Globals.PAGE_LOGIN_SYSTEM_CODE, userinfo[1]);
+				searchMap.put(Globals.PAGE_LOGIN_ROLEID, userinfo[2]);
+				searchMap.put(Globals.PAGE_LOGIN_PARTID , userinfo[3]);
+				searchMap.put(Globals.PAGE_LOGIN_INSTTCODE , userinfo[4]);
 			}
 			
 			

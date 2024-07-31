@@ -156,7 +156,7 @@ public class JwtVerification {
 		String username = null;
 		
 		try {
-	           username = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			username = jwtTokenUtil.getUsernameFromToken(jwtToken);
 		} catch (IllegalArgumentException e) {
 			log.debug("Unable to get JWT Token");
 		} catch (ExpiredJwtException e) {
