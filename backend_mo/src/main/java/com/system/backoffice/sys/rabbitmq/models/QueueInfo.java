@@ -18,4 +18,5 @@ public class QueueInfo {
 	private String queueAutodelete;
 	private String lastUpdusrId;
 	private String lastUpdtPnttm;
+	private String systemCode;
 }

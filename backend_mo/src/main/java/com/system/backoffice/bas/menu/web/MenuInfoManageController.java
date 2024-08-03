@@ -112,11 +112,21 @@ public class MenuInfoManageController {
 		try {
 			
 			// 기존 세션 체크 인증에서 토큰 방식으로 변경
-			if (!jwtVerification.isVerificationAdmin(request)) {
-		
+			if (!jwtVerification.isVerificationAdmin(request) &&  !jwtVerification.isVerificationSystem(request)) {
 				ResultVO resultVO = new ResultVO();
 				return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-			}
+			}else {
+				String[] userinfo = jwtVerification.getTokenUserInfo(request);
+				searchVO.put(Globals.PAGE_LOGIN_SYSTEM_CODE, userinfo[1]);
+				searchVO.put(Globals.PAGE_LOGIN_ROLEID, userinfo[2]);
+				searchVO.put(Globals.PAGE_LOGIN_PARTID , userinfo[3]);
+				searchVO.put(Globals.PAGE_LOGIN_INSTTCODE , userinfo[4]);
+				if (!jwtVerification.isVerificationAdmin(request)) {
+					searchVO.put("searchSystemCode", userinfo[1]);
+					searchVO.put("searchUseyn", "Y");
+				}
+				
+			}	
 			
 			
 			int pageUnit = searchVO.get(Globals.PAGE_UNIT) == null ?  propertiesService.getInt(Globals.PAGE_UNIT)
@@ -158,7 +168,7 @@ public class MenuInfoManageController {
 											 HttpServletRequest request) throws Exception {
 		
 		// 기존 세션 체크 인증에서 토큰 방식으로 변경
-		if (!jwtVerification.isVerificationAdmin(request)) {
+		if (!jwtVerification.isVerificationAdmin(request) &&  !jwtVerification.isVerificationSystem(request)) {
 	
 			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
@@ -220,9 +230,28 @@ public class MenuInfoManageController {
 		}
 		
 		int ret = menuService.updateMenuManage(info);
+		
+		
+		
 
 		String messageKey = "";
-		if (ret > 0) {
+		if (ret > 0 && !info.getSystemCode().equals(Globals.SYSTEM_IPCC)) {
+			
+			MessageDto dto =  MessageDto.builder()
+					.id(info.getMenuNo())
+					.processGubun(info.getMode())
+					.processName("MENUINFO")
+					.urlMethod("GET")
+					.url("/api/backoffice/sys/menu/"+ info.getMenuNo()+".do")
+					.build();
+			
+					messageService.sendMessage(dto, 
+							"Topic", 
+							exchangeName,
+							routingKey);
+					log.info("=========== send message");
+			
+			
 			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 			messageKey = StringUtils.equals(info.getMode(), Globals.SAVE_MODE_INSERT) 
 					? "sucess.common.insert" : "sucess.common.update";
@@ -250,19 +279,28 @@ public class MenuInfoManageController {
 											HttpServletRequest request) throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
 		
-		// 화면에서 자식메뉴 체크 하므로 불필요
-//		if (menuService.selectUpperMenuNoByPk(menuNo) != 0) {
-//			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete.upperMenuExist"));
-//			model.addObject(Globals.STATUS,  Globals.STATUS_FAIL);
-//			return model;
-//		}
-		if (!jwtVerification.isVerificationAdmin(request)) {
 
+		if (!jwtVerification.isVerificationAdmin(request)) {
 			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
 		}
 		int ret = menuService.deleteMenuManage(menuNo);
 		if (ret > 0) {
+			
+			MessageDto dto =  MessageDto.builder()
+					.id(menuNo)
+					.processGubun("DEL")
+					.processName("MENUINFO")
+					.urlMethod("DELETE")
+					.url("")
+					.build();
+			
+					messageService.sendMessage(dto, 
+							"Topic", 
+							exchangeName,
+							routingKey);
+					log.info("=========== send message");
+					
 			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.delete"));
 			model.addObject(Globals.STATUS,  Globals.STATUS_SUCCESS);
 		}else {
@@ -657,13 +695,16 @@ public class MenuInfoManageController {
 													HttpServletRequest request,
 													@PathVariable String roleId)throws Exception {
 		ModelAndView model = new ModelAndView (Globals.JSON_VIEW);
-		
-		if (!jwtVerification.isVerificationAdmin(request)) {
-    		ResultVO resultVO = new ResultVO();
+		String systemCode = "";
+		if (!jwtVerification.isVerificationAdmin(request) &&  !jwtVerification.isVerificationSystem(request)) {
+			ResultVO resultVO = new ResultVO();
 			return jwtVerification.handleAuthError(resultVO); // 토큰 확인
-    	}
+		}else {
+			String[] userinfo = jwtVerification.getTokenUserInfo(request);
+			systemCode = UtilInfoService.NVL(commandMap.get("systemCode"),userinfo[1]);
+		}
 		
-		String systemCode = UtilInfoService.NVL(commandMap.get("systemCode"),"IPCC");
+		
 		String hidMenuGubun = UtilInfoService.NVL(commandMap.get("hidMenuGubun"),"MENU_GUBUN_1");
 		
 		List<Map<String, Object>> list = menuCreateService.selectMenuCreatList_Author(roleId, systemCode, hidMenuGubun);

@@ -82,7 +82,8 @@ public class AdminInfoManageController {
 	@Value("${rabbitmq.topic.key}")
 	private String routingKey;
 	
-	
+	@Autowired
+	private MessageService messageService;
 	
 	//@PreAuthorize("hasAnyRole('ROLE_B2C','ROLE_B2B')")
 	@ApiOperation(value="관리자 리스트", notes = "성공시 관리자 리스트를 반환 합니다.")
@@ -296,7 +297,7 @@ public class AdminInfoManageController {
 			
 			if (ret >0){
 				
-				/*
+				
 				MessageDto dto =  MessageDto.builder()
 						.id(adminId)
 						.processGubun(Globals.SAVE_MODE_UPDATE)
@@ -310,7 +311,7 @@ public class AdminInfoManageController {
 						exchangeName,
 						routingKey);
 				log.info("=========== admin send message");
-				*/
+				
 				
 				model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
 				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("success.common.insert"));		

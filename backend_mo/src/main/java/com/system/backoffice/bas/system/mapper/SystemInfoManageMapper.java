@@ -31,5 +31,4 @@ public interface SystemInfoManageMapper {
 	public int updateSystemInfo(SystemInfoRequestDto vo);
 	
 	public int deleteSystemInfo(String systemCode);
-	    
 }

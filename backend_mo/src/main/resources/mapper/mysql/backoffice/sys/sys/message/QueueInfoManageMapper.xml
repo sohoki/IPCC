@@ -17,6 +17,14 @@
 			ORDER BY TB.LAST_UPDT_PNTTM  DESC
 			LIMIT   #{params.firstIndex},   #{params.recordCountPerPage}  	
 	</select>
+	<select id="selectQueueCombobox"  resultType="camelmap">
+		SELECT QUEUE_NM
+		FROM TB_QUEUE_INFO
+		WHERE 1=1 
+			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.systemCode)">
+				AND SYSTEM_CODE IS NOT NULL
+			</if>
+	</select>
 	<select id="selectExchangeInfoManageListByPagination" resultType="camelmap">
 			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
 			TB.* FROM (

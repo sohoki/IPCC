@@ -16,7 +16,11 @@ public interface QueueInfoManageMapper {
 
 	public List<Map<String, Object>> selectQueueManageListByPagination(@Param("params") Map<String, Object> vo);
 	
+	public List<Map<String, Object>> selectQueueCombobox(@Param("params") Map<String, Object> vo);
+	
 	public List<Map<String, Object>> selectExchangeInfoManageListByPagination(@Param("params") Map<String, Object> vo);
+	
+	
 	
 	public Optional<QueueInfo> selectQueueDetail(String queueNm);
 	

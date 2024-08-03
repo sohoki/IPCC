@@ -112,7 +112,7 @@ public class EgovCcmCmmnDetailCodeManageController {
 			}
 			else {
 				model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		    	model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
+				model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.delete"));
 			}
 			
 			
@@ -293,7 +293,7 @@ public class EgovCcmCmmnDetailCodeManageController {
 		}catch (Exception e){
 			log.error("updateCmmnDetailCode error:" + e.toString());
 			model.addObject(Globals.STATUS, Globals.STATUS_FAIL);
-		model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.insert"));		
+			model.addObject(Globals.STATUS_MESSAGE, egovMessageSource.getMessage("fail.common.insert"));		
 		}
 		return model;
 	}

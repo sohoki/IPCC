@@ -55,6 +55,6 @@ public class MessageService {
 	 */
 	@RabbitListener(queues = "${rabbitmq.queue.name}")
 	public void reciveMessage(MessageDto messageDto) {
-		log.info("backend Received message: {}", messageDto.toString());
+		log.info("backend Received message: {}", messageDto.toString() );
 	}
 }

@@ -163,6 +163,7 @@ public class AmqpConfigInfoManageController {
 		
 		return model;
 	}
+	
 	@ApiOperation(value="Queues 조회", notes = "성공시 Queues을 조회 합니다.")
 	@PostMapping(value="queueList.do")
 	public ModelAndView selectQueueManageListByPagination(@RequestBody Map<String, Object> searchMap, 
@@ -211,6 +212,34 @@ public class AmqpConfigInfoManageController {
 		}
 		return model;
 	}
+	
+	@ApiOperation(value="Queues combobox ", notes = "성공시 Queues combobx 을 조회 합니다.")
+	@GetMapping(value="queueComboList.do")
+	public ModelAndView selectQueueCombobox(@RequestParam Map<String, Object> searchMap, 
+																	HttpServletRequest request, 
+																	BindingResult bindingResult) throws Exception {
+		
+		ModelAndView model = new ModelAndView(Globals.JSON_VIEW);
+		try {
+			
+			if (!jwtVerification.isVerificationAdmin(request)) {
+				ResultVO resultVO = new ResultVO();
+				return jwtVerification.handleAuthError(resultVO); // 토큰 확
+			}
+			
+			model.addObject(Globals.STATUS_REGINFO, searchMap);
+			model.addObject(Globals.JSON_RETURN_RESULT_LIST, queueService.selectQueueCombobox(searchMap));
+			model.addObject(Globals.STATUS, Globals.STATUS_SUCCESS);
+			
+			
+		}catch (NullPointerException e) {
+			log.error("ERROR:" + e.toString());
+		} catch (Exception e) {
+			log.error("ERROR:" + e.toString());
+		}
+		return model;
+	}
+	
 	@ApiOperation(value="Queues 조회", notes = "성공시 Queues을 조회 합니다.")
 	@PostMapping(value="exchangeList.do")
 	public ModelAndView selectExchangeManageListByPagination(@RequestBody Map<String, Object> searchMap, 

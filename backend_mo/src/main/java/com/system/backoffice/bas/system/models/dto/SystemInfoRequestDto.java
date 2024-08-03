@@ -52,5 +52,8 @@ public class SystemInfoRequestDto {
 	@Schema(description="시스템 연동 레벨")
 	private String systemConnLevel;
 	
+	@Schema(description="시스템 메세지Queue")
+	private String systemQueue;
+	
 	
 }

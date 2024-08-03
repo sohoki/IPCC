@@ -3,6 +3,8 @@ package com.system.backoffice.sys.rabbitmq.service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Service;
 
 import com.system.backoffice.sys.rabbitmq.mapper.QueueInfoManageMapper;
@@ -25,6 +27,9 @@ public class QueueInfoManageService {
 		return queueMpper.selectQueueManageListByPagination(vo);
 	}
 	
+	public List<Map<String, Object>> selectQueueCombobox(@Param("params") Map<String, Object> vo){
+		return queueMpper.selectQueueCombobox(vo);
+	}
 	public List<Map<String, Object>> selectExchangeInfoManageListByPagination(Map<String, Object> vo){
 		return queueMpper.selectExchangeInfoManageListByPagination(vo);
 	}

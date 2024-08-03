@@ -39,5 +39,6 @@ public class MenuInfoRequestDto {
 	
 	private String menuPrivacy;
 	
+	
  	private int cnt = 0;
 }

@@ -15,7 +15,7 @@
 					 A.SYSTEM_ICON, A.SYSTEM_MENUGUBUN, A.SYSTEM_HEALTH_CHECK,
 					 A.SYSTEM_GUBUN, fn_DetailCodeNm(A.SYSTEM_GUBUN) SYSTEM_GUBUN_TXT,
 					 fn_DetailCodeNm( A.SYSTEM_HEALTH_CHECK) SYSTEM_HEALTH_CHECK_TXT, fn_DetailCodeNm( A.SYSTEM_MENUGUBUN) SYSTEM_MENUGUBUN_TXT,
-					 A.SYSTEM_HEALTH_CHECK_URL, A.SYSTEM_CONN_LEVEL, A.SYSTEM_TOKEN_KEY
+					 A.SYSTEM_HEALTH_CHECK_URL, A.SYSTEM_CONN_LEVEL, A.SYSTEM_TOKEN_KEY, A.SYSTEM_QUEUE
 				FROM TB_SYSTEMINFO A,  (select @ROWNUM := 0) RN_TB
 				WHERE 1=1
 				<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -84,9 +84,9 @@
 	<insert id="insertSystemInfo">
 		INSERT INTO TB_SYSTEMINFO	
 		(
-		    SYSTEM_CODE, SYSTEM_NAME, SYSTEM_DC, SYSTEM_CREATEDC, DOMAIN_INFO ,SYSTEM_USEYN, SYSTEM_GUBUN, 
-		    SYSTEM_ICON, SYSTEM_MENUGUBUN, SYSTEM_HEALTH_CHECK, SYSTEM_HEALTH_CHECK_URL, SYSTEM_CONN_LEVEL,
-		    SYSTEM_TOKEN_KEY
+			SYSTEM_CODE, SYSTEM_NAME, SYSTEM_DC, SYSTEM_CREATEDC, DOMAIN_INFO ,SYSTEM_USEYN, SYSTEM_GUBUN, 
+			SYSTEM_ICON, SYSTEM_MENUGUBUN, SYSTEM_HEALTH_CHECK, SYSTEM_HEALTH_CHECK_URL, SYSTEM_CONN_LEVEL,
+			SYSTEM_TOKEN_KEY, SYSTEM_QUEUE
 		)
 		VALUES 
 		(
@@ -94,8 +94,13 @@
 			, #{systemUseyn,jdbcType=VARCHAR}, #{systemGubun} 
 			, #{systemIcon,jdbcType=VARCHAR}, #{systemMenugubun,jdbcType=VARCHAR}, #{systemHealthCheck,jdbcType=VARCHAR}
 			, #{systemHealthCheckUrl,jdbcType=VARCHAR} , #{systemConnLevel,jdbcType=VARCHAR}
-			, #{systemTokenKey,jdbcType=VARCHAR}
-		)
+			, #{systemTokenKey,jdbcType=VARCHAR}, #{systemQueue,jdbcType=VARCHAR}
+		);
+		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemQueue)">
+			
+			UPDATE TB_QUEUE_INFO set  =  SYSTEM_CODE =  #{systemCode} ,  LAST_UPDT_PNTTM = NOW()
+			WHERE QUEUE_NM =  #{systemQueue};
+		</if>
    	</insert>
 
 
@@ -118,8 +123,15 @@
 								SYSTEM_HEALTH_CHECK = #{systemHealthCheck, jdbcType=VARCHAR} , 
 								SYSTEM_HEALTH_CHECK_URL = #{systemHealthCheckUrl, jdbcType=VARCHAR} , 
 								SYSTEM_CONN_LEVEL= #{systemConnLevel, jdbcType=VARCHAR} , 
-								SYSTEM_GUBUN = #{systemGubun}
-		WHERE SYSTEM_CODE = #{systemCode}
+								SYSTEM_GUBUN = #{systemGubun},
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemQueue)">  
+								SYSTEM_QUEUE = #{systemQueue,jdbcType=VARCHAR}
+								</if>
+		WHERE SYSTEM_CODE = #{systemCode};
+		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemQueue)">
+			UPDATE TB_QUEUE_INFO set  =  SYSTEM_CODE =  #{systemCode} ,  LAST_UPDT_PNTTM = NOW()
+			WHERE QUEUE_NM =  #{systemQueue};
+		</if>
    	</update>
    	
    	<delete id="deleteSystemInfo">

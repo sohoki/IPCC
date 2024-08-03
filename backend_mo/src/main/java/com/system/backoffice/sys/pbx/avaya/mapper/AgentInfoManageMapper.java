@@ -23,11 +23,11 @@ public interface AgentInfoManageMapper {
 	
 	public int insertAgentInfoList(List<AgentInfo> list);
 	
-    public int insertAgentInfo(AgentInfoReqDto vo);
+	public int insertAgentInfo(AgentInfoReqDto vo);
+		
+	public int updateAgentInfo(AgentInfoReqDto vo);
 	
-    public int updateAgentInfo(AgentInfoReqDto vo);
-    
-    //public int updateStationConsultInfo(AgentInfo vo);
-    
-    public int deleteAgentInfo(String loginId);
+	//public int updateStationConsultInfo(AgentInfo vo);
+	
+	public int deleteAgentInfo(String loginId);
 }
