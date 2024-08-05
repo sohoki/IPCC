@@ -11,12 +11,12 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor	
-public class ExchangeInfo {
+public class BindingInfo {
 
+	private String queueNm;
 	private String exchangeName;
-	private String exchangeDurability;
-	private String exchangeAutodelete;
-	private String exchangeType;
+	private String exchangeRoutingKey;
+	private String bindingExample;
 	private String lastUpdusrId;
 	private String lastUpdtPnttm;
 }

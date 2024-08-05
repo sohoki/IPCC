@@ -16,8 +16,8 @@ public class ExchangeInfoReqDto {
 
 	private String mode;
 	private String exchangeName;
-	private String queueNm;
-	private String exchangeRoutingKey;
+	private String exchangeDurability;
+	private String exchangeAutodelete;
 	private String exchangeType;
 	private String userId;
 }

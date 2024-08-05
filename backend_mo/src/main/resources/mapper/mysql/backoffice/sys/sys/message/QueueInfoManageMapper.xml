@@ -22,14 +22,16 @@
 		FROM TB_QUEUE_INFO
 		WHERE 1=1 
 			<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.systemCode)">
-				AND SYSTEM_CODE IS NOT NULL
+				AND (  SYSTEM_CODE IS NULL OR  SYSTEM_CODE = #{params.systemCode} OR 
+							SYSTEM_CODE NOT IN (SELECT SYSTEM_CODE FROM TB_QUEUE_INFO where IFNULL(SYSTEM_CODE, '') != ''  ) 
+						 )
 			</if>
 	</select>
 	<select id="selectExchangeInfoManageListByPagination" resultType="camelmap">
 			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
 			TB.* FROM (
-								SELECT  EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, 
-												DATE_FORMAT(LAST_UPDT_PNTTM, '%Y-%m-%d' )  LAST_UPDT_PNTTM
+								SELECT  EXCHANGE_NAME, EXCHANGE_DURABILITY, EXCHANGE_AUTODELETE, EXCHANGE_TYPE, LAST_UPDUSR_ID, 
+												DATE_FORMAT(LAST_UPDT_PNTTM, '%Y-%m-%d' )  LAST_UPDT_PNTTM, fn_DetailCodeNm(EXCHANGE_TYPE) EXCHANGE_TYPE_TXT
 								FROM  TB_EXCHANGE_INFO 
 								WHERE 1=1
 								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
@@ -42,8 +44,30 @@
 												</otherwise>
 											</choose>
 								</if>	
-								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(queueNm)">
-										AND QUEUE_NM = #{queueNm}
+								ORDER BY LAST_UPDT_PNTTM  DESC
+			) TB  
+			ORDER BY TB.LAST_UPDT_PNTTM  DESC
+			LIMIT   #{params.firstIndex},   #{params.recordCountPerPage}  	
+	</select>
+	<select id="selectBuindingInfoManageListByPagination" resultType="camelmap">
+			SELECT SUM(1) OVER(PARTITION BY NULL) AS TOTAL_RECORD_COUNT,
+			TB.* FROM (
+								SELECT  QUEUE_NM, EXCHANGE_NAME, EXCHANGE_ROUTING_KEY, BINDING_EXAMPLE, LAST_UPDUSR_ID, 
+												DATE_FORMAT(LAST_UPDT_PNTTM, '%Y-%m-%d' )  LAST_UPDT_PNTTM
+								FROM  TB_BINDINGINFO 
+								WHERE 1=1
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchKeyword)">
+										<choose>
+												<when test="params.searchCondition == 'queue'">
+													AND QUEUE_NM LIKE CONCAT('%',#{params.searchKeyword},'%') 
+												</when>
+												<otherwise>
+													AND EXCHANGE_NAME LIKE CONCAT('%',#{params.searchKeyword},'%')  
+												</otherwise>
+											</choose>
+								</if>	
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.exchangeName)">
+										AND EXCHANGE_NAME = #{params.exchangeName}
 								</if>
 								ORDER BY LAST_UPDT_PNTTM  DESC
 			) TB  
@@ -55,6 +79,12 @@
 			FROM TB_QUEUE_INFO
 			WHERE QUEUE_NM = #{queueNm}
 	</select>
+	<select id="selectExchangeCombobox" resultType="ExchangeInfo">
+			SELECT EXCHANGE_NAME
+			FROM TB_QUEUE_INFO
+	</select>
+	
+	
 	<select id="selectExchangeInfoDetail" resultType="ExchangeInfo">
 			SELECT EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM
 			FROM TB_EXCHANGE_INFO
@@ -68,10 +98,17 @@
 		DELETE FROM TB_QUEUE_INFO WHERE QUEUE_NM = #{queueNm}
 	</delete>
 	<insert id="insertExchangeInfo">
-		INSERT INTO TB_EXCHANGE_INFO(EXCHANGE_NAME, QUEUE_NM, EXCHANGE_ROUTING_KEY, EXCHANGE_TYPE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM)
-		VALUES (#{exchangeName},#{queueNm},#{exchangeRoutingKey},#{exchangeType}, #{userId}, NOW() )
+		INSERT INTO TB_EXCHANGE_INFO(EXCHANGE_NAME, EXCHANGE_DURABILITY, EXCHANGE_AUTODELETE, EXCHANGE_TYPE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM)
+		VALUES (#{exchangeName},#{exchangeDurability},#{exchangeAutodelete},#{exchangeType}, #{userId}, NOW() )
 	</insert>
 	<delete id="deleteExchangeInfo">
 		DELETE FROM TB_EXCHANGE_INFO WHERE EXCHANGE_NAME = #{exchangeName}
+	</delete>
+	<insert id="insertBuindingInfo">
+		INSERT INTO TB_BINDINGINFO(QUEUE_NM, EXCHANGE_NAME, EXCHANGE_ROUTING_KEY, BINDING_EXAMPLE, LAST_UPDUSR_ID, LAST_UPDT_PNTTM)
+		VALUES (#{queueNm}, #{exchangeName},  #{exchangeRoutingKey }, #{bindingExample,jdbcType=VARCHAR}, #{userId}, NOW())
+	</insert>
+	<delete id="deleteBuindingInfo">
+		DELETE FROM TB_BINDINGINFO WHERE QUEUE_NM = #{queueNm} AND EXCHANGE_NAME = #{exchangeName} AND EXCHANGE_ROUTING_KEY = #{exchangeRoutingKey }
 	</delete>
 </mapper>

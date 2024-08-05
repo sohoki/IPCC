@@ -98,7 +98,7 @@
 		);
 		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemQueue)">
 			
-			UPDATE TB_QUEUE_INFO set  =  SYSTEM_CODE =  #{systemCode} ,  LAST_UPDT_PNTTM = NOW()
+			UPDATE TB_QUEUE_INFO SET  SYSTEM_CODE =  #{systemCode} ,  LAST_UPDT_PNTTM = NOW()
 			WHERE QUEUE_NM =  #{systemQueue};
 		</if>
    	</insert>
@@ -123,14 +123,16 @@
 								SYSTEM_HEALTH_CHECK = #{systemHealthCheck, jdbcType=VARCHAR} , 
 								SYSTEM_HEALTH_CHECK_URL = #{systemHealthCheckUrl, jdbcType=VARCHAR} , 
 								SYSTEM_CONN_LEVEL= #{systemConnLevel, jdbcType=VARCHAR} , 
-								SYSTEM_GUBUN = #{systemGubun},
+								SYSTEM_GUBUN = #{systemGubun}
 								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemQueue)">  
-								SYSTEM_QUEUE = #{systemQueue,jdbcType=VARCHAR}
+								, SYSTEM_QUEUE = #{systemQueue,jdbcType=VARCHAR}
 								</if>
-		WHERE SYSTEM_CODE = #{systemCode};
+		WHERE SYSTEM_CODE = #{systemCode}
+		;
 		<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemQueue)">
-			UPDATE TB_QUEUE_INFO set  =  SYSTEM_CODE =  #{systemCode} ,  LAST_UPDT_PNTTM = NOW()
-			WHERE QUEUE_NM =  #{systemQueue};
+			UPDATE TB_QUEUE_INFO SET   SYSTEM_CODE =  #{systemCode} ,  
+																			LAST_UPDT_PNTTM = NOW()
+			WHERE QUEUE_NM =  #{systemQueue}
 		</if>
    	</update>
    	
