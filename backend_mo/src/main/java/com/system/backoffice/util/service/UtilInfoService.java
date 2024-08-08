@@ -139,20 +139,19 @@ public class UtilInfoService {
     }
 
     //null or empty 체크
-    public static String NVL(String _val, String _replace) {
-    	return _val.isEmpty() ? _replace : _val;
-    }
-    
-    public static String NVL(Object _val, String _replace) {
-    	return _val == null ? _replace : StringUtils.isBlank(_val.toString()) ? _replace : _val.toString();
-    }
-    public static String NVLObj(Object _val, String _replace) {
-    	return _val == null ? _replace : StringUtils.isBlank(_val.toString()) ? _replace : _val.toString();
-    }
-    public static int NVLObj(Object _val, int _replace) {
-    	return _val == null ? _replace :  StringUtils.isBlank(_val.toString()) ? _replace :  Integer.parseInt((String.valueOf(_val)));
-    }
-    
+	public static String NVL(String _val, String _replace) {
+		return _val.isEmpty() ? _replace : _val;
+	}
+	
+	public static String NVL(Object _val, String _replace) {
+		return _val == null ? _replace : StringUtils.isBlank(_val.toString()) ? _replace : _val.toString();
+	}
+	public static String NVLObj(Object _val, String _replace) {
+		return _val == null ? _replace : StringUtils.isBlank(_val.toString()) ? _replace : _val.toString();
+	}
+	public static int NVLObj(Object _val, int _replace) {
+		return _val == null ? _replace :  StringUtils.isBlank(_val.toString()) ? _replace :  Integer.parseInt((String.valueOf(_val)));
+	}
 
 
 	public static int NVL(Object _val, int _replace) {

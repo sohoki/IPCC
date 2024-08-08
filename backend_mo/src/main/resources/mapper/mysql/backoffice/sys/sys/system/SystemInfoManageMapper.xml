@@ -106,7 +106,9 @@
 
 	<update id="updateSystemInfo">
 		UPDATE TB_SYSTEMINFO SET SYSTEM_NAME = #{systemName}, 
+								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(domainInfo)">  
 								DOMAIN_INFO = #{domainInfo,jdbcType=VARCHAR}, 
+								</if>
 								SYSTEM_DC = #{systemDc, jdbcType=VARCHAR}  ,
 								SYSTEM_USEYN =#{systemUseyn,jdbcType=VARCHAR} ,
 								<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(systemIcon)">  

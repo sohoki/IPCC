@@ -105,7 +105,7 @@ public class AdminInfoManageController {
 				searchVO.put(Globals.PAGE_LOGIN_PARTID , userinfo[3]);
 				searchVO.put(Globals.PAGE_LOGIN_INSTTCODE , userinfo[4]);
 			}
-	
+			log.info("======================1");
 			if (!searchVO.get(Globals.USER_PART_ID).equals("SYSTEM"))
 				searchVO.put(Globals.PAGE_UNIT, UtilInfoService.NVLObj(searchVO.get(Globals.PAGE_UNIT), propertiesService.getInt(Globals.PAGE_UNIT)));
 			else 
@@ -125,11 +125,11 @@ public class AdminInfoManageController {
 			searchVO.put(Globals.PAGE_RECORD_PER_PAGE, paginationInfo.getRecordCountPerPage());
 			
 			model.addObject(Globals.STATUS_REGINFO, searchVO);
-			List<AdminInfoVO> adminList;
-			if (searchVO.get(Globals.USER_PART_ID).equals("SYSTEM"))
-				adminList =  (List<AdminInfoVO>) userManagerService.selectAdminUserManageListBySystemInfo(searchVO);
-			else 
-				adminList =  (List<AdminInfoVO>) userManagerService.selectAdminUserManageListByPagination(searchVO);
+			List<AdminInfoVO> adminList = searchVO.get(Globals.USER_PART_ID).equals("SYSTEM") ? 
+														(List<AdminInfoVO>) userManagerService.selectAdminUserManageListBySystemInfo(searchVO) 
+													:  (List<AdminInfoVO>) userManagerService.selectAdminUserManageListByPagination(searchVO);
+					
+			log.info("======================2");
 			model.addObject(Globals.JSON_RETURN_RESULT_LIST,  adminList);
 			int totCnt = adminList.size() > 0 ? adminList.get(0).getTotalRecordCount() : 0;  
 			paginationInfo.setTotalRecordCount(totCnt);

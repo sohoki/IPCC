@@ -103,9 +103,9 @@
 						a.ADMIN_STATUS,  
 						a.CONSULTANT_USEYN ,
 						a.INSTT_CODE , 
-						b.ROLE_ID
+						a.LAST_UPDT_PNTTM
 				FROM   TB_MANAGERINFO a, TB_MANAGER_AUTH_INFO b
-				WHERE  a.ADMIN_ID = B.USER_ID 
+				WHERE  a.ADMIN_ID = b.USER_ID 
 						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchUseYn)">
 							AND a.USE_YN = #{params.useYn}
 						</if>
@@ -115,7 +115,8 @@
 						<if test="!@org.apache.commons.lang3.StringUtils@isEmpty(params.searchPartId)">
 							AND a.PART_ID = #{params.searchPartId}
 						</if>
-				ORDER BY a.REG_DATE  DESC
+						AND SYSTEM_CODE = #{params.systemCode}
+				ORDER BY a.LAST_UPDT_PNTTM  DESC
 			) TB	 	    
 	</select>
 <select id="selectSystemUserMenuInfo" resultType="UserAuthInfoDto">
